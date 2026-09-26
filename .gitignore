@@ -1,0 +1,59 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Antrops prototypmall
+.vercel
+.env*.local
+.mall-state.json
+# Skills hämtas färska av npm run setup/update och checkas inte in.
+# antrop-prototyp är mallens egen och checkas in.
+.agents/
+.claude/skills/*
+!.claude/skills/antrop-prototyp/
+!.claude/skills/promo-video/
+skills-lock.json
+.claude/settings.local.json
+# impeccable: bara listan över kända falsklarm checkas in
+.impeccable/*
+!.impeccable/critique/
+.impeccable/critique/*
+!.impeccable/critique/ignore.md
+screenshots/
+
+# Videor: renderade filer checkas inte in
+video/*/out/

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vercel@latest env pull *)",
+      "Bash(npx vercel@latest whoami)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "mcp__shadcn",
+      "mcp__next-devtools"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Read(./.env*.local)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/session-start.mjs",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "antrop": {
+      "source": {
+        "source": "github",
+        "repo": "antrop-ab/antrop-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "antrop-toolbox@antrop": true
+  },
+  "enabledMcpjsonServers": [
+    "shadcn",
+    "next-devtools"
+  ]
+}

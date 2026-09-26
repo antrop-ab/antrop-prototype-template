@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Promovideo</title>
+<!--
+  Showcase-video av prototypen. Fyll i STORY nedan (namn, färger, typsnitt,
+  skärmar, funktioner) och rendera: npm run video -- video/promo
+  Förhandsvisa och skrubba: npm run video -- video/promo --serve
+  Se skillen promo-video (.claude/skills/promo-video/SKILL.md).
+-->
+<script>
+const STORY = {
+  name: "Prototyp",                       // tjänstens namn, stort i introt och på slutet
+  tagline: "En ny tjänst, klickbar redan idag.",
+  primary: "#4F5BD5",                     // kundens huvudfärg (samma som npm run theme)
+  dark: "#12131A",                        // mörk bakgrund i videon
+  light: "#F4F5FB",                       // ljus bakgrund i videon
+  font: "Figtree",                        // Google Fonts-namn, samma som prototypen
+  // Skärmdumpar från `npm run screenshots -- … --both` (mappen screenshots/).
+  // Varje skärm: fil (utan mobil-ljust-/mobil-morkt-) och en kort bildtext.
+  screens: [
+    { file: "01-start", caption: "Startsidan" },
+  ],
+  darkMode: true,                         // visa samma skärmar i mörkt läge
+  desktop: null,                          // t.ex. "desktop-ljust-01-start.png", eller null
+  features: [
+    "Byggd för mobilen först",
+    "Ljust och mörkt läge",
+    "Tydliga, stora kontroller",
+  ],
+  url: "prototyp.vercel.app",
+  credit: "En prototyp av Antrop",
+};
+</script>
+<style>
+:root { --primary: #4F5BD5; --dark: #12131A; --light: #F4F5FB; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; overflow: hidden; }
+.stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--dark); color: #fff; -webkit-font-smoothing: antialiased; }
+.scene { position: absolute; inset: 0; opacity: 0; }
+.big { font-weight: 800; letter-spacing: -0.035em; line-height: 0.98; }
+.label { font-size: 22px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7; }
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.w > span { display: inline-block; }
+.blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.55; background: var(--primary); }
+.phone { position: absolute; width: 400px; height: 846px; border-radius: 64px; background: #0c0f12; padding: 13px; box-shadow: 0 60px 120px -30px rgba(0,0,0,.55), inset 0 0 0 2px #2a2f35; }
+.phone .screen { position: relative; width: 100%; height: 100%; border-radius: 52px; overflow: hidden; background: #fff; }
+.phone .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; }
+.ripple { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; background: rgba(255,255,255,.55); border: 2px solid rgba(255,255,255,.9); opacity: 0; z-index: 999; }
+.browser { position: absolute; width: 1120px; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 60px 140px -30px rgba(0,0,0,.6); }
+.browser .bar { height: 52px; background: #f1f3f4; display: flex; align-items: center; gap: 10px; padding: 0 22px; }
+.browser .bar i { width: 13px; height: 13px; border-radius: 50%; background: #d7d9dc; display: block; }
+.browser .bar .url { margin-left: 18px; flex: 1; height: 32px; border-radius: 16px; background: #fff; font-size: 15px; color: #5c6670; display: flex; align-items: center; padding: 0 16px; }
+.browser img { display: block; width: 100%; }
+.feature { position: absolute; left: 160px; display: flex; align-items: center; gap: 36px; font-size: 64px; font-weight: 700; letter-spacing: -0.02em; color: var(--dark); }
+.feature .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); flex: none; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="scene" id="s1">
+    <div class="blob" id="b1" style="width:900px;height:900px;left:-200px;top:300px"></div>
+    <div class="blob" id="b2" style="width:700px;height:700px;left:1300px;top:-200px;opacity:.35"></div>
+    <div class="label" id="credit" style="position:absolute;left:160px;top:300px"></div>
+    <h1 class="big split" id="title" style="position:absolute;left:150px;top:350px;font-size:190px;width:1650px"></h1>
+    <div id="tagline" style="position:absolute;left:160px;top:720px;font-size:56px;opacity:.8;width:1400px"></div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="blob" style="width:1100px;height:900px;left:900px;top:150px;opacity:.35"></div>
+    <div style="position:absolute;left:150px;top:360px;width:640px">
+      <div class="label" id="cap-label">Så fungerar det</div>
+      <div class="big" id="cap" style="font-size:88px;margin-top:22px"></div>
+    </div>
+    <div style="position:absolute;inset:0;perspective:2200px">
+      <div class="phone" id="pl" style="left:880px;top:130px"><div class="screen"></div></div>
+      <div class="phone" id="pr" style="left:1400px;top:130px"><div class="screen"></div></div>
+      <div class="phone" id="pc" style="left:1140px;top:110px"><div class="screen"></div></div>
+    </div>
+    <div class="browser" id="browser" style="left:120px;top:190px;opacity:0">
+      <div class="bar"><i></i><i></i><i></i><div class="url" id="browser-url"></div></div>
+      <img id="desktop-img">
+    </div>
+  </section>
+
+  <section class="scene" id="s3" style="background:var(--light)"><div id="features"></div></section>
+
+  <section class="scene" id="s4">
+    <div class="blob" id="b3" style="width:1000px;height:1000px;left:460px;top:40px;opacity:.45"></div>
+    <div class="big" id="end-name" style="position:absolute;left:0;right:0;top:360px;text-align:center;font-size:150px"></div>
+    <div id="end-url" style="position:absolute;left:0;right:0;top:580px;text-align:center;font-size:40px;opacity:.85"></div>
+    <div class="label" id="end-credit" style="position:absolute;left:0;right:0;top:900px;text-align:center;font-size:18px"></div>
+  </section>
+  <div id="fade" style="position:absolute;inset:0;background:#000;opacity:0;z-index:60"></div>
+</div>
+
+<script>
+// Typsnitt och färger från STORY
+document.head.insertAdjacentHTML("beforeend", `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(STORY.font)}:wght@400;600;700;800&display=block">`);
+const root = document.documentElement.style;
+root.setProperty("--primary", STORY.primary);
+root.setProperty("--dark", STORY.dark);
+root.setProperty("--light", STORY.light);
+document.querySelector(".stage").style.fontFamily = `"${STORY.font}", system-ui, sans-serif`;
+document.getElementById("credit").textContent = STORY.credit;
+document.getElementById("title").textContent = STORY.name;
+document.getElementById("tagline").textContent = STORY.tagline;
+document.getElementById("end-name").textContent = STORY.name;
+document.getElementById("end-url").textContent = STORY.url;
+document.getElementById("end-credit").textContent = STORY.credit;
+document.querySelectorAll(".split").forEach((el) => {
+  el.innerHTML = el.textContent.split(" ").map((w) => `<span class="w"><span>${w}</span></span>`).join(" ");
+});
+const modes = STORY.darkMode ? ["ljust", "morkt"] : ["ljust"];
+["pl", "pc", "pr"].forEach((id) => {
+  const scr = document.querySelector(`#${id} .screen`);
+  modes.forEach((m) => STORY.screens.forEach((s) => {
+    const img = document.createElement("img");
+    img.src = `../../screenshots/mobil-${m}-${s.file}.png`;
+    img.dataset.n = `${m}-${s.file}`;
+    scr.appendChild(img);
+  }));
+  scr.insertAdjacentHTML("beforeend", '<div class="ripple"></div>');
+});
+if (STORY.desktop) {
+  document.getElementById("desktop-img").src = `../../screenshots/${STORY.desktop}`;
+  document.getElementById("browser-url").textContent = STORY.url;
+}
+</script>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../../scripts/video/timeline.js"></script>
+<script>
+// Längden räknas ut från antalet skärmar och funktioner, i hela takter.
+const B = 60 / 112 * 4;
+const n = STORY.screens.length;
+const showcaseBars = Math.max(4, Math.ceil(n * 0.55)) + (STORY.darkMode ? 2 : 0) + (STORY.desktop ? 2 : 0);
+const S = { s1: 0, s2: 3 * B };
+S.s3 = S.s2 + showcaseBars * B;
+S.s4 = S.s3 + Math.max(3, Math.ceil(STORY.features.length * 0.6 + 1)) * B;
+const END = S.s4 + 7;
+
+const { tl, cue } = createVideo({
+  duration: END,
+  fonts: [`800 80px "${STORY.font}"`, `700 40px "${STORY.font}"`, `400 30px "${STORY.font}"`],
+  music: {
+    bpm: 112,
+    sections: [
+      { start: 0, end: S.s2, energy: 0 },
+      { start: S.s2, end: S.s3, energy: 3 },
+      { start: S.s3, end: S.s4, energy: 2 },
+    ],
+    drops: [S.s2],
+    end: S.s4,
+    fadeOut: END - 2,
+  },
+});
+const scene = (id, a, b) => { tl.set(`#${id}`, { opacity: 1 }, a); if (b) tl.set(`#${id}`, { opacity: 0 }, b); };
+
+// 1. Intro
+scene("s1", 0, S.s2);
+tl.fromTo("#b1", { scale: 0.6, x: -200 }, { scale: 1, x: 0, duration: 4, ease: "power2.out" }, 0);
+tl.fromTo("#b2", { scale: 0.6 }, { scale: 1.1, duration: 5, ease: "power2.out" }, 0.3);
+tl.fromTo("#credit", { opacity: 0, y: 20 }, { opacity: 0.7, y: 0, duration: 0.8 }, 0.5);
+tl.fromTo("#title .w > span", { yPercent: 110 }, { yPercent: 0, duration: 1, ease: "expo.out", stagger: 0.08 }, 1.0);
+tl.fromTo("#tagline", { opacity: 0, y: 30 }, { opacity: 0.8, y: 0, duration: 1.1, ease: "expo.out" }, 2.2);
+cue("whoosh", 0.9, { dur: 0.8 });
+cue("pop", 2.2);
+tl.to("#s1 > *:not(.blob)", { y: -60, opacity: 0, duration: 0.5, ease: "power3.in", stagger: 0.05 }, S.s2 - 0.6);
+
+// 2. Telefonerna
+scene("s2", S.s2, S.s3);
+cue("impact", S.s2);
+let z = 10;
+const current = {};
+const show = (id, name, t) => {
+  const next = `#${id} [data-n="${name}"]`;
+  if (!document.querySelector(next)) return;
+  tl.set(next, { zIndex: ++z }, t);
+  if (current[id]) tl.to(`#${id} [data-n="${current[id]}"]`, { opacity: 0, duration: 0.4 }, t);
+  tl.fromTo(next, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, t);
+  current[id] = name;
+};
+const caption = (text, t) => {
+  tl.to("#cap", { opacity: 0, y: -20, duration: 0.2 }, t - 0.2);
+  tl.set("#cap", { textContent: text, y: 20 }, t);
+  tl.to("#cap", { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, t);
+};
+const scr = (i) => STORY.screens[Math.max(0, Math.min(n - 1, i))].file;
+show("pl", `ljust-${scr(0)}`, S.s2);
+show("pc", `ljust-${scr(Math.min(1, n - 1))}`, S.s2);
+show("pr", `ljust-${scr(Math.min(2, n - 1))}`, S.s2);
+tl.fromTo("#pl", { y: 900, rotateY: 26, scale: 0.8 }, { y: 60, rotateY: 22, rotateZ: -2, scale: 0.8, duration: 1.4, ease: "expo.out" }, S.s2 + 0.05);
+tl.fromTo("#pr", { y: 900, rotateY: -26, scale: 0.8 }, { y: 60, rotateY: -22, rotateZ: 2, scale: 0.8, duration: 1.4, ease: "expo.out" }, S.s2 + 0.15);
+tl.fromTo("#pc", { y: 900, scale: 0.9 }, { y: 0, scale: 1, duration: 1.5, ease: "expo.out" }, S.s2 + 0.1);
+tl.fromTo("#cap-label", { opacity: 0 }, { opacity: 0.7, duration: 0.6 }, S.s2 + 0.3);
+let t = S.s2 + 0.4;
+STORY.screens.forEach((s, i) => {
+  if (i > 0) {
+    tl.fromTo("#pc .ripple", { left: "50%", top: "80%", scale: 0.2, opacity: 0.9 }, { scale: 1.4, opacity: 0, duration: 0.55 }, t - 0.25);
+    cue("click", t - 0.25);
+    show("pc", `ljust-${s.file}`, t);
+    show(i % 2 ? "pl" : "pr", `ljust-${scr(i - 1)}`, t + 0.15);
+  }
+  caption(s.caption, t);
+  t += B * 0.55;
+});
+if (STORY.darkMode) {
+  const td = t + 0.2;
+  cue("whoosh", td - 0.15, { dur: 0.8 });
+  caption("Ljust och mörkt läge", td);
+  ["pl", "pc", "pr"].forEach((id, k) => {
+    const cur = current[id].replace("ljust-", "morkt-");
+    const img = `#${id} [data-n="${cur}"]`;
+    tl.set(img, { opacity: 1, y: 0, zIndex: ++z, clipPath: "inset(0 0 100% 0)" }, td);
+    tl.to(img, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power3.inOut" }, td + k * 0.08);
+    current[id] = cur;
+  });
+  t = td + 2 * B;
+}
+if (STORY.desktop) {
+  const tk = t;
+  cue("whoosh", tk - 0.2, { dur: 0.8 });
+  tl.to("#cap, #cap-label", { opacity: 0, duration: 0.3 }, tk - 0.3);
+  tl.to(["#pl", "#pr"], { opacity: 0, y: 300, duration: 0.6, ease: "power3.in" }, tk - 0.3);
+  tl.fromTo("#browser", { opacity: 0, x: -200, scale: 0.94 }, { opacity: 1, x: 0, scale: 1, duration: 1.1, ease: "expo.out" }, tk);
+  tl.to("#pc", { x: 300, y: 90, scale: 0.86, duration: 1.1, ease: "expo.out" }, tk);
+  show("pc", `ljust-${scr(n - 1)}`, tk + 0.1);
+}
+tl.to("#s2", { opacity: 0, duration: 0.4 }, S.s3 - 0.4);
+
+// 3. Funktioner
+scene("s3", S.s3 - 0.4, S.s4);
+tl.fromTo("#s3", { clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(150% at 50% 50%)", duration: 0.9, ease: "power3.inOut" }, S.s3 - 0.45);
+cue("whoosh", S.s3 - 0.5, { dur: 0.9 });
+const fEl = document.getElementById("features");
+const gap = Math.min(170, 700 / Math.max(1, STORY.features.length));
+STORY.features.forEach((f, i) => {
+  const el = document.createElement("div");
+  el.className = "feature";
+  el.style.top = `${540 - ((STORY.features.length - 1) * gap) / 2 + i * gap - 40}px`;
+  el.innerHTML = `<span class="dot"></span><span></span>`;
+  el.lastChild.textContent = f;
+  fEl.appendChild(el);
+  const ft = S.s3 + 0.4 + i * 0.5;
+  tl.fromTo(el, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.8, ease: "expo.out" }, ft);
+  cue("pop", ft, { freq: 600 + i * 120 });
+});
+tl.to(".feature", { opacity: 0, y: -30, duration: 0.4, stagger: 0.04 }, S.s4 - 0.6);
+
+// 4. Slut
+scene("s4", S.s4);
+tl.fromTo("#b3", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 0.45, duration: 2, ease: "expo.out" }, S.s4);
+tl.fromTo("#end-name", { opacity: 0, scale: 1.1, filter: "blur(16px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.2, ease: "expo.out" }, S.s4);
+tl.fromTo("#end-url", { opacity: 0, y: 20 }, { opacity: 0.85, y: 0, duration: 1 }, S.s4 + 0.9);
+tl.fromTo("#end-credit", { opacity: 0 }, { opacity: 0.7, duration: 1 }, S.s4 + 1.5);
+cue("shimmer", S.s4 + 0.9);
+tl.to("#fade", { opacity: 1, duration: 1.6 }, END - 1.7);
+</script>
+</body>
+</html>

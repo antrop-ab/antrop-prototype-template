@@ -1,0 +1,12 @@
+{
+  "$comment": "Inställningar för Antrops prototypmall. Läses av skripten i scripts/.",
+  "templateRepo": "antrop-ab/antrop-prototype-template",
+  "githubOwner": "antrop-ab",
+  "vercelScope": null,
+  "skills": [
+    { "source": "https://github.com/shadcn/ui", "skill": "shadcn", "why": "shadcn:s egen skill: CLI, komponenter, formulärmönster, tema" },
+    { "source": "https://github.com/pbakaus/impeccable", "why": "designprocess: shape före bygget, critique och audit efteråt" },
+    { "source": "https://github.com/emilkowalski/skills", "skill": ["emil-design-eng", "review-animations", "find-animation-opportunities", "mobile-native"], "why": "rörelse och detaljkänsla (Emil Kowalski, skaparen av Sonner och Vaul)" },
+    { "source": "https://github.com/vercel-labs/agent-skills", "skill": ["web-design-guidelines", "vercel-react-view-transitions"], "why": "Vercels gränssnittsregler och vybyten i Next.js" }
+  ]
+}

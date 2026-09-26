@@ -1,0 +1,193 @@
+/*
+ * Antrops storlekslager: tydliga, stora kontroller som standard.
+ *
+ * shadcn är kompakt från början (knappar och fält på 32–36 px, text på 14 px).
+ * Här blir standardstorleken 44 px och 16 px text, utan att komponentfilerna i
+ * components/ui ändras. Reglerna hakar i shadcn:s egna attribut (data-slot och
+ * data-size), så `npx shadcn add --overwrite` kan hämta senaste versionen utan
+ * att storlekarna försvinner.
+ *
+ * Så styr du storleken:
+ *   - Per komponent: size="sm" | "default" | "lg" (och icon, icon-sm, icon-lg).
+ *   - Per yta: data-density="compact" på en förälder, till exempel en tät
+ *     tabell eller ett verktyg för proffsanvändare på desktop.
+ *   - Globalt: ändra variablerna i :root nedan.
+ *   - Engångsavvikelse: important-varianten i Tailwind, till exempel "h-14!".
+ *     Vanliga klasser som "h-14" vinner inte över det här lagret.
+ */
+
+:root {
+  --control-h: 2.75rem; /* 44 px: standard för knappar, fält, väljare */
+  --control-h-sm: 2.25rem; /* 36 px: sekundära handlingar i täta ytor */
+  --control-h-lg: 3.25rem; /* 52 px: huvudhandling på mobil, hero */
+  --control-h-xs: 1.75rem; /* 28 px: bara dekorativt, t.ex. taggar med knapp */
+  --control-px: 1rem;
+  --control-font: 1rem; /* 16 px: läsbart, och iOS zoomar inte in i fält */
+  --control-font-sm: 0.875rem;
+  --menu-item-h: 2.5rem; /* rader i menyer och listor */
+  --choice-size: 1.25rem; /* checkbox och radioknapp */
+}
+
+/* Pekskärm: menyrader når också 44 px. */
+@media (pointer: coarse) {
+  :root {
+    --menu-item-h: 2.75rem;
+  }
+}
+
+/* Tät yta, t.ex. ett admin-verktyg på desktop. Används med eftertanke. */
+[data-density="compact"] {
+  --control-h: 2.25rem;
+  --control-h-sm: 2rem;
+  --control-h-lg: 2.75rem;
+  --control-px: 0.75rem;
+  --control-font: 0.875rem;
+  --menu-item-h: 2rem;
+  --choice-size: 1rem;
+}
+
+@layer utilities {
+  /* Knappar ---------------------------------------------------------------- */
+  [data-slot="button"][data-size="default"],
+  [data-slot="toggle"][data-size="default"],
+  [data-slot="toggle-group-item"][data-size="default"] {
+    height: var(--control-h);
+    min-width: var(--control-h);
+    padding-inline: var(--control-px);
+    font-size: var(--control-font);
+  }
+  [data-slot="button"][data-size="sm"],
+  [data-slot="toggle"][data-size="sm"],
+  [data-slot="toggle-group-item"][data-size="sm"] {
+    height: var(--control-h-sm);
+    min-width: var(--control-h-sm);
+    font-size: var(--control-font-sm);
+  }
+  [data-slot="button"][data-size="lg"],
+  [data-slot="toggle"][data-size="lg"],
+  [data-slot="toggle-group-item"][data-size="lg"] {
+    height: var(--control-h-lg);
+    min-width: var(--control-h-lg);
+    padding-inline: calc(var(--control-px) * 1.5);
+    font-size: var(--control-font);
+  }
+  /* Textlänkar ska linjera med texten runt dem: ingen sidopadding, men full klickhöjd. */
+  [data-slot="button"][data-variant="link"][data-variant="link"] {
+    padding-inline: 0;
+    min-width: 0;
+  }
+  [data-slot="button"][data-size="xs"] {
+    height: var(--control-h-xs);
+  }
+  [data-slot="button"][data-size="icon"] {
+    width: var(--control-h);
+    height: var(--control-h);
+  }
+  [data-slot="button"][data-size="icon-sm"] {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+  }
+  [data-slot="button"][data-size="icon-lg"] {
+    width: var(--control-h-lg);
+    height: var(--control-h-lg);
+  }
+  [data-slot="button"] svg:not([class*="size-"]) {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* Fält ------------------------------------------------------------------- */
+  [data-slot="input"][data-slot="input"],
+  [data-slot="select-trigger"][data-size="default"],
+  [data-slot="native-select"][data-size="default"],
+  [data-slot="combobox-trigger"][data-slot="combobox-trigger"],
+  [data-slot="input-group"][data-slot="input-group"] {
+    height: var(--control-h);
+    min-height: var(--control-h);
+    font-size: var(--control-font);
+  }
+  [data-slot="input"][data-slot="input"],
+  [data-slot="select-trigger"][data-size="default"],
+  [data-slot="native-select"][data-size="default"] {
+    padding-inline: 0.875rem;
+  }
+  [data-slot="select-trigger"][data-size="sm"],
+  [data-slot="native-select"][data-size="sm"] {
+    height: var(--control-h-sm);
+    font-size: var(--control-font-sm);
+  }
+  [data-slot="input-group"] [data-slot="input-group-control"] {
+    font-size: var(--control-font);
+  }
+  /* Textfält med flera rader: inputgruppens höjd får växa. */
+  [data-slot="input-group"]:has(textarea) {
+    height: auto;
+  }
+  [data-slot="textarea"][data-slot="textarea"] {
+    min-height: calc(var(--control-h) * 2);
+    padding: 0.625rem 0.875rem;
+    font-size: var(--control-font);
+  }
+  [data-slot="input-otp-slot"][data-slot="input-otp-slot"] {
+    width: var(--control-h);
+    height: var(--control-h);
+    font-size: 1.125rem;
+  }
+
+  /* Val -------------------------------------------------------------------- */
+  [data-slot="checkbox"][data-slot="checkbox"],
+  [data-slot="radio-group-item"][data-slot="radio-group-item"] {
+    width: var(--choice-size);
+    height: var(--choice-size);
+  }
+  [data-slot="radio-group-item"] [data-slot="radio-group-indicator"] {
+    width: 100%;
+    height: 100%;
+  }
+  [data-slot="checkbox-indicator"] svg {
+    width: calc(var(--choice-size) - 0.25rem);
+    height: calc(var(--choice-size) - 0.25rem);
+  }
+
+  /* Switch: 24 × 40 px. Tummen flyttas (100 % − 2 px) av komponenten själv,
+     så bredden måste vara tummen × 2 plus kanten. */
+  [data-slot="switch"][data-size="default"] {
+    height: calc(var(--choice-size) + 0.25rem);
+    width: calc(var(--choice-size) * 2);
+  }
+  [data-slot="switch"][data-size="default"] [data-slot="switch-thumb"] {
+    width: var(--choice-size);
+    height: var(--choice-size);
+  }
+
+  /* Flikar ----------------------------------------------------------------- */
+  [data-slot="tabs"][data-orientation="horizontal"] [data-slot="tabs-list"]:not([data-variant="line"]) {
+    height: var(--control-h);
+  }
+  [data-slot="tabs-trigger"][data-slot="tabs-trigger"] {
+    padding-inline: 0.875rem;
+    font-size: var(--control-font-sm);
+  }
+
+  /* Menyer och listor ------------------------------------------------------ */
+  [data-slot="dropdown-menu-item"],
+  [data-slot="dropdown-menu-checkbox-item"],
+  [data-slot="dropdown-menu-radio-item"],
+  [data-slot="dropdown-menu-sub-trigger"],
+  [data-slot="context-menu-item"],
+  [data-slot="context-menu-checkbox-item"],
+  [data-slot="context-menu-radio-item"],
+  [data-slot="menubar-item"],
+  [data-slot="select-item"],
+  [data-slot="combobox-item"],
+  [data-slot="command-item"] {
+    min-height: var(--menu-item-h);
+    font-size: 0.9375rem;
+  }
+
+  /* Etiketter -------------------------------------------------------------- */
+  [data-slot="label"][data-slot="label"],
+  [data-slot="field-label"][data-slot="field-label"] {
+    font-size: 0.9375rem;
+  }
+}
