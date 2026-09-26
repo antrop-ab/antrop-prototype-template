@@ -48,7 +48,7 @@ Fyll i sökvägen och beställningen själv. Fortsätt utan omstart bara om Antr
   ```
 
 - **Kör du det själv** (Antroparen har öppnat en tom mapp i Claude-appen): lägg till `-s -- --here --no-vercel` efter `bash`. Kör i bakgrunden och läs utskriften. Vid GitHub-inloggningen skrivs en engångskod ut: ge den till Antroparen direkt. Homebrew och Vercel kräver ett Terminal-fönster och hoppas över.
-- Mallen är privat i `antrop-ab`. Antroparen behöver vara medlem i organisationen på GitHub. `npm run doctor` kollar det.
+- Mallen är publik, men varje prototyp blir ett privat repo i `antrop-ab`. Antroparen behöver därför vara medlem i organisationen på GitHub. `npm run doctor` kollar det.
 - **Om `gh` säger att inloggningen misslyckats** fast Antroparen loggat in: en gammal `GH_TOKEN` i miljön går före. Kör `env -u GH_TOKEN -u GITHUB_TOKEN gh auth status`. Mallens skript tar bort den själva.
 
 ## Innan du designar: underlag först
