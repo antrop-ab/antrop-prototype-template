@@ -32,7 +32,7 @@ En mall för Antropare som vill bygga klickbara prototyper i kod i sina kundproj
 curl -fsSL https://raw.githubusercontent.com/antrop-ab/antrop-prototype-template/main/scripts/bootstrap.sh | bash
 ```
 
-Skriptet installerar det som saknas (Homebrew, git, Node, GitHub CLI), loggar in dig på GitHub, skapar din prototyp som ett privat repo i `antrop-ab`, installerar allt och kopplar till Vercel om du vill. Öppna sedan mappen i Claude-appen, fliken *Code*. Mer i [docs/kom-igang.md](docs/kom-igang.md).
+Skriptet installerar det som saknas (Homebrew, git, Node, GitHub CLI), loggar in dig på GitHub, skapar din prototyp som ett privat repo i `antrop-ab`, installerar allt och kopplar till Vercel om du vill. Öppna sedan mappen i Claude-appen, fliken *Code*. Mer i [docs/kom-igang.md](docs/kom-igang.md). Verktygen och inloggningen sköts av [antrop-setup](https://github.com/antrop-ab/antrop-setup), som är gemensamt för Antrops mallar.
 
 Du behöver: ett GitHub-konto som är medlem i [antrop-ab](https://github.com/antrop-ab), ett Claude-konto och gärna ett Vercel-konto (logga in med GitHub).
 
