@@ -86,7 +86,7 @@ shadcn/ui i `components/ui/`, alla installerade. AI Elements i `components/ai-el
 - **Knappar:** en huvudhandling per vy (`Button`). Sekundära: `outline`, `secondary`, `ghost`, `link`. Ikonknappar har `aria-label`.
 - **Formulär:** `FieldGroup` > `Field` > `FieldLabel` + kontroll + `FieldDescription`/`FieldError`. Etiketter ovanför fälten.
 - **Listor:** `Item` (med `ItemMedia`, `ItemContent`, `ItemActions`) eller `Table` för data med kolumner.
-- **Tomma lägen:** `Empty`. **Laddning:** `Skeleton`. **Bekräftelse:** `sonner`-toast.
+- **Tomma lägen:** `Empty`, med en väg vidare när det går (till exempel närmaste dag med lediga tider). **Laddning:** `Skeleton`. **Bekräftelse:** `sonner`-toast för små handlingar. En bekräftelsesida efter ett flöde svarar på "vad händer nu?": vad som är gjort, nästa steg och en sekundär knapp för att börja om.
 - **Navigering:** `Sidebar` för verktyg på desktop, flikar (`Tabs`) för vyer på samma nivå, `Breadcrumb` i djupa strukturer.
 
 ## Do's and Don'ts
@@ -96,6 +96,10 @@ shadcn/ui i `components/ui/`, alla installerade. AI Elements i `components/ai-el
 - Använd färdiga shadcn-komponenter och block före egna.
 - Skriv korta, konkreta texter i kundens ton (se skillen `antrop-prototyp`, `references/ux-writing.md`).
 - Visa verkliga lägen: tomt, laddar, fel, många och få poster.
+- Visa läget innan användaren trycker: "Fullt" eller "3 lediga" på dagar och val, med text och inte bara färg.
+- Säg vad som saknas när huvudknappen inte går att använda, till exempel "Välj en tid för att boka" i `bottomBar`. En grå knapp utan förklaring får användaren att gissa.
+- Låt vågräta rader (dagar, chips) skrolla inom sidans marginaler eller brytas på flera rader. Inget ska sticka ut utanför kanten.
+- På desktop ska huvudhandlingen i ett flöde synas utan att man skrollar. Centrera inte bara mobilkolumnen när det finns plats bredvid.
 - Kolla mobil och desktop, ljust och mörkt.
 
 **Gör inte:**
