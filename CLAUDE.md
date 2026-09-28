@@ -39,7 +39,7 @@ Fyll i sökvägen och beställningen själv. Fortsätt utan omstart bara om Antr
 
 ## Första gången på en ny dator (Mac)
 
-`scripts/bootstrap.sh` tar datorn från tom till körbar prototyp: Homebrew (om Antroparen är administratör), git, Node, GitHub CLI, inloggning på GitHub, en ny prototyp från mallen, `npm run setup` och valfritt Vercel. Det kan köras om, klara steg hoppas över.
+`scripts/bootstrap.sh` tar datorn från tom till körbar prototyp: Homebrew (om Antroparen är administratör), git, Node, GitHub CLI, inloggning på GitHub, en ny prototyp från mallen, `npm run setup` och valfritt Vercel. Det kan köras om, klara steg hoppas över. Verktygen och inloggningen (Homebrew, git, Node, GitHub CLI, GitHub-inloggning) sköts av det gemensamma skriptet [antrop-setup](https://github.com/antrop-ab/antrop-setup), som bootstrap hämtar och kör först. Fel där rättas i antrop-setup, inte här.
 
 - **Enklast:** be Antroparen öppna *Terminal* och klistra in raden nedan. Då fungerar alla frågor och inloggningar.
 

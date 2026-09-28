@@ -25,13 +25,13 @@
 # Inloggningen på GitHub skriver då ut en engångskod som Antroparen klistrar in i
 # webbläsaren.
 
+# Verktygen och inloggningen sköts av https://github.com/antrop-ab/antrop-setup (gemensamt för
+# Antrops mallar). Det här skriptet gör sedan det som är unikt för mallen.
+
 set -uo pipefail
 
 TEMPLATE="antrop-ab/antrop-prototype-template"
 ORG="antrop-ab"
-BIN="$HOME/.local/bin"
-NODE_DIR="$HOME/.local/node"
-PROFILE_MARK="# Antrops prototypmall: Node och GitHub CLI i ~/.local"
 
 NAME=""
 PARENT="$HOME/Documents"
@@ -39,7 +39,6 @@ HERE=0
 PROJECT=1
 VERCEL="ask"
 BREW_WANTED="ask"
-PROFILE_CHANGED=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -81,207 +80,36 @@ yes_answer() { case "$1" in j|J|ja|Ja|y|Y|yes) return 0 ;; *) return 1 ;; esac; 
 unset GH_HOST GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN
 
 [ "$(uname -s)" = "Darwin" ] || fail "Skriptet är gjort för Mac." "På Windows: följ docs/kom-igang.md."
-# hw.optional.arm64 stämmer även om Terminal körs via Rosetta.
-if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then
-  NODE_ARCH="arm64"; GH_ARCH="arm64"
-else
-  NODE_ARCH="x64"; GH_ARCH="amd64"
-fi
 
-mkdir -p "$BIN"
-export PATH="$BIN:$NODE_DIR/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.local/node/bin:$PATH"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-printf '%sAntrops prototypmall: sätter upp din dator%s\n' "$B" "$R"
-info "Du kan köra det här igen när som helst. Det som redan är klart hoppas över."
+# Verktyg och inloggning -------------------------------------------------------
 
-# Laddar ner en fil och kontrollerar den mot en fil med kontrollsummor.
-download_verified() { # url checksum-url filnamn
-  curl -fsSL "$1" -o "$TMP/$3" && curl -fsSL "$2" -o "$TMP/sums.txt" || return 1
-  (cd "$TMP" && grep " $3\$" sums.txt | shasum -a 256 -c - >/dev/null 2>&1)
-}
-
-# 1. Homebrew -----------------------------------------------------------------
-
-step "1/7 Homebrew"
-brew_path() {
-  local p
-  for p in /opt/homebrew/bin/brew /usr/local/bin/brew; do
-    [ -x "$p" ] && { printf '%s' "$p"; return 0; }
-  done
-  return 1
-}
-BREW=""
-if BREW="$(brew_path)"; then
-  eval "$("$BREW" shellenv)"
-  ok "$("$BREW" --version | head -1)"
-elif [ "$BREW_WANTED" = "no" ]; then
-  info "Hoppade över."
-elif ! id -Gn | tr ' ' '\n' | grep -qx admin; then
-  info "Ditt konto är inte administratör, så Homebrew går inte att installera. Det gör inget,"
-  info "resten fungerar utan. Vill du ha Homebrew senare: fråga IT."
-elif [ "$HAS_TTY" = 0 ]; then
-  info "Homebrew behöver ditt datorlösenord och kan bara installeras från Terminal. Hoppar över."
-else
-  info "Homebrew är en app store för utvecklarverktyg. Med den kan Claude senare installera"
-  info "till exempel ffmpeg eller en databas åt dig, utan att fråga efter lösenord."
-  if yes_answer "$(ask "Installera Homebrew? Det kräver ditt datorlösenord en gång. [J/n]:" "j")"; then
-    info "Skriv ditt datorlösenord och tryck Enter. Det syns inte medan du skriver."
-    sudo -v </dev/tty || fail "Lösenordet godkändes inte." "Kör skriptet igen, eller lägg till --no-brew för att hoppa över Homebrew."
-    info "Installerar Homebrew. Saknas Apples utvecklarverktyg hämtas de också, det kan ta 10 till 20 minuter."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" </dev/null \
-      || fail "Homebrew-installationen misslyckades." "Kör skriptet igen, eller lägg till --no-brew för att hoppa över Homebrew."
-    BREW="$(brew_path)" || fail "Homebrew installerades men hittas inte."
-    eval "$("$BREW" shellenv)"
-    ok "$("$BREW" --version | head -1)"
-  else
-    info "Hoppade över. Kör skriptet igen om du ändrar dig."
-  fi
-fi
-
-# Vanligaste Homebrew-felet: raderna i ~/.zprofile kördes aldrig, så Terminal hittar inte brew.
-if [ -n "$BREW" ] && ! grep -qF "$BREW shellenv" "$HOME/.zprofile" 2>/dev/null; then
-  printf '\neval "$(%s shellenv)"\n' "$BREW" >>"$HOME/.zprofile"
-  PROFILE_CHANGED=1
-fi
-
-# 2. Git ----------------------------------------------------------------------
-
-step "2/7 Git"
-# Utan utvecklarverktyg är /usr/bin/git bara en platshållare. Kör den inte innan
-# verktygen finns, den öppnar i så fall installationsrutan på egen hand.
-git_works() { git --version >/dev/null 2>&1; }
-if xcode-select -p >/dev/null 2>&1 || { gitpath="$(command -v git)" && [ "$gitpath" != "/usr/bin/git" ]; }; then
-  if ! git_works; then
-    if git --version 2>&1 | grep -qi license; then
-      fail "Xcode är installerat men licensen är inte godkänd, så git fungerar inte." \
-        "Öppna Xcode en gång och godkänn licensen (eller be IT), och kör sedan skriptet igen."
-    fi
-    fail "Git finns men fungerar inte: $(git --version 2>&1 | head -1)" "Be Claude eller IT om hjälp."
-  fi
-  ok "$(git --version)"
-else
-  info "Git följer med Apples utvecklarverktyg (Command Line Tools)."
-  info "En ruta öppnas nu. Klicka Installera och vänta, det tar 5 till 15 minuter."
-  info "Frågar rutan efter ett administratörslösenord som du inte har: installera"
-  info "Command Line Tools via Self Service eller be IT, och kör sedan skriptet igen."
-  xcode-select --install >/dev/null 2>&1 || true
-  waited=0
-  until xcode-select -p >/dev/null 2>&1; do
-    sleep 10
-    waited=$((waited + 10))
-    [ "$waited" -ge 3600 ] && fail "Utvecklarverktygen blev inte klara inom en timme." "Kör skriptet igen när installationen är klar."
-  done
-  git_works || fail "Utvecklarverktygen är installerade men git svarar inte." "Kör skriptet igen, eller be Claude om hjälp."
-  ok "$(git --version)"
-fi
-
-# 2. Node.js ------------------------------------------------------------------
-
-step "3/7 Node.js"
-node_major() { node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
-if [ "$(node_major)" -ge 20 ]; then
-  ok "Node $(node --version)"
-elif [ -n "$BREW" ]; then
-  info "Installerar Node med Homebrew"
-  "$BREW" install node >/dev/null || fail "Homebrew kunde inte installera Node." "Kör skriptet igen."
-  hash -r
-  ok "Node $(node --version)"
-else
-  # Senaste LTS-versionen: första raden i listan som har ett LTS-namn.
-  curl -fsSL https://nodejs.org/dist/index.json -o "$TMP/index.json" \
-    || fail "Kunde inte hämta Nodes versionslista." "Kolla internetuppkopplingen och kör skriptet igen."
-  version="$(grep '"lts":"' "$TMP/index.json" | head -1 | sed -E 's/.*"version":"(v[0-9.]+)".*/\1/')"
-  [ -n "$version" ] || fail "Kunde inte hämta Nodes versionslista." "Kolla internetuppkopplingen och kör skriptet igen."
-  file="node-$version-darwin-$NODE_ARCH.tar.gz"
-  info "Hämtar Node $version till ~/.local/node"
-  download_verified "https://nodejs.org/dist/$version/$file" "https://nodejs.org/dist/$version/SHASUMS256.txt" "$file" \
-    || fail "Nedladdningen av Node misslyckades eller blev fel." "Kör skriptet igen."
-  mkdir -p "$TMP/node"
-  tar -xzf "$TMP/$file" -C "$TMP/node" --strip-components 1 || fail "Kunde inte packa upp Node."
-  rm -rf "$NODE_DIR" && mv "$TMP/node" "$NODE_DIR"
-  hash -r
-  ok "Node $(node --version)"
-fi
-
-# 3. GitHub CLI ---------------------------------------------------------------
-
-step "4/7 GitHub CLI"
-if command -v gh >/dev/null 2>&1; then
-  ok "$(gh --version | head -1)"
-elif [ -n "$BREW" ]; then
-  info "Installerar GitHub CLI med Homebrew"
-  "$BREW" install gh >/dev/null || fail "Homebrew kunde inte installera GitHub CLI." "Kör skriptet igen."
-  hash -r
-  ok "$(gh --version | head -1)"
-else
-  # Adressen till senaste versionen slutar på /tag/vX.Y.Z. Undviker GitHubs API-gräns.
-  latest="$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/cli/cli/releases/latest)"
-  ver="${latest##*/v}"
-  [ -n "$ver" ] && [ "$ver" != "$latest" ] || fail "Kunde inte hitta senaste versionen av GitHub CLI." "Kolla internetuppkopplingen och kör skriptet igen."
-  zip="gh_${ver}_macOS_${GH_ARCH}.zip"
-  base="https://github.com/cli/cli/releases/download/v$ver"
-  info "Hämtar GitHub CLI $ver till ~/.local/bin"
-  download_verified "$base/$zip" "$base/gh_${ver}_checksums.txt" "$zip" \
-    || fail "Nedladdningen av GitHub CLI misslyckades eller blev fel." "Kör skriptet igen."
-  unzip -q -o "$TMP/$zip" -d "$TMP" || fail "Kunde inte packa upp GitHub CLI."
-  cp "$TMP/gh_${ver}_macOS_${GH_ARCH}/bin/gh" "$BIN/gh" && chmod +x "$BIN/gh"
-  hash -r
-  ok "$(gh --version | head -1)"
-fi
-
-# Terminal och kodagenten ska hitta det som hamnat i ~/.local även i nästa fönster.
-if [ -x "$BIN/gh" ] || [ -x "$NODE_DIR/bin/node" ]; then
-  for profile in "$HOME/.zprofile" "$HOME/.bash_profile"; do
-    [ "$profile" = "$HOME/.bash_profile" ] && [ ! -f "$profile" ] && continue
-    if ! grep -qF "$PROFILE_MARK" "$profile" 2>/dev/null; then
-      printf '\n%s\nexport PATH="$HOME/.local/bin:$HOME/.local/node/bin:$PATH"\n' "$PROFILE_MARK" >>"$profile"
-      PROFILE_CHANGED=1
-    fi
-  done
-fi
-
-# 4. Logga in på GitHub -------------------------------------------------------
-
-step "5/7 Logga in på GitHub"
-if gh auth status --hostname github.com >/dev/null 2>&1; then
-  ok "Inloggad som $(gh api user --jq .login)"
-else
-  info "Du behöver ett GitHub-konto som är medlem i antrop-ab. Har du inget konto:"
-  info "skapa ett gratis på https://github.com/signup och be någon på Antrop bjuda in dig."
-  info ""
-  info "Nu öppnas webbläsaren. Klistra in koden som visas nedanför och klicka Authorize."
-  if [ "$HAS_TTY" = 1 ]; then
-    gh auth login --hostname github.com --git-protocol https --web --scopes workflow </dev/tty
-  else
-    # Utan terminal öppnar gh inte webbläsaren själv.
-    open "https://github.com/login/device" >/dev/null 2>&1 || true
-    gh auth login --hostname github.com --git-protocol https --web --scopes workflow </dev/null
-  fi
-  gh auth status --hostname github.com >/dev/null 2>&1 || fail "Inloggningen på GitHub blev inte klar." "Kör skriptet igen."
-  ok "Inloggad som $(gh api user --jq .login)"
-fi
-gh auth setup-git --hostname github.com >/dev/null 2>&1 || true
-
-if [ -z "$(git config --global user.name)" ] || [ -z "$(git config --global user.email)" ]; then
-  # GitHubs noreply-adress, så att den privata mejladressen inte hamnar i koden.
-  gh_name="$(gh api user --jq '.name // .login')"
-  gh_email="$(gh api user --jq '"\(.id)+\(.login)@users.noreply.github.com"')"
-  [ -n "$(git config --global user.name)" ] || git config --global user.name "$gh_name"
-  [ -n "$(git config --global user.email)" ] || git config --global user.email "$gh_email"
-fi
-ok "Git sparar dina ändringar som $(git config --global user.name) <$(git config --global user.email)>"
+# Homebrew, git, GitHub CLI och inloggningen är gemensamma för Antrops mallar och sköts av
+# https://github.com/antrop-ab/antrop-setup. Rätta där, inte här.
+SETUP_URL="${ANTROP_SETUP_URL:-https://raw.githubusercontent.com/antrop-ab/antrop-setup/main/setup.sh}"
+curl -fsSL "$SETUP_URL" -o "$TMP/setup.sh" \
+  || fail "Kunde inte hämta Antrops setup-skript." "Kolla internetuppkopplingen och kör skriptet igen."
+setup_args=(--title "Antrops prototypmall" --node --org "$ORG" --gh-scopes workflow --brew-default j)
+[ "$BREW_WANTED" = "no" ] && setup_args+=(--no-brew)
+# stdin från /dev/null: skriptet kan komma via `curl | bash`, och då får setup inte läsa resten av det.
+bash "$TMP/setup.sh" "${setup_args[@]}" </dev/null || exit 1
+for brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$brew" ] && { eval "$("$brew" shellenv)"; break; }
+done
+hash -r
 
 # 6. Prototypen ---------------------------------------------------------------
 
 if [ "$PROJECT" = 0 ]; then
   step "Klart"
-  info "Verktygen och inloggningen är på plats. Öppna ett nytt Terminal-fönster för att använda dem."
+  info "Verktygen och inloggningen är på plats."
   exit 0
 fi
 
-step "6/7 Din prototyp"
+step "Din prototyp"
 [ "$(gh api "user/memberships/orgs/$ORG" --jq .state 2>/dev/null)" = "active" ] \
   || fail "Ditt GitHub-konto är inte medlem i $ORG, så mallen syns inte för dig." \
     "Be någon på Antrop bjuda in $(gh api user --jq .login) till https://github.com/$ORG och kör skriptet igen."
@@ -329,7 +157,7 @@ npm run setup || fail "npm run setup stötte på problem." "Öppna mappen i Clau
 
 # 7. Vercel -------------------------------------------------------------------
 
-step "7/7 Vercel: publicering och AI (valfritt)"
+step "Vercel: publicering och AI (valfritt)"
 if [ "$VERCEL" = "ask" ]; then
   if yes_answer "$(ask "Koppla till Vercel nu? Då kan Claude publicera länkar och använda AI direkt. [J/n]:" "j")"; then VERCEL="yes"; else VERCEL="no"; fi
 fi
@@ -353,5 +181,4 @@ info "1. Öppna Claude-appen, gå till fliken Code och starta en ny chatt."
 info "2. Välj mappen $target."
 info "3. Skriv vad du vill bygga, till exempel:"
 info "   \"Kunden är ett försäkringsbolag med huvudfärgen #0B5FFF. Gör en vy där man anmäler en skada.\""
-[ "$PROFILE_CHANGED" = 1 ] && info "" && info "Öppna ett nytt Terminal-fönster om du vill använda node eller gh i Terminal."
 exit 0
