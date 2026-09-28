@@ -26,7 +26,11 @@ try {
   }
   const pkgName = JSON.parse(readFileSync("package.json", "utf8")).name;
   if (pkgName === "antrop-prototype-template" && !/antrop-prototype-template$/.test(process.cwd())) {
-    notes.push("Det här är en ny prototyp som inte har körts med `npm run setup` än. Kör det först (det hämtar senaste komponenterna och ger prototypen ett eget namn).");
+    const skillsLoaded = existsSync(".claude/skills/shadcn") && existsSync(".claude/skills/impeccable");
+    notes.push(
+      "Det här är en ny prototyp som inte har körts med `npm run setup` än. Kör det först (det hämtar senaste komponenterna och ger prototypen ett eget namn)." +
+        (skillsLoaded ? " Skills är redan laddade i den här chatten, så ingen omstart behövs efter setup." : ""),
+    );
   }
   if (!existsSync(".vercel/project.json")) {
     notes.push("Inte kopplad till Vercel än. Det görs första gången prototypen publiceras (`npm run ship`).");

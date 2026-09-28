@@ -9,7 +9,7 @@
 // mappens namn. Senare körningar, och kollegor som klonar prototypen, får den
 // säkra varianten: anpassade komponenter lämnas i fred.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 import { exec, readJson, say, step } from "./lib/util.mjs";
 
@@ -17,6 +17,8 @@ const TEMPLATE_NAME = "antrop-prototype-template";
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const inTemplateRepo = readJson("mall.config.json", {}).templateRepo?.endsWith(`/${basename(process.cwd())}`);
 const first = process.argv.includes("--fresh") || (pkg.name === TEMPLATE_NAME && !inTemplateRepo);
+// Fanns skills redan är de laddade i en chatt som startades här, och då behövs ingen omstart.
+const hadSkills = existsSync(".claude/skills/shadcn") && existsSync(".claude/skills/impeccable");
 
 if (first && pkg.name === TEMPLATE_NAME && !inTemplateRepo) {
   const name = basename(process.cwd()).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || "prototyp";
@@ -46,8 +48,10 @@ writeFileSync(
 );
 
 say(
-  ok
-    ? "\nKlart. VIKTIGT: starta en ny chatt i Claude i den här mappen, så att skills och MCP-servrar laddas."
-    : "\nNågot blev inte helt rätt (se ovan). Be Claude om hjälp.",
+  !ok
+    ? "\nNågot blev inte helt rätt (se ovan). Be Claude om hjälp."
+    : hadSkills
+      ? "\nKlart. Skills fanns redan, så en chatt som startades i den här mappen kan fortsätta direkt utan omstart."
+      : "\nKlart. VIKTIGT: starta en ny chatt i Claude i den här mappen, så att skills och MCP-servrar laddas.",
 );
 process.exit(ok ? 0 : 1);

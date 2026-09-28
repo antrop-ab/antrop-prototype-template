@@ -20,7 +20,7 @@ npm run screenshots -- / /exempel/komponenter
 npm run screenshots -- /boka "Välj tid" "Bekräfta" --desktop --dark
 ```
 
-Ett steg som börjar med `/` är en adress, ett steg med `=` fyller i ett fält (`"E-post=anna@exempel.se"`, etiketten före likhetstecknet), och allt annat är texten på en knapp eller länk att klicka på. Skärmdumpar tas efter varje steg. Bilderna hamnar i `screenshots/` i mobilformat, med `--desktop` även i 1440 px och med `--dark` i mörkt läge. `--full` tar hela sidan. Dev-servern måste vara igång.
+Ett steg som börjar med `/` är en adress, ett steg med `=` fyller i ett fält (`"E-post=anna@exempel.se"`, etiketten före likhetstecknet), och allt annat är texten på något att klicka på: en knapp, länk, radioknapp, kryssruta eller flik. Skärmdumpar tas efter varje steg. Bilderna hamnar i `screenshots/` i mobilformat, med `--desktop` även i 1440 px och med `--dark` i mörkt läge. `--full` tar hela sidan. Dev-servern måste vara igång.
 
 Vill Antroparen ha bilderna i Figma: Figma-pluginen kan skriva in dem, eller bygga om vyn som redigerbara lager (`/figma-generate-design`).
 

@@ -30,12 +30,12 @@ Hooken `scripts/session-start.mjs` skriver rader som börjar med `[Antrop-mall]`
 2. **Svarar MCP-servrarna?** Du ska ha `shadcn` och `next-devtools`, och via plugins `figma` och `vercel`. Verktygen kan vara *deferred*: sök med `ToolSearch` (till exempel `shadcn`) innan du drar slutsatsen att de saknas. Kräver en server inloggning ("requires authentication") kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
 3. **Finns skills?** `.claude/skills/` ska ha `antrop-prototyp`, `shadcn`, `impeccable`, `emil-design-eng` med flera. Saknas de: `npm run update -- --skills`, sedan omstart.
 
-**Obligatoriskt stopp efter kloning och setup i samma session.** Skills, MCP-servrar och plugins laddas bara när Claude startar i mallens mapp. Har du hämtat mallen och kört `npm run setup` i den här sessionen: **bygg ingenting än.** Skriv ungefär:
+**Obligatoriskt stopp när omstart behövs.** Skills, MCP-servrar och plugins laddas bara när Claude startar i mallens mapp. Omstart behövs om du klonade prototypen i den här sessionen (du startades inte i dess mapp), eller om `npm run setup` avslutar med "starta en ny chatt" (skills saknades). Då: **bygg ingenting än.** Skriv ungefär:
 
 > Nu är mallen på plats. För att jag ska kunna använda shadcn:s dokumentation, designskills och Figma behöver jag startas om i mappen. Starta en ny chatt i Claude-appen och välj mappen `<sökväg>`. Klistra sedan in:
 > *"<Antroparens beställning i en mening>. Mallen är installerad och jag har startat om."*
 
-Fyll i sökvägen och beställningen själv. Fortsätt utan omstart bara om Antroparen uttryckligen ber om det.
+Fyll i sökvägen och beställningen själv. Fortsätt utan omstart bara om Antroparen uttryckligen ber om det. Säger setup att skills redan fanns och du startades i mappen behövs ingen omstart: fortsätt direkt, också vid ett autonomt bygge.
 
 ## Första gången på en ny dator (Mac)
 

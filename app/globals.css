@@ -196,3 +196,16 @@
     color: var(--primary-soft-foreground);
   }
 }
+
+/*
+ * Fast knappyta längst ned på mobilen (PageShell bottomBar): det som skrollas fram
+ * eller får tangentbordsfokus hamnar ovanför den, inte bakom den.
+ */
+html:has([data-bottom-bar]) {
+  scroll-padding-bottom: 8rem;
+}
+@media (min-width: 40rem) {
+  html:has([data-bottom-bar]) {
+    scroll-padding-bottom: 0;
+  }
+}

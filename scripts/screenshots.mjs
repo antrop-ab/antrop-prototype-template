@@ -8,7 +8,8 @@
 // Ett steg som börjar med / är en adress. Ett steg med = fyller i ett fält:
 // "Namn=Anna Andersson" skriver i fältet vars etikett är Namn. "vänta:Text"
 // väntar tills texten syns (till exempel ett AI-svar) innan bilden tas. Allt annat
-// är namnet på en knapp eller länk att klicka på (samma text som skärmläsaren läser upp).
+// är namnet på något att klicka på: en knapp, länk, radioknapp, kryssruta, flik eller
+// ett menyval (samma text som skärmläsaren läser upp).
 //
 //   npm run screenshots -- /boka/uppgifter "Namn=Anna Andersson" "Telefon=070-123 45 67" "Fortsätt"
 //
@@ -89,12 +90,14 @@ const slug = (text) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "start";
 
+// Radioknappar, flikar och liknande: val av tjänst, tid eller dag är ofta RadioGroup,
+// ToggleGroup (role="radio") eller Tabs, inte knappar.
+const clickableRoles = ["button", "link", "radio", "tab", "checkbox", "switch", "option", "menuitem"];
+
 async function click(page, name) {
   const candidates = [
-    page.getByRole("button", { name, exact: true }),
-    page.getByRole("link", { name, exact: true }),
-    page.getByRole("button", { name }),
-    page.getByRole("link", { name }),
+    ...clickableRoles.map((role) => page.getByRole(role, { name, exact: true })),
+    ...clickableRoles.map((role) => page.getByRole(role, { name })),
     page.getByText(name, { exact: true }),
   ];
   for (const locator of candidates) {
@@ -103,7 +106,7 @@ async function click(page, name) {
       return;
     }
   }
-  throw new Error(`Hittade ingen knapp eller länk som heter "${name}".`);
+  throw new Error(`Hittade inget att klicka på som heter "${name}".`);
 }
 
 mkdirSync("screenshots", { recursive: true });
