@@ -40,7 +40,7 @@ Skriptet kan köras igen när som helst, till exempel om något avbröts. Det so
 
 ## Första prototypen
 
-Kolla att modellväljaren i Claude-appen står på **Opus**, den senaste versionen. Mallen väljer den automatiskt, men det går att ändra. Opus gör tydligt bättre design än de mindre modellerna.
+Kolla att modellväljaren i Claude-appen står på **Opus**, den senaste versionen. Mallen väljer den automatiskt, men det går att ändra. Opus gör tydligt bättre design än de mindre modellerna. Sonnet räcker för små ändringar och drar ungefär hälften så mycket av kvoten, vilket är bra att veta om du har Pro. [Så testade vi](https://claude.ai/artifact/2johoTbNDTfzz2moQQMDKv).
 
 Börja med kundens utseende, sedan första vyn:
 

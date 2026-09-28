@@ -42,7 +42,7 @@ Skapa en **tom mapp** (till exempel `Dokument/kund-prototyp`), öppna den i Clau
 
 ## Så jobbar du
 
-Bygg med **den senaste Opus-modellen** (mallen väljer den automatiskt). Den gör tydligt bättre design. Ser du en annan modell i modellväljaren i Claude-appen: byt till Opus.
+Bygg med **den senaste Opus-modellen** (mallen väljer den automatiskt). Den gör tydligt bättre design. För små ändringar, som en text eller en knapp, räcker Sonnet, som drar ungefär hälften så mycket av kvoten. Kostar Opus för mycket? Se [testet där Opus och Sonnet byggde samma prototyp](https://claude.ai/artifact/2johoTbNDTfzz2moQQMDKv).
 
 Skriv till Claude som till en kollega:
 

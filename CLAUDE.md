@@ -14,11 +14,17 @@ Antroparen kan vara ny på terminal, git och npm. Därför ska du:
 - **Skriva svenska** till Antroparen. Kod, variabelnamn och commit-meddelanden på engelska. Texter i gränssnittet på det språk kunden använder, svenska om inget annat sägs.
 - **Tipsa om det Antroparen inte vet finns**, högst ett tips i taget och när det passar (se "Plugins och verktyg").
 
-## Modell: senaste Opus
+## Modell: Opus som standard
 
-Prototyper byggs med **den senaste Opus-modellen**. Den gör tydligt bättre design och håller ihop större flöden. `.claude/settings.json` väljer `opus`, ett alias som alltid pekar på den senaste versionen.
+Prototyper byggs som standard med **den senaste Opus-modellen** på sin vanliga effort-nivå (`medium`). `.claude/settings.json` väljer `opus`, ett alias som alltid pekar på den senaste versionen. I ett test där samma prototyp byggdes flera gånger (september 2026) gav Opus 5.5 tydligt bättre UX och UI än Sonnet 5.5, för ungefär dubbelt så stor förbrukning av kvoten. Sonnet 5.5 på effort `high` gav lika bra design men förbrukade mer än Opus.
 
-**Kör du inte på Opus** (se din modell i systemprompten): säg det till Antroparen direkt, innan du bygger något. Be hen byta till den senaste Opus i modellväljaren i Claude-appen (eller `/model opus` i terminalen) och starta om chatten. Fortsätt bara på en annan modell om Antroparen uttryckligen ber om det.
+- **Nya vyer, flöden och större omtag:** Opus.
+- **Små, väl avgränsade ändringar** (en text, en knapp, en färg, en rad i en lista): Sonnet räcker och drar ungefär hälften så mycket av kvoten. Tipsa om det när Antroparen säger att kvoten tar slut, eller har Pro och gör många små ändringar.
+- **Höj inte effort-nivån** (`high`, `xhigh`) för att få bättre design. Det ger fler steg och kostar mer än att byta till Opus.
+
+**Kör du inte på Opus** (se din modell i systemprompten): nämn det i en mening i ditt första svar, till exempel att Opus ger bättre design för nya vyer men att du fortsätter på den valda modellen. Bygg sedan som vanligt. Stanna inte och vänta på svar: Antroparen kan ha valt modellen för att spara kvot.
+
+**Undrar Antroparen om Opus verkligen är värt det** (kostnaden, kvoten, Pro mot Max): svara kort med siffrorna ovan och ge länken till testet, där designerna från båda modellerna syns sida vid sida: https://claude.ai/artifact/2johoTbNDTfzz2moQQMDKv
 
 Det här gäller modellen som *bygger* prototypen. AI-funktionerna *i* prototypen väljer modell i `lib/ai.ts`.
 
