@@ -6,8 +6,11 @@ export const isWin = process.platform === "win32";
 
 export const config = JSON.parse(readFileSync(new URL("../../mall.config.json", import.meta.url), "utf8"));
 
-/** Kör ett kommando och returnerar utskriften, eller null om det misslyckas. */
-export function run(cmd, args, { timeout = 60_000, env, cwd } = {}) {
+/**
+ * Kör ett kommando och returnerar utskriften, eller null om det misslyckas.
+ * `okStatus` är slutkoder som också räknas som lyckade (npm outdated avslutar med 1 när något är inaktuellt).
+ */
+export function run(cmd, args, { timeout = 60_000, env, cwd, okStatus = [0] } = {}) {
   try {
     return execFileSync(cmd, args, {
       encoding: "utf8",
@@ -19,7 +22,9 @@ export function run(cmd, args, { timeout = 60_000, env, cwd } = {}) {
     }).trim();
   } catch (error) {
     const text = `${error.stdout ?? ""}${error.stderr ?? ""}`.trim();
-    return error.status === 0 ? text : null;
+    if (error.status === 0) return text;
+    // Bara stdout här, så att npm:s notiser på stderr inte förstör JSON-utskrift.
+    return okStatus.includes(error.status) ? (error.stdout ?? "").trim() : null;
   }
 }
 

@@ -16,7 +16,7 @@ En mall för Antropare som vill bygga klickbara prototyper i kod i sina kundproj
 
 - **Snyggt från start.** shadcn/ui med ett genomtänkt standardutseende: rent, luftigt och linjärt. Stora, tydliga kontroller (44 punkter) och rörelse som känns rätt.
 - **Kundens utseende på fem minuter.** Ett kommando byter färger, typsnitt och hörnradie, i både ljust och mörkt läge, med kontrollerad kontrast.
-- **Claude kan designsystemet.** shadcn:s MCP-server och skill, designskills (impeccable, Emil Kowalskis skills för rörelse, Vercels gränssnittsregler) och Figma.
+- **Claude kan designsystemet.** shadcn:s MCP-server och skill, designskills (impeccable, Emil Kowalskis skills för rörelse, Vercels gränssnittsregler), Figma och Mobbin för referenser från riktiga appar.
 - **Redo för AI.** AI SDK, AI Elements och Vercel AI Gateway. Inga API-nycklar att hantera.
 - **Publicera med ett ord.** Claude sparar, laddar upp till GitHub och publicerar på Vercel. Nycklar och miljövariabler ligger på Vercel.
 - **Alltid senaste versionen.** Setup och `npm run update` hämtar senaste shadcn-komponenterna och skills, utan att skriva över det du anpassat.
@@ -87,7 +87,7 @@ Fler i [CLAUDE.md](CLAUDE.md).
 | **Storlekar** | Kontroller 44 px och 16 px text som standard (`app/sizing.css`), tät variant för proffsverktyg |
 | **Rörelse** | Knapptryck, sheets och drawers med iOS-kurva, vybyten åt navigeringshållet, Motion for React (`app/motion.css`) |
 | **AI** | AI SDK, AI Elements, Vercel AI Gateway (Claude, GPT, Gemini med flera) |
-| **MCP-servrar** | shadcn, Next.js devtools. Via plugins: Figma, Vercel, Context7 |
+| **MCP-servrar** | shadcn, Next.js devtools, Mobbin (valfri). Via plugins: Figma, Vercel, Context7 |
 | **Skills** | antrop-prototyp (mallens egen), shadcn, impeccable, Emil Kowalskis skills för rörelse och mobil, Vercels gränssnittsregler och vybyten, avoid-ai-swedish |
 | **Publicering** | GitHub (privat repo i antrop-ab) och Vercel. Claude i GitHub via `@claude` |
 | **Telefon** | Kan läggas på hemskärmen och öppnas i helskärm, bra i användartester |

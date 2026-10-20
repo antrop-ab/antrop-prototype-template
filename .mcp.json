@@ -7,6 +7,10 @@
     "next-devtools": {
       "command": "npx",
       "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
     }
   }
 }

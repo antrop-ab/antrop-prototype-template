@@ -72,7 +72,7 @@ function updatePackages() {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   const deps = { ...pkg.dependencies, ...pkg.devDependencies };
   const names = TRACKED.filter((n) => n in deps);
-  const out = run("npm", ["outdated", "--json", ...names], { timeout: 120_000 }) ?? "";
+  const out = run("npm", ["outdated", "--json", ...names], { timeout: 120_000, okStatus: [0, 1] }) ?? "";
   let outdated = {};
   try {
     outdated = JSON.parse(out || "{}");
@@ -83,8 +83,10 @@ function updatePackages() {
   const major = (v) => Number(String(v ?? "0").split(".")[0]);
   const install = [];
   const held = [];
-  for (const [name, info] of Object.entries(outdated)) {
-    if (!info.latest || info.current === info.latest) continue;
+  for (const [name, entry] of Object.entries(outdated)) {
+    // Ett paket som flera andra beror på (till exempel react) kommer som en lista, en rad per beroende.
+    const info = Array.isArray(entry) ? entry[0] : entry;
+    if (!info?.latest || info.current === info.latest) continue;
     if (fresh || major(info.current) === major(info.latest)) install.push(`${name}@${info.latest}`);
     else held.push(`${name} ${info.current} -> ${info.latest}`);
   }

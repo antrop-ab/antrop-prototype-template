@@ -1,7 +1,7 @@
 {
   "components/ai-elements/attachments.tsx": "841c70af1fb6b7d2",
   "components/ai-elements/code-block.tsx": "691ccd82abf8c573",
-  "components/ai-elements/confirmation.tsx": "a52e00ccf4704bc2",
+  "components/ai-elements/confirmation.tsx": "5b2c54401df060b4",
   "components/ai-elements/conversation.tsx": "0ac1164170011852",
   "components/ai-elements/inline-citation.tsx": "9d53ecc73700a5f3",
   "components/ai-elements/message.tsx": "73adb39510288683",
