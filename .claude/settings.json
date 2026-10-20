@@ -15,7 +15,8 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "mcp__shadcn",
-      "mcp__next-devtools"
+      "mcp__next-devtools",
+      "mcp__mobbin"
     ],
     "deny": [
       "Read(./.env.local)",
@@ -52,6 +53,7 @@
   },
   "enabledMcpjsonServers": [
     "shadcn",
-    "next-devtools"
+    "next-devtools",
+    "mobbin"
   ]
 }
