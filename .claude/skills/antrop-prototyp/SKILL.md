@@ -20,7 +20,7 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 ## Arbetsgång för en ny vy
 
 1. **Underlag:** Figma-länk, beskrivning eller Claude Design. Fyll i `PRODUCT.md` om *Users* eller *Product Purpose* saknas.
-   - **Referenser (valfritt):** utan Figma, erbjud att söka hur andra appar löst samma flöde med Mobbin-MCP:n (`search_flows`, `search_screens`). Vill Antroparen det: visa 3–5 exempel som länkar. Se "Innan du designar" i `CLAUDE.md`.
+   - **Referenser (valfritt):** utan Figma, erbjud att söka hur andra appar löst samma flöde med Mobbin-MCP:n (`search_flows`, `search_screens`). Vill Antroparen det: visa 3–5 exempel som länkar. Vid autonomt bygge: sök själv om det troligen finns bra referenser. Se "Innan du designar" i `CLAUDE.md`.
 2. **Tema:** är kundens tema satt? (`npm run theme -- --show`). Om inte: gör det först.
 3. **Plan:** impeccables `shape` (med mönstren från eventuella referenser), eller högst fem punkter vid autonomt bygge. Välj shadcn-block om ett passar.
 4. **Bygg** med `PageShell`, shadcn-komponenter, semantiska färger och påhittad data med undantagsfall.
