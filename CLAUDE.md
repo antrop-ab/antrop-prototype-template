@@ -64,7 +64,7 @@ Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det F
 - **Figma:** be om länken (högerklick på framen, *Copy link to selection*). Läs med Figma-MCP:n: `get_design_context`, `get_screenshot` och `get_variable_defs`. Översätt lager till shadcn-komponenter, inte till handgjorda divar. Variabler för färg och typsnitt blir kundens tema (se "Kundens tema").
 - **Ingen Figma:** berätta att du planerar med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Users* och *Product Purpose* ifyllda, annars fråga (vem, i vilken situation, vad ska hen få gjort). Kör `shape` före bygget och `critique` plus `audit` efter. Arbetsflödena är filer: läs `.claude/skills/impeccable/reference/<namn>.md`. Kör aldrig `bolder`, `colorize` eller `document` utan att Antroparen bett om det: de byter den visuella världen.
 - **Valfritt: referenser från Mobbin i konceptfasen.** Innan du formar ett nytt flöde eller en ny vy utan Figma: erbjud i en mening att hämta hur andra appar löst samma sak. Gör det bara om Antroparen vill, annars går du vidare till `shape`. Mobbin-MCP:n söker i skärmar och flöden från riktiga appar: `search_flows` för flöden i flera steg (onboarding, bokning, betalning), `search_screens` för en enskild vy (inställningar, profil, tomt läge) och `search_sections` för delar av webbsidor (prissättning, sidfot). Välj `platform` efter hur prototypen används: `ios` för mobil, `web` för desktop. Titta på bilderna, inte bara metadatan. Visa Antroparen 3–5 relevanta exempel som länkar (`mobbin_url`) med en mening om vad varje exempel gör bra, och vilka mönster du tänker använda. Kopiera mönster och struktur, aldrig någon annans varumärke, bilder eller texter. Bygget görs med shadcn och kundens tema. Svarar Mobbin att inloggning krävs: säg det i en mening och fortsätt utan referenser. Vid autonomt bygge: sök i Mobbin om du tror att det finns bra referenser där (vanliga flöden som onboarding, bokning, betalning, inställningar), en sökning per flöde. Välj själv och nämn kort vilka exempel du utgick från.
-- **Vill Antroparen utforska varianter först:** tipsa om `/design` (Claude Design), där idéer kan skissas och itereras visuellt innan de byggs här. Får du en länk till en design från Claude Design: läs den med Artifact-verktyget (`read`) och bygg den med shadcn-komponenter.
+- **Vill Antroparen utforska varianter först:** tipsa om `/design` (Claude Design), där idéer kan skissas och itereras visuellt innan de byggs här. Gäller det en enskild del (ett kort, en knapp, ett steg i flödet) i prototypen: tipsa om `/prototype`, som bygger 3–5 tydligt olika varianter med kundens tema och en väljare att bläddra mellan. Antroparen måste skriva kommandot själv. Får du en länk till en design från Claude Design: läs den med Artifact-verktyget (`read`) och bygg den med shadcn-komponenter.
 - **Autonomt bygge** (Antroparen har bett dig bygga och granska utan att vänta): `shape` blir en plan på högst fem punkter, bygg direkt, kör `critique` och åtgärda utan de riktade frågorna. Välj det rimligaste och berätta vad du valde.
 
 ## Kundens tema
@@ -109,7 +109,7 @@ Läs `DESIGN.md`. Kortversionen:
 - **En tydlig huvudhandling per vy** (`Button`), sekundära som `variant="outline"`, `ghost` eller `link`.
 - **Ikoner från `lucide-react`, aldrig emojis** i gränssnittet.
 - **Mobil först.** Bygg för 375 px och skala upp. Sheet på desktop, `Drawer` på mobil för lager som öppnas nedifrån.
-- **Tillstånd:** tomt (`Empty`), laddar (`Skeleton`, `Spinner`), fel och lyckat (`sonner`-toast eller `Alert`). Påhittad data täcker minst ett undantagsfall.
+- **Tillstånd:** tomt (`Empty`), laddar (`Skeleton`, `Spinner`), fel och lyckat (`sonner`-toast eller `Alert`). Påhittad data täcker minst ett undantagsfall. Skillen `break-ui` testar en färdig vy med värsta tänkbara data (långa namn, tomma listor, "1 medlemmar") bakom en växel och rapporterar vad som gick sönder.
 
 ### Rörelse
 
@@ -189,7 +189,7 @@ Förinställda i `.claude/settings.json`. Claude frågar om installationen förs
 | **Context7** (plugin) | Aktuell dokumentation för bibliotek | När du är osäker på ett API |
 | **antrop-toolbox** (plugin) | `avoid-ai-swedish` tar bort AI-ton ur svensk text, bildgenerering | Efter att du skrivit texter i gränssnittet |
 | **impeccable** (skill) | `shape`, `critique`, `audit`, `polish`, `layout`, `typeset`, `animate` | Ny vy utan Figma, eller granskning av en klar vy |
-| **Emil Kowalskis skills** | `emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native` | "Gör det här mer levande", "känns fel på mobilen" |
+| **Emil Kowalskis skills** | `emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype` | "Gör det här mer levande", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter" |
 | **Vercels skills** | `web-design-guidelines`, `vercel-react-view-transitions` | Granskning mot gränssnittsregler, vybyten |
 | **/design** (Claude Design) | Utforska och iterera visuella varianter innan bygget | När Antroparen vill se flera riktningar först |
 | **promo-video** (skill) | Showcase-video av prototypen med musik och ljud, som MP4 | När prototypen ska visas för kunden eller i en presentation |
