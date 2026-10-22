@@ -24,7 +24,7 @@ Strategin är **återhållsam**: neutrala ytor och en huvudfärg. Allt går via 
 | Sekundär | `bg-secondary` | Sekundära knappar, filter |
 | Kant | `border-border`, `border-input` | Avdelare och fält |
 | Fel | `bg-destructive`, `text-destructive` | Fel och destruktiva val |
-| Diagram | `chart-1` till `chart-5` | Serier i diagram, `chart-1` är huvudfärgen |
+| Diagram | `chart-1` till `chart-5` | Serier i diagram i den ordningen, `chart-1` är huvudfärgen. Går att skilja åt för färgblinda (se `references/dashboards.md`) |
 
 - **Aldrig hårdkodade färger** (`#fff`, `bg-blue-500`). De bryter mot kundens tema och mörkt läge.
 - Gråskalan har en aning av huvudfärgen (`--neutral tinted`), så att allt hänger ihop.

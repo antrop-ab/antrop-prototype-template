@@ -54,7 +54,6 @@ Kör guarden i `useEffect`, aldrig direkt under rendering, och testa hela flöde
 
 Behövs riktig lagring (flera användare, data som ska finnas kvar): fråga Antroparen först. Rekommendation:
 
-1. **Supabase via Vercel Marketplace:** `npx vercel@latest integration add supabase`. Nycklarna hamnar på Vercel och hämtas lokalt med `npm run env`. Använd Supabase-MCP:n för tabeller och frågor.
-2. Skillen `marketplace` (Vercel-pluginen) visar andra alternativ (Neon, Upstash med flera).
+Mallen använder **Neon** (Postgres). Allt om att skapa databasen, koppla den till Vercel, schema, exempeldata och inloggning står i `backend.md`.
 
 Riktig data innebär nya krav: inloggning, behörigheter och GDPR. Påminn om att prototypen inte är produktion.

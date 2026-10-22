@@ -18,6 +18,7 @@
     "theme": "node scripts/theme.mjs",
     "env": "node scripts/env.mjs",
     "vercel:link": "node scripts/vercel-link.mjs",
+    "db:connect": "node scripts/db-connect.mjs",
     "ship": "node scripts/ship.mjs",
     "feedback": "node scripts/feedback.mjs",
     "github:claude": "node scripts/github-claude.mjs",

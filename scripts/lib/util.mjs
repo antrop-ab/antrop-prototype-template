@@ -9,12 +9,14 @@ export const config = JSON.parse(readFileSync(new URL("../../mall.config.json", 
 /**
  * Kör ett kommando och returnerar utskriften, eller null om det misslyckas.
  * `okStatus` är slutkoder som också räknas som lyckade (npm outdated avslutar med 1 när något är inaktuellt).
+ * `input` skickas till kommandot på stdin (till exempel en hemlighet som inte ska synas i argumenten).
  */
-export function run(cmd, args, { timeout = 60_000, env, cwd, okStatus = [0] } = {}) {
+export function run(cmd, args, { timeout = 60_000, env, cwd, okStatus = [0], input } = {}) {
   try {
     return execFileSync(cmd, args, {
       encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: [input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
+      input,
       timeout,
       shell: isWin,
       env: env ?? process.env,
