@@ -8,6 +8,9 @@
 //
 // Val:
 //   --primary <hex>      kundens huvudfärg (knappar, fokus, valda lägen)
+//   --primary-dark <hex> egen huvudfärg i mörkt läge. Utan den räknas en fram:
+//                        en ljusare ton av huvudfärgen, eller en ljus knapp med
+//                        mörk text om huvudfärgen är nästan svart
 //   --neutral <typ>      tinted (standard: gråskalan får en aning av huvudfärgen),
 //                        cool, warm eller pure
 //   --radius <rem>       hörnradie, t.ex. 0.5 (skarpt), 0.75 (standard), 1 (mjukt)
@@ -47,8 +50,8 @@ if (flag("show")) {
   process.exit(0);
 }
 
-if (!flag("reset") && !flag("apply") && !opt("primary") && !opt("radius") && !opt("font") && !opt("neutral") && !opt("heading-font") && !opt("name")) {
-  console.log('Användning: npm run theme -- --primary "#0B5FFF" [--neutral tinted|cool|warm|pure] [--radius 0.75] [--font "Inter"]');
+if (!flag("reset") && !flag("apply") && !opt("primary") && !opt("primary-dark") && !opt("radius") && !opt("font") && !opt("neutral") && !opt("heading-font") && !opt("name")) {
+  console.log('Användning: npm run theme -- --primary "#0B5FFF" [--primary-dark "#hex"] [--neutral tinted|cool|warm|pure] [--radius 0.75] [--font "Inter"]');
   console.log("            npm run theme -- --reset | --show");
   process.exit(0);
 }
@@ -57,7 +60,9 @@ const settings = flag("reset")
   ? { ...DEFAULT }
   : {
       ...saved,
-      ...(opt("primary") && { primary: opt("primary") }),
+      // En ny huvudfärg nollställer en tidigare --primary-dark, om den inte anges igen.
+      ...(opt("primary") && { primary: opt("primary"), primaryDark: undefined }),
+      ...(opt("primary-dark") && { primaryDark: opt("primary-dark") }),
       ...(opt("neutral") && { neutral: opt("neutral") }),
       ...(opt("radius") && { radius: opt("radius") }),
       ...(opt("font") && { font: opt("font") }),
@@ -101,7 +106,7 @@ console.log("Titta på resultatet i webbläsaren, i ljust och mörkt läge.");
 
 // ---------------------------------------------------------------------------
 
-function build({ primary, neutral, radius }) {
+function build({ primary, primaryDark, neutral, radius }) {
   const brand = toGamut(rgbToOklch(parseHex(primary)));
   const hue = { tinted: brand.h, cool: 265, warm: 70, pure: 0 }[neutral];
   const tint = { tinted: 0.006, cool: 0.008, warm: 0.007, pure: 0 }[neutral];
@@ -152,7 +157,7 @@ function build({ primary, neutral, radius }) {
   // Mörkt läge
   const dbg = n(0.165, 1.6);
   const dfg = n(0.965, 0.5);
-  const dPrimary = pickPrimary({ ...brand, l: Math.min(Math.max(brand.l, 0.6), 0.72) }, dbg, dbg, "mörkt", notes);
+  const dPrimary = pickPrimary(darkSeed(brand, primaryDark, notes), dbg, dbg, "mörkt", notes);
   Object.assign(dark, {
     background: dbg,
     foreground: dfg,
@@ -198,6 +203,20 @@ function build({ primary, neutral, radius }) {
     brand,
     css: `:root {\n  --radius: ${radius}rem;\n${toCss(light)}\n}\n\n.dark {\n${toCss(dark)}\n}`,
   };
+}
+
+/**
+ * Huvudfärgen i mörkt läge. Färgade varumärken ljusas upp till en mellanton med vit text.
+ * En nästan svart huvudfärg (svarta knappar) blir i stället en ljus knapp med mörk text,
+ * så som designsystem med svarta knappar brukar göra i mörkt läge.
+ */
+function darkSeed(brand, primaryDark, notes) {
+  if (primaryDark) return toGamut(rgbToOklch(parseHex(primaryDark)));
+  if (brand.l < 0.3 && brand.c < 0.04) {
+    notes.push("mörkt läge: huvudfärgen är nästan svart, så knapparna blir ljusa med mörk text. Vill du ha en annan färg: --primary-dark \"#hex\".");
+    return { ...brand, l: 0.93 };
+  }
+  return { ...brand, l: Math.min(Math.max(brand.l, 0.6), 0.72) };
 }
 
 /** Väljer knapptext (vit eller mörk) och justerar färgen tills kontrasten är minst 4,5:1. */
