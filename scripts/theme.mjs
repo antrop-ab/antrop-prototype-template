@@ -241,8 +241,11 @@ function chartUsable(c, surface) {
 function chartFirst(brand, mode, surface) {
   // Huvudfärgen flyttas in i bandet. Blir den för grå där (kroman ryms inte i sRGB)
   // väljs den närmaste ljusheten i bandet där den blir tydlig nog.
+  // En grå eller svart huvudfärg har ingen nyans att bygga på. Då blir serie 1 en
+  // lugn blå, som läses som neutral i diagram.
+  const base = brand.c < 0.04 ? { l: brand.l, c: 0.13, h: 255 } : brand;
   const [lo, hi] = CHART_BAND[mode];
-  const at = (l) => toGamut({ ...brand, l, c: Math.max(brand.c, 0.13) });
+  const at = (l) => toGamut({ ...base, l, c: Math.max(base.c, 0.13) });
   // Huvudfärgens egen ljushet först, om den redan ligger i bandet.
   const levels = [Math.min(Math.max(brand.l, lo), hi)];
   for (let l = lo; l <= hi + 1e-9; l += 0.01) levels.push(l);
@@ -267,11 +270,16 @@ function chartScore(colors) {
 
 function chartColors(brand, light, dark) {
   const firstLight = chartFirst(brand, "light", light);
+  const firstDark = chartFirst(brand, "dark", dark);
+  // Mörkt läge behåller nyansen, så en nyans måste gå att skilja från huvudfärgen i båda lägena.
+  const darkOptions = (h) =>
+    CHART_STEPS.dark.map((l) => toGamut({ l, c: 0.15, h })).filter((x) => chartUsable(x, dark));
   const candidates = [];
   for (let h = 0; h < 360; h += 15) {
+    const darkOk = darkOptions(h).some((x) => separation(x, firstDark) >= 6);
     for (const l of CHART_STEPS.light) {
       const c = toGamut({ l, c: 0.15, h });
-      if (chartUsable(c, light) && separation(c, firstLight) >= 6) candidates.push(c);
+      if (darkOk && chartUsable(c, light) && separation(c, firstLight) >= 6) candidates.push(c);
     }
   }
 
@@ -300,15 +308,15 @@ function chartColors(brand, light, dark) {
   const lightColors = [firstLight, ...(best ?? [0, 1, 2, 3]).map((i) => candidates[i])];
 
   // Mörkt läge: samma nyanser, den kombination av ljusheter som skiljer bäst.
-  const firstDark = chartFirst(brand, "dark", dark);
-  const options = lightColors.slice(1).map((c) =>
-    CHART_STEPS.dark.map((l) => toGamut({ l, c: 0.15, h: c.h })).filter((x) => chartUsable(x, dark)),
-  );
+  const options = lightColors.slice(1).map((c) => darkOptions(c.h));
   let darkColors = [firstDark, ...options.map((o, i) => o[0] ?? lightColors[i + 1])];
   let darkScore = -Infinity;
   const walk = (i, chosen) => {
     if (i === options.length) {
-      const score = chartScore([firstDark, ...chosen]);
+      // Samma golv mot huvudfärgen som i ljust läge, annars kan en serie som inte
+      // ligger bredvid den bli omöjlig att skilja från den för färgblinda.
+      const floor = Math.min(...chosen.map((c) => separation(c, firstDark)));
+      const score = chartScore([firstDark, ...chosen]) - (floor < 6 ? 100 : 0);
       if (score > darkScore) [darkColors, darkScore] = [[firstDark, ...chosen], score];
       return;
     }
@@ -335,11 +343,12 @@ function report({ light, dark, notes }) {
     const mark = (v) => `${v.toFixed(1).padStart(5)}${v >= min ? " ok " : " LÅG"}`;
     console.log(`  ${`${label} (krav ${String(min).replace(".", ",")}:1)`.padEnd(42)} ${mark(a)}  ${mark(b)}`);
   }
-  // Diagramfärgerna: det svagaste avståndet mellan två serier bredvid varandra,
-  // för rödgrönt färgblinda (krav 8) och med vanlig syn (krav 15), som i skillen dataviz.
+  // Diagramfärgerna: det svagaste avståndet för rödgrönt färgblinda (krav 8) och med
+  // vanlig syn (krav 15), som i skillen dataviz. Det räknas mellan serier bredvid
+  // varandra (staplar, linjer) och mellan alla de tre första (punktdiagram, kartor).
   const worst = (mode) => {
     const list = [1, 2, 3, 4, 5].map((i) => mode[`chart-${i}`]);
-    const pairs = list.slice(1).map((c, i) => [list[i], c]);
+    const pairs = [...list.slice(1).map((c, i) => [list[i], c]), [list[0], list[2]]];
     return {
       cvd: Math.min(...pairs.map(([a, b]) => Math.min(deltaE(a, b, "protan"), deltaE(a, b, "deutan")))),
       normal: Math.min(...pairs.map(([a, b]) => deltaE(a, b))),

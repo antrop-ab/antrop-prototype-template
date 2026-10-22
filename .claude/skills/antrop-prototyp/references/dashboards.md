@@ -36,6 +36,7 @@ Egna färger utanför temat: kör dataviz validator mot båda lägena innan de a
 
 - **En y-axel.** Två mått med olika skala blir två diagram.
 - **Färgen följer serien**, inte ordningen. Ett filter som tar bort en serie får inte måla om de andra.
+- **Punktdiagram, kartor och små multipler: högst tre serier.** Där kan vilka två färger som helst hamna bredvid varandra, och bara `chart-1` till `chart-3` är kontrollerade mot varandra. Fler serier: slå ihop till "Övrigt" eller dela upp i flera diagram.
 - **Legend** när det finns två serier eller fler. Direkta etiketter på några punkter, inte på alla.
 - **Visa n.** Små grupper får en synlig siffra (*"n = 7"*). Under 30 svar: visa antal i stället för procent, eller båda.
 - **Text i textfärger** (`foreground`, `muted-foreground`), aldrig i seriens färg.
