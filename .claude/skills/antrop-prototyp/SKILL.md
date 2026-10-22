@@ -1,6 +1,6 @@
 ---
 name: antrop-prototyp
-description: Antrops sätt att bygga prototyper i kundprojekt med Next.js, shadcn/ui och Vercel. Använd när en vy, ett flöde eller en AI-funktion ska byggas eller granskas i den här mallen, när kundens tema (färger, typsnitt, logga) ska sättas, när texter i gränssnittet skrivs, när rörelse eller animationer ska läggas till, eller när exempeldata behövs. Trigger: "bygg en vy", "gör en prototyp", "kundens färger", "tema", "skriv texterna", "animation", "exempeldata", "AI-funktion", "chatt", "publicera".
+description: Antrops sätt att bygga prototyper i kundprojekt med Next.js, shadcn/ui och Vercel. Använd när en vy, ett flöde eller en AI-funktion ska byggas eller granskas i den här mallen, när kundens tema (färger, typsnitt, logga) ska sättas, när texter i gränssnittet skrivs, när rörelse eller animationer ska läggas till, eller när exempeldata behövs. Trigger: "bygg en vy", "gör en prototyp", "kundens färger", "tema", "skriv texterna", "animation", "exempeldata", "AI-funktion", "chatt", "databas", "spara på riktigt", "Neon", "dashboard", "diagram", "insikter", "publicera".
 ---
 
 # Antrops prototyper
@@ -14,7 +14,9 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 | Skriva texter i gränssnittet: knappar, fel, tomma lägen, ton | [references/ux-writing.md](references/ux-writing.md) |
 | Rörelse: mikroanimationer, lager, vybyten, Motion | [references/motion.md](references/motion.md) |
 | AI-funktioner: chatt, strukturerade svar, modeller, nycklar | [references/ai-features.md](references/ai-features.md) |
-| Exempeldata, delat tillstånd, spara på riktigt | [references/data.md](references/data.md) |
+| Exempeldata och delat tillstånd mellan sidor | [references/data.md](references/data.md) |
+| Spara på riktigt: databas (Neon), schema, inloggning, koppling till Vercel | [references/backend.md](references/backend.md) |
+| Insiktsdashboards: nyckeltal, diagram, filter, citat, siffror som stämmer | [references/dashboards.md](references/dashboards.md) |
 | Visa prototypen: skärmdumpar, användartester, kunden | [references/presenting.md](references/presenting.md) |
 
 ## Arbetsgång för en ny vy
@@ -27,7 +29,8 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 5. **Texter:** skriv i kundens ton. Kör `avoid-ai-swedish` (antrop-toolbox) på längre svenska texter.
 6. **Rörelse:** `transitionTypes` på länkar, `Drawer` på mobil. Fråga `find-animation-opportunities` om något ska kännas mer levande.
 7. **Granska** i webbläsaren: mobil och desktop, ljust och mörkt, varje klick. Kör impeccables `critique` och `audit`, åtgärda.
-8. **Publicera** med `npm run ship` när Antroparen vill dela.
+8. **Kodgranskning:** kör `code-review` och åtgärda fynden. Rör ändringen databas, inloggning eller API: kör också `security-review`.
+9. **Publicera** med `npm run ship` när Antroparen vill dela.
 
 ## Kvalitetsribba
 
@@ -39,4 +42,5 @@ En vy är klar när:
 - tomt, laddar och fel är hanterade där de kan uppstå
 - texterna är korta, konkreta och på kundens språk
 - inga hårdkodade färger, inga emojis, inga kort i kort
+- `code-review` är körd och fynden åtgärdade
 - `npm run typecheck` går igenom

@@ -23,12 +23,15 @@
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
-import { parseHex, rgbToOklch, toGamut, contrast, css, ensureContrast, oklchToHex } from "./lib/color.mjs";
+import { parseHex, rgbToOklch, toGamut, contrast, css, ensureContrast, oklchToHex, deltaE } from "./lib/color.mjs";
 
 const DEFAULT = { primary: "#4F5BD5", neutral: "tinted", radius: "0.75", font: "Figtree" };
 const GLOBALS = "app/globals.css";
 const FONTS = "app/fonts.ts";
 const BRAND = "app/brand.ts";
+// Diagramfärgernas ljushet per läge (OKLCH), se chartColors längre ned.
+const CHART_STEPS = { light: [0.5, 0.56, 0.62], dark: [0.57, 0.61, 0.65] };
+const CHART_BAND = { light: [0.45, 0.66], dark: [0.56, 0.66] };
 
 const argv = process.argv.slice(2);
 const opt = (name) => {
@@ -116,6 +119,7 @@ function build({ primary, neutral, radius }) {
   const lbg = white;
   const lfg = n(0.2, 2.5);
   const lPrimary = pickPrimary(brand, lbg, lfg, "ljust", notes);
+  const chartSet = chartColors(brand, lbg, n(0.165, 1.6));
   Object.assign(light, {
     background: lbg,
     foreground: lfg,
@@ -138,7 +142,7 @@ function build({ primary, neutral, radius }) {
     brand,
     "primary-soft": toGamut({ l: 0.962, c: Math.min(brand.c, 0.04), h: brand.h }),
     "primary-soft-foreground": ensureContrast({ ...brand, l: Math.min(brand.l, 0.45) }, { l: 0.962, c: 0.04, h: brand.h }, 4.6, -1),
-    ...charts(brand, 0.62),
+    ...chartSet.light,
     sidebar: n(0.984),
     "sidebar-foreground": lfg,
     "sidebar-primary": lPrimary.bg,
@@ -175,7 +179,7 @@ function build({ primary, neutral, radius }) {
     brand,
     "primary-soft": toGamut({ l: 0.28, c: Math.min(brand.c, 0.06), h: brand.h }),
     "primary-soft-foreground": ensureContrast({ ...brand, l: 0.82 }, { l: 0.28, c: 0.06, h: brand.h }, 4.6, 1),
-    ...charts(brand, 0.7),
+    ...chartSet.dark,
     sidebar: n(0.19, 1.6),
     "sidebar-foreground": dfg,
     "sidebar-primary": dPrimary.bg,
@@ -222,15 +226,98 @@ function pickPrimary(color, bg, ink, mode, notes) {
   return { bg: next, fg };
 }
 
-function charts(brand, l) {
-  // Huvudfärgen först, sedan fyra lugna toner som skiljer sig tydligt i nyans.
-  const offsets = [0, 150, 60, 210, 300];
-  return Object.fromEntries(
-    offsets.map((o, i) => [
-      `chart-${i + 1}`,
-      toGamut(i === 0 ? brand : { l, c: 0.13, h: (brand.h + o) % 360 }),
-    ]),
+/**
+ * Fem diagramfärger: huvudfärgen först, sedan fyra som går att skilja åt både med
+ * vanlig syn och för rödgrönt färgblinda. Samma regler som skillen dataviz:
+ * ljusheten inom ett band per läge, kroma minst 0,10, kontrast minst 3:1 mot
+ * bakgrunden och tydligt avstånd mellan serier som ligger bredvid varandra.
+ * Mörkt läge får samma nyanser som ljust, så att en serie behåller sin färg.
+ */
+
+function chartUsable(c, surface) {
+  return c.c >= 0.1 && contrast(c, surface) >= 3.05;
+}
+
+function chartFirst(brand, mode, surface) {
+  // Huvudfärgen flyttas in i bandet. Blir den för grå där (kroman ryms inte i sRGB)
+  // väljs den närmaste ljusheten i bandet där den blir tydlig nog.
+  const [lo, hi] = CHART_BAND[mode];
+  const at = (l) => toGamut({ ...brand, l, c: Math.max(brand.c, 0.13) });
+  // Huvudfärgens egen ljushet först, om den redan ligger i bandet.
+  const levels = [Math.min(Math.max(brand.l, lo), hi)];
+  for (let l = lo; l <= hi + 1e-9; l += 0.01) levels.push(l);
+  levels.sort((a, b) => Math.abs(a - brand.l) - Math.abs(b - brand.l));
+  const first = levels.map(at).find((c) => chartUsable(c, surface)) ?? at(levels[0]);
+  return first;
+}
+
+// Hur väl två färger går att skilja åt: det svagaste av färgblint och halva
+// avståndet med vanlig syn (dataviz kräver minst 8 respektive 15).
+function separation(a, b) {
+  return Math.min(deltaE(a, b, "protan"), deltaE(a, b, "deutan"), deltaE(a, b) / 1.9);
+}
+
+// Poäng för en ordning: grannarna väger tyngst (staplar och linjer), sedan att de
+// tre första går att skilja åt inbördes (punktdiagram), sist alla par.
+function chartScore(colors) {
+  const pairs = (list) => list.flatMap((a, i) => list.slice(i + 1).map((b) => separation(a, b)));
+  const adjacent = Math.min(...colors.slice(1).map((c, i) => separation(colors[i], c)));
+  return Math.min(adjacent, 12) + 0.3 * Math.min(...pairs(colors.slice(0, 3))) + 0.05 * Math.min(...pairs(colors));
+}
+
+function chartColors(brand, light, dark) {
+  const firstLight = chartFirst(brand, "light", light);
+  const candidates = [];
+  for (let h = 0; h < 360; h += 15) {
+    for (const l of CHART_STEPS.light) {
+      const c = toGamut({ l, c: 0.15, h });
+      if (chartUsable(c, light) && separation(c, firstLight) >= 6) candidates.push(c);
+    }
+  }
+
+  // Sök igenom alla ordningar av fyra kandidater. Grannavstånden räknas en gång.
+  const n = candidates.length;
+  const sep = candidates.map((a) => candidates.map((b) => separation(a, b)));
+  const sepFirst = candidates.map((c) => separation(c, firstLight));
+  let best;
+  let bestScore = -Infinity;
+  for (let a = 0; a < n; a++) {
+    for (let b = 0; b < n; b++) {
+      if (b === a || Math.min(sepFirst[a], sep[a][b]) < 8) continue;
+      for (let c = 0; c < n; c++) {
+        if (c === a || c === b || sep[b][c] < 8) continue;
+        const three = Math.min(sepFirst[a], sepFirst[b], sep[a][b]);
+        for (let d = 0; d < n; d++) {
+          if (d === a || d === b || d === c || sep[c][d] < 8) continue;
+          const adjacent = Math.min(sepFirst[a], sep[a][b], sep[b][c], sep[c][d], 12);
+          const all = Math.min(three, sepFirst[c], sepFirst[d], sep[a][c], sep[a][d], sep[b][d]);
+          const score = adjacent + 0.3 * three + 0.05 * all;
+          if (score > bestScore) [best, bestScore] = [[a, b, c, d], score];
+        }
+      }
+    }
+  }
+  const lightColors = [firstLight, ...(best ?? [0, 1, 2, 3]).map((i) => candidates[i])];
+
+  // Mörkt läge: samma nyanser, den kombination av ljusheter som skiljer bäst.
+  const firstDark = chartFirst(brand, "dark", dark);
+  const options = lightColors.slice(1).map((c) =>
+    CHART_STEPS.dark.map((l) => toGamut({ l, c: 0.15, h: c.h })).filter((x) => chartUsable(x, dark)),
   );
+  let darkColors = [firstDark, ...options.map((o, i) => o[0] ?? lightColors[i + 1])];
+  let darkScore = -Infinity;
+  const walk = (i, chosen) => {
+    if (i === options.length) {
+      const score = chartScore([firstDark, ...chosen]);
+      if (score > darkScore) [darkColors, darkScore] = [[firstDark, ...chosen], score];
+      return;
+    }
+    for (const o of options[i]) walk(i + 1, [...chosen, o]);
+  };
+  walk(0, []);
+
+  const named = (list) => Object.fromEntries(list.map((c, i) => [`chart-${i + 1}`, c]));
+  return { light: named(lightColors), dark: named(darkColors) };
 }
 
 function report({ light, dark, notes }) {
@@ -247,6 +334,21 @@ function report({ light, dark, notes }) {
     const b = contrast(db, df);
     const mark = (v) => `${v.toFixed(1).padStart(5)}${v >= min ? " ok " : " LÅG"}`;
     console.log(`  ${`${label} (krav ${String(min).replace(".", ",")}:1)`.padEnd(42)} ${mark(a)}  ${mark(b)}`);
+  }
+  // Diagramfärgerna: det svagaste avståndet mellan två serier bredvid varandra,
+  // för rödgrönt färgblinda (krav 8) och med vanlig syn (krav 15), som i skillen dataviz.
+  const worst = (mode) => {
+    const list = [1, 2, 3, 4, 5].map((i) => mode[`chart-${i}`]);
+    const pairs = list.slice(1).map((c, i) => [list[i], c]);
+    return {
+      cvd: Math.min(...pairs.map(([a, b]) => Math.min(deltaE(a, b, "protan"), deltaE(a, b, "deutan")))),
+      normal: Math.min(...pairs.map(([a, b]) => deltaE(a, b))),
+    };
+  };
+  for (const [label, key, min] of [["Diagramfärger, färgblint (krav 8)", "cvd", 8], ["Diagramfärger, vanlig syn (krav 15)", "normal", 15]]) {
+    const [a, b] = [worst(light)[key], worst(dark)[key]];
+    const mark = (v) => `${v.toFixed(1).padStart(5)}${v >= min ? " ok " : " LÅG"}`;
+    console.log(`  ${label.padEnd(42)} ${mark(a)}  ${mark(b)}`);
   }
   for (const note of notes) console.log(`  Obs: ${note}`);
 }

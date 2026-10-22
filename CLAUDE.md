@@ -72,7 +72,7 @@ Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det F
 Varje kundprojekt ska se ut som kunden. Gör det här **först** i en ny prototyp, innan första vyn byggs:
 
 1. Fråga efter kundens huvudfärg, typsnitt och logga, eller hämta dem ur Figma (`get_variable_defs`) eller kundens webbplats (öppna den i webbläsaren och läs färger och typsnitt ur CSS:en).
-2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Berätta för Antroparen om den justerades (`--exact` behåller färgen).
+2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Det tar också fram fem diagramfärger som går att skilja åt för färgblinda. Berätta för Antroparen om den justerades (`--exact` behåller färgen).
 3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/` och använd `next/font/local` i `app/fonts.ts`.
 4. Logga: lägg den i `public/` som SVG.
 5. Visa `/exempel/komponenter` i ljust och mörkt läge så att Antroparen kan godkänna temat.
@@ -143,6 +143,14 @@ Mallen är redo för AI: AI SDK, AI Elements (chatt, resonemang, källor, verkty
 
 Det här är inte den Next.js du känner från träningen. API:er och konventioner kan ha ändrats. Läs relevant guide i `node_modules/next/dist/docs/` innan du skriver kod du är osäker på, och ta varningar om utfasning på allvar. `next-devtools`-MCP:n visar fel från den körande dev-servern.
 
+### Databas och backend
+
+När prototypen ska spara på riktigt (flera användare, inloggning, data som finns kvar): fråga Antroparen först, och läs sedan `references/backend.md`. Mallen använder **Neon** (Postgres), med Neons plugin för MCP och skills. Claude skapar databasen i EU, kopplar den till Vercel med `npm run db:connect` och sparar schemat som SQL-filer i `db/`. Ingen nyckel skrivs i koden eller i chatten.
+
+### Insiktsdashboards
+
+Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboards.md` och Claude Codes inbyggda skill `dataviz` innan första diagrammet. Börja med frågorna dashboarden ska svara på, låt rubriken säga insikten och kontrollera varje siffra mot databasen.
+
 ## Titta på resultatet
 
 - Starta med webbläsarverktyget: `preview_start` med `{ name: "dev" }` (läser `.claude/launch.json`, port 3000).
@@ -151,9 +159,18 @@ Det här är inte den Next.js du känner från träningen. API:er och konvention
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
 - `npm run typecheck` ska gå igenom innan något publiceras. Det är mallens kvalitetsgrind, tester behövs inte för prototyper.
 
+## Kodgranskning
+
+Antroparen läser inte koden, så du granskar den. Kör skillen **`code-review`** och åtgärda fynden (`--fix`):
+
+- efter varje större ändring: en ny vy, ett nytt flöde, en AI-funktion, databas eller inloggning
+- alltid före `npm run ship` om koden har ändrats sedan förra granskningen
+
+Rör ändringen databasen, inloggningen eller ett API: kör också **`security-review`**. Fråga inte först, inte heller vid ett autonomt bygge. Berätta i en mening med vardagsord vad som hittades och rättades (*"Granskningen hittade att en sida kunde visa andras uppdrag. Det är rättat."*). Fynd som kräver ett beslut av Antroparen tar du upp med hen.
+
 ## Publicera: "bygg prototypen"
 
-När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: kör `npm run ship -- "<vad som ändrats>"`. Skriptet kontrollerar koden, sparar (commit), laddar upp till GitHub (push) och väntar in Vercel. Första gången skapas ett privat repo i `antrop-ab` och ett projekt på Vercel. Ge Antroparen länken.
+När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör sedan `npm run ship -- "<vad som ändrats>"`. Skriptet kontrollerar koden, sparar (commit), laddar upp till GitHub (push) och väntar in Vercel. Första gången skapas ett privat repo i `antrop-ab` och ett projekt på Vercel. Ge Antroparen länken.
 
 - Förklara git med vardagsord: en *commit* är en sparpunkt, en *push* laddar upp. Föreslå en sparpunkt när något fungerar.
 - **Varianter:** skapa en branch (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte.
@@ -186,6 +203,9 @@ Förinställda i `.claude/settings.json`. Claude frågar om installationen förs
 | **Vercel** (plugin) | Publicering, loggar, miljövariabler, AI Gateway, Marketplace | När något ska delas eller en deploy fallerar |
 | **next-devtools** (MCP) | Fel och varningar från den körande Next.js-servern | När sidan visar fel |
 | **Mobbin** (MCP) | Referenser: skärmar och flöden från riktiga appar och webbplatser | I konceptfasen av ett nytt flöde, eller "hur brukar andra göra det här?" |
+| **Neon** (plugin) | Databas: skapa projekt, köra SQL, schema, inloggning. MCP och Neons skills | När prototypen ska spara på riktigt, eller en dashboard ska visa riktig data |
+| **dataviz** (inbyggd skill) | Diagram, nyckeltal och färger som går att skilja åt för färgblinda | Varje gång ett diagram eller en dashboard byggs |
+| **code-review**, **security-review** (inbyggda skills) | Granskar koden och rättar fel | Efter varje större ändring och före publicering |
 | **Context7** (plugin) | Aktuell dokumentation för bibliotek | När du är osäker på ett API |
 | **antrop-toolbox** (plugin) | `avoid-ai-swedish` tar bort AI-ton ur svensk text, bildgenerering | Efter att du skrivit texter i gränssnittet |
 | **impeccable** (skill) | `shape`, `critique`, `audit`, `polish`, `layout`, `typeset`, `animate` | Ny vy utan Figma, eller granskning av en klar vy |
@@ -197,7 +217,6 @@ Förinställda i `.claude/settings.json`. Claude frågar om installationen förs
 Föreslå vid behov, installera när Antroparen säger ja (`claude plugin install <namn>@claude-plugins-official`, laddas i nästa chatt):
 
 - **Atlassian** (Jira, Confluence), **Linear** eller **Notion** när ett ärende eller en sida nämns.
-- **Supabase** (MCP) när prototypen behöver spara data på riktigt. Via Vercel Marketplace (`npx vercel@latest integration add supabase`) hamnar nycklarna på Vercel automatiskt.
 - **Miro** när underlaget ligger på en Miro-tavla.
 
 Plugins som kräver inloggning öppnar en webbläsare. Antroparen loggar in själv. Be aldrig om lösenord eller tokens i chatten.
@@ -226,6 +245,7 @@ Påminn Antroparen första gången du skriver i filen och när ni avslutar: *"Ja
 | `npm run update` | Uppdaterar paket, komponenter och skills säkert (`--check` visar bara) |
 | `npm run ship -- "meddelande"` | Kontrollerar, sparar, laddar upp och publicerar. Skriver ut länken |
 | `npm run vercel:link` / `npm run env` | Kopplar till Vercel / hämtar nycklar till `.env.local` |
+| `npm run db:connect` | Lägger en Neon-databas som `DATABASE_URL` på Vercel och lokalt (adressen via stdin) |
 | `npm run screenshots -- / "Knapptext"` | Skärmdumpar av ett flöde till presentationer (`--desktop`, `--dark`, `--full`) |
 | `npm run video -- video/promo` | Renderar en promovideo av prototypen med musik (`--draft`, `--still 5`, `--serve`). Se skillen `promo-video` |
 | `npm run github:claude` | Visar hur Claude i GitHub sätts upp |
@@ -255,6 +275,7 @@ components/
   prototyp/step-progress.tsx  "Steg 2 av 5" för flöden
 hooks/use-mounted.ts      för innehåll som beror på klockan (se references/data.md)
 data/                     påhittad exempeldata
+db/                       databasens schema och exempeldata som SQL-filer (när prototypen har en databas)
 lib/ai.ts                 modellval för AI Gateway
 lib/format.ts             svenska format för datum, tid, pris och tal
 DESIGN.md                 visuella regler (läses av dig och impeccable)
