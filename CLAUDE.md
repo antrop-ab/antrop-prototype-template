@@ -72,8 +72,8 @@ Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det F
 Varje kundprojekt ska se ut som kunden. Gör det här **först** i en ny prototyp, innan första vyn byggs:
 
 1. Fråga efter kundens huvudfärg, typsnitt och logga, eller hämta dem ur Figma (`get_variable_defs`) eller kundens webbplats (öppna den i webbläsaren och läs färger och typsnitt ur CSS:en).
-2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Berätta för Antroparen om den justerades (`--exact` behåller färgen).
-3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/` och använd `next/font/local` i `app/fonts.ts`.
+2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Berätta för Antroparen om den justerades (`--exact` behåller färgen). Har kunden ett eget mörkt läge: ange dess knappfärg med `--primary-dark "#hex"`.
+3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/`, eller installera kundens npm-paket, och använd `next/font/local` i `app/fonts.ts` (se `references/theming.md`). Licensen gäller också den publicerade länken.
 4. Logga: lägg den i `public/` som SVG.
 5. Visa `/exempel/komponenter` i ljust och mörkt läge så att Antroparen kan godkänna temat.
 
@@ -146,6 +146,7 @@ Det här är inte den Next.js du känner från träningen. API:er och konvention
 ## Titta på resultatet
 
 - Starta med webbläsarverktyget: `preview_start` med `{ name: "dev" }` (läser `.claude/launch.json`, port 3000).
+- **Vill Antroparen ha en bestämd port** (till exempel 3100, för att andra prototyper redan kör): ändra konfigurationen i `.claude/launch.json` till `"runtimeArgs": ["run", "dev", "--", "-p", "3100"]` och `"port": 3100`. Hittar `npm run screenshots` inte servern: lägg till `--url http://localhost:3100`.
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
