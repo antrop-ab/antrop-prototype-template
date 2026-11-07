@@ -65,6 +65,10 @@ Block lägger filer i `app/` och `components/`. Titta på vad som skapades och f
 - **Formulär:** etikett ovanför fältet, hjälptext under, felmeddelande under med `FieldError` och `aria-invalid` på fältet.
 - **Kort:** bara för objekt (ett projekt, en order), inte för att rama in sektioner.
 - **Svenska standardtexter:** `npm run update` översätter komponenternas engelska skärmläsartexter och standardtexter ("Close", "Loading", "Previous") till svenska (`scripts/translate-components.mjs`). Hittar du en ny engelsk text: lägg till paret där.
+- **Prototyp på engelska:** sätt `"language": "en"` i `mall.config.json`, `lang="en"` i `app/layout.tsx` och kör `node scripts/translate-components.mjs`. Då läser skärmläsare upp engelska, och komponenterna räknas inte som ändrade för hand.
+- **Bredare sheet:** standardbredden sitter på `data-[side=right]:sm:max-w-sm`, så en vanlig `sm:max-w-lg` slår inte igenom. Använd samma variant: `<SheetContent className="data-[side=right]:sm:max-w-lg">` (eller `data-[side=left]:` för vänster).
+- **`InputGroupButton` har egna storlekar:** `xs` (standard), `sm`, `icon-xs` och `icon-sm`, inte `default` och `lg` som `Button`.
+- **En knapp i en trigger** (`<DropdownMenuTrigger asChild><Button …>`) får triggerns `data-slot`. `app/sizing.css` täcker det, så storleken blir samma som för andra knappar.
 - **`ItemDescription` klipper efter två rader** (`line-clamp-2`). För längre text som adresser: `className="line-clamp-none"`.
 
 ## Ny komponent som inte finns i shadcn

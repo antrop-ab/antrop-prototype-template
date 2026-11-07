@@ -42,6 +42,8 @@ const { output } = await generateText({
 })
 ```
 
+**Felet `AI_NoObjectGeneratedError`** ("could not parse") betyder oftast att svaret klipptes, inte att modellen svarade fel. Svenska tar fler tokens än engelska: höj `maxOutputTokens`. Skicka inte med `temperature` till nyare Claude-modeller: det stöds inte och ger bara en varning i loggen.
+
 ## Design av AI-funktioner
 
 - **Visa att något händer** direkt: `Shimmer` eller `Loader` inom 100 ms, strömma texten.
@@ -72,3 +74,9 @@ Ska prototypen bara *visa* en AI-upplevelse (till exempel i ett användartest d�
 ## Kostnad
 
 AI Gateway debiterar per anrop på Vercel-teamets konto. Prototyper kostar oftast några kronor, men en öppen länk med en chatt kan missbrukas. Begränsa längden (`maxOutputTokens`) och fråga Antroparen innan en publik chatt publiceras.
+
+**På Vercel är AI Gateway alltid kopplad**, så `isGatewayConfigured()` är sann för alla som har länken. Startar en knapp dyra körningar (långa analyser, många anrop, bilder): låt dem kräva en miljövariabel på Vercel (till exempel `LIVE_AI=1`) och visa exempelsvaret annars. Sätt också en kostnadsgräns för teamet i AI Gateway på vercel.com.
+
+## Egen nyckel i stället för AI Gateway
+
+Mallen går via AI Gateway och behöver ingen egen nyckel. Använder en prototyp ändå en egen Anthropic-nyckel: ge den ett annat namn än `ANTHROPIC_API_KEY` (till exempel `PROTOTYP_ANTHROPIC_KEY`) och läs det namnet i koden. Claude Code tömmer `ANTHROPIC_API_KEY` i sitt skal, särskilt i molnet, så tester av AI-funktionerna faller annars på en saknad nyckel.

@@ -90,5 +90,15 @@ Byts `--primary` senare försvinner `--primary-dark`, om den inte anges igen.
 
 ## Utanför temat
 
+- **Kundens bakgrund, textfärg och extra färger** (krämvit bakgrund, brun text, färgplattor): skriptet sätter bara huvudfärg, gråskala, radie och typsnitt. Lägg kundens värden i ett eget block **direkt efter** `theme:end` i `app/globals.css`, med värden för både `:root` och `.dark`. Blocket ligger utanför det skriptet skriver över, så `npm run theme` och `npm run update` behåller det. Kontrollera kontrasten själv (brödtext 4,5:1).
+
+  ```css
+  /* brand:start Kundens egna värden utöver temat. Skrivs inte över av npm run theme. */
+  :root { --background: oklch(0.98 0.01 85); --foreground: oklch(0.3 0.04 50); }
+  .dark { --background: oklch(0.2 0.02 60); --foreground: oklch(0.95 0.01 85); }
+  /* brand:end */
+  ```
+
+- **Alternativa tecken:** `globals.css` slår på Figtrees `ss01` och `cv11`. `npm run theme -- --font` stänger av dem för andra typsnitt, eftersom samma koder kan byta helt andra tecken. Har du skrivit `app/fonts.ts` för hand: sätt `font-feature-settings: normal` på `body` själv. Skriptet skriver inte över en `app/fonts.ts` med `next/font/local` utan `--force`.
 - **Egna färger för en enstaka yta** (till exempel en kampanjbanner): lägg till en variabel i `:root` och `.dark` **utanför** temablocket, och registrera den i `@theme inline` som `--color-<namn>`. Då fungerar `bg-<namn>`.
 - **Täthet:** kund med proffsverktyg på desktop kan få `data-density="compact"` på verktygsytan, inte globalt.
