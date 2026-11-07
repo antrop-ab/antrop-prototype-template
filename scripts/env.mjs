@@ -27,8 +27,19 @@ if (quiet) {
     /VERCEL_OIDC_TOKEN|AI_GATEWAY_API_KEY/.test(readFileSync(file, "utf8")) &&
     Date.now() - statSync(file).mtimeMs < 10 * 60 * 60 * 1000;
   if (fresh) process.exit(0);
-  const out = vercel(["env", "pull", ".env.local", "--yes"], { timeout: 60_000 });
-  console.log(out ? "Hämtade nycklar från Vercel till .env.local." : "Kunde inte hämta nycklar från Vercel (offline eller utloggad). AI-funktioner kan saknas lokalt.");
+  const started = Date.now();
+  const out = vercel(["env", "pull", ".env.local", "--yes"], { timeout: 120_000 });
+  if (out) {
+    console.log("Hämtade nycklar från Vercel till .env.local.");
+    process.exit(0);
+  }
+  // Säg vad som faktiskt gick fel, så att ingen tror att inloggningen är trasig
+  // när hämtningen bara tog för lång tid.
+  const timedOut = Date.now() - started >= 115_000;
+  const loggedIn = !timedOut && !!vercel(["whoami"], { timeout: 30_000 });
+  const reason = timedOut ? "det tog för lång tid" : loggedIn ? "okänt fel, du är inloggad" : "du verkar inte vara inloggad: kör npx vercel login";
+  console.log(`\n!! Kunde inte hämta nycklar från Vercel (${reason}).`);
+  console.log("!! AI-anrop och databasen kan misslyckas lokalt. Kör `npm run env` och starta om `npm run dev`.\n");
   process.exit(0);
 }
 

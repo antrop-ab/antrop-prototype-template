@@ -7,6 +7,11 @@
  * data-size), så `npx shadcn add --overwrite` kan hämta senaste versionen utan
  * att storlekarna försvinner.
  *
+ * En Button inuti en trigger med asChild (DropdownMenuTrigger, DrawerTrigger,
+ * PopoverTrigger …) får triggerns data-slot, till exempel "dropdown-menu-trigger".
+ * Därför matchar knappreglerna också [data-slot$="-trigger"][data-variant]:
+ * data-variant finns bara på knappar, inte på triggers som select-trigger.
+ *
  * Så styr du storleken:
  *   - Per komponent: size="sm" | "default" | "lg" (och icon, icon-sm, icon-lg).
  *   - Per yta: data-density="compact" på en förälder, till exempel en tät
@@ -28,10 +33,13 @@
   --choice-size: 1.25rem; /* checkbox och radioknapp */
 }
 
-/* Pekskärm: menyrader når också 44 px. */
-@media (pointer: coarse) {
+/* Pekskärm och telefon: menyrader och små knappar når också 44 px, och
+   kryssrutor och radioknappar blir lättare att träffa. */
+@media (pointer: coarse), (max-width: 639px) {
   :root {
+    --control-h-sm: 2.75rem;
     --menu-item-h: 2.75rem;
+    --choice-size: 1.5rem;
   }
 }
 
@@ -50,7 +58,8 @@
   /* Knappar ---------------------------------------------------------------- */
   [data-slot="button"][data-size="default"],
   [data-slot="toggle"][data-size="default"],
-  [data-slot="toggle-group-item"][data-size="default"] {
+  [data-slot="toggle-group-item"][data-size="default"],
+  [data-slot$="-trigger"][data-variant][data-size="default"] {
     height: var(--control-h);
     min-width: var(--control-h);
     padding-inline: var(--control-px);
@@ -58,40 +67,47 @@
   }
   [data-slot="button"][data-size="sm"],
   [data-slot="toggle"][data-size="sm"],
-  [data-slot="toggle-group-item"][data-size="sm"] {
+  [data-slot="toggle-group-item"][data-size="sm"],
+  [data-slot$="-trigger"][data-variant][data-size="sm"] {
     height: var(--control-h-sm);
     min-width: var(--control-h-sm);
     font-size: var(--control-font-sm);
   }
   [data-slot="button"][data-size="lg"],
   [data-slot="toggle"][data-size="lg"],
-  [data-slot="toggle-group-item"][data-size="lg"] {
+  [data-slot="toggle-group-item"][data-size="lg"],
+  [data-slot$="-trigger"][data-variant][data-size="lg"] {
     height: var(--control-h-lg);
     min-width: var(--control-h-lg);
     padding-inline: calc(var(--control-px) * 1.5);
     font-size: var(--control-font);
   }
   /* Textlänkar ska linjera med texten runt dem: ingen sidopadding, men full klickhöjd. */
-  [data-slot="button"][data-variant="link"][data-variant="link"] {
+  [data-slot="button"][data-variant="link"][data-variant="link"],
+  [data-slot$="-trigger"][data-variant="link"][data-variant="link"] {
     padding-inline: 0;
     min-width: 0;
   }
   [data-slot="button"][data-size="xs"] {
     height: var(--control-h-xs);
   }
-  [data-slot="button"][data-size="icon"] {
+  [data-slot="button"][data-size="icon"],
+  [data-slot$="-trigger"][data-variant][data-size="icon"] {
     width: var(--control-h);
     height: var(--control-h);
   }
-  [data-slot="button"][data-size="icon-sm"] {
+  [data-slot="button"][data-size="icon-sm"],
+  [data-slot$="-trigger"][data-variant][data-size="icon-sm"] {
     width: var(--control-h-sm);
     height: var(--control-h-sm);
   }
-  [data-slot="button"][data-size="icon-lg"] {
+  [data-slot="button"][data-size="icon-lg"],
+  [data-slot$="-trigger"][data-variant][data-size="icon-lg"] {
     width: var(--control-h-lg);
     height: var(--control-h-lg);
   }
-  [data-slot="button"] svg:not([class*="size-"]) {
+  [data-slot="button"] svg:not([class*="size-"]),
+  [data-slot$="-trigger"][data-variant] svg:not([class*="size-"]) {
     width: 1.125rem;
     height: 1.125rem;
   }

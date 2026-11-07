@@ -15,7 +15,10 @@ function ThemeProvider({
       disableTransitionOnChange
       {...props}
     >
-      <ThemeHotkey />
+      {/* Tangenten D växlar läge medan ni bygger. I den publicerade versionen
+          följer prototypen bara datorns inställning, så att en kund som råkar
+          trycka på D inte får mörkt läge utan att förstå varför. */}
+      {process.env.NODE_ENV === "development" && <ThemeHotkey />}
       {children}
     </NextThemesProvider>
   )

@@ -18,13 +18,18 @@
 //   --dark           mörkt läge
 //   --both           både ljust och mörkt läge
 //   --full           hela sidan, inte bara det som syns i fönstret
+//   --motion         behåll rörelse (standard: reducerad rörelse, så att allt syns direkt)
+//
+// Med --url går det också att ta bilder av den publicerade prototypen, till exempel
+// när bilderna kommer från ett CMS som dev-servern inte når:
+//   npm run screenshots -- / "Boka" --url https://prototypen.vercel.app
 //
 // Bilderna hamnar i screenshots/ (checkas inte in), med format och läge i namnet,
 // till exempel mobil-ljust-03-valj-tid.png. Bilder från tidigare körningar med
 // samma namn skrivs över, andra lämnas. Dev-servern måste vara igång.
 
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(`--${name}`);
@@ -65,10 +70,18 @@ if (steps.length === 0) {
 
 const { chromium } = await import("playwright");
 
+// I Claudes molnmiljö finns Chromium förinstallerat här, ofta i en annan version
+// än mallens Playwright. Då används den i stället för att ladda ner en egen.
+const PREINSTALLED_CHROMIUM = "/opt/pw-browsers/chromium";
+
 async function launch() {
   try {
     return await chromium.launch();
-  } catch {
+  } catch (error) {
+    if (existsSync(PREINSTALLED_CHROMIUM)) {
+      return chromium.launch({ executablePath: PREINSTALLED_CHROMIUM, args: ["--no-sandbox"] });
+    }
+    if (!String(error).includes("Executable doesn't exist")) throw error;
     console.log("Laddar ner Chromium för skärmdumpar (bara första gången)...");
     const result = spawnSync("npx", ["playwright", "install", "chromium"], {
       stdio: "inherit",
@@ -121,6 +134,9 @@ try {
       viewport: { width: viewport.width, height: viewport.height },
       colorScheme: scheme,
       deviceScaleFactor: 2,
+      // Utan rörelse syns allt direkt: element som tonar in vid scroll är annars
+      // osynliga i helsidesbilder, och öppna lager hinner inte glida klart.
+      reducedMotion: flag("motion") ? "no-preference" : "reduce",
     });
     const page = await context.newPage();
     // Dölj Next.js utvecklarknapp ("N") så att den inte syns i bilderna.
@@ -148,7 +164,7 @@ try {
       // Låt Sheets och andra lager animera klart.
       await page.waitForTimeout(700);
       const file = `screenshots/${viewport.name}-${schemeName[scheme]}-${String(index + 1).padStart(2, "0")}-${slug(step)}.png`;
-      await page.screenshot({ path: file, fullPage: flag("full") });
+      await page.screenshot({ path: file, fullPage: flag("full"), animations: "disabled" });
       console.log(`Sparade ${file}`);
     }
     await context.close();

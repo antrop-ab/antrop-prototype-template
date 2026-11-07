@@ -16,6 +16,7 @@
 //   --radius <rem>       hörnradie, t.ex. 0.5 (skarpt), 0.75 (standard), 1 (mjukt)
 //   --font <namn>        typsnitt från Google Fonts, t.ex. "Inter" eller "Hanken Grotesk"
 //   --heading-font <namn> eget typsnitt för rubriker (annars samma som --font)
+//   --force              skriv över app/fonts.ts även när den har egna typsnittsfiler
 //   --name <namn>        prototypens namn: sidtitel och namn på hemskärmen (app/brand.ts)
 //   --exact              behåll huvudfärgen exakt, även om knapptexten får för låg kontrast
 //   --dry-run            skriv bara ut resultatet
@@ -101,8 +102,9 @@ writeFileSync(GLOBALS, nextCss);
 console.log(`\nSkrev temat till ${GLOBALS}.`);
 
 if (opt("font") || opt("heading-font") || flag("reset")) {
-  writeFonts(settings.font, settings.headingFont);
-  console.log(`Skrev typsnitt till ${FONTS}: ${settings.font}${settings.headingFont ? ` (rubriker: ${settings.headingFont})` : ""}.`);
+  if (writeFonts(settings.font, settings.headingFont)) {
+    console.log(`Skrev typsnitt till ${FONTS}: ${settings.font}${settings.headingFont ? ` (rubriker: ${settings.headingFont})` : ""}.`);
+  }
 }
 writeBrand(settings);
 console.log("Titta på resultatet i webbläsaren, i ljust och mörkt läge.");
@@ -382,6 +384,12 @@ function report({ light, dark, notes }) {
 }
 
 function writeFonts(font, headingFont) {
+  // En handskriven app/fonts.ts med kundens egna filer (next/font/local) ska inte
+  // skrivas över av misstag.
+  if (existsSync(FONTS) && /next\/font\/local/.test(readFileSync(FONTS, "utf8")) && !flag("force")) {
+    console.log(`${FONTS} har kundens egna typsnittsfiler (next/font/local) och skrevs inte över. Lägg till --force för att byta till Google Fonts.`);
+    return false;
+  }
   const require = createRequire(import.meta.url);
   let data = {};
   try {
@@ -427,6 +435,19 @@ export const fontMono = Geist_Mono({
 `;
   if (!existsSync("app")) throw new Error("Kör skriptet i prototypens rotmapp.");
   writeFileSync(FONTS, source);
+  writeFontFeatures(font);
+  return true;
+}
+
+/**
+ * Figtrees alternativa tecken (ss01, cv11) passar mallens standardtypsnitt. I ett
+ * annat typsnitt kan samma koder byta ut helt andra tecken, så de stängs av då.
+ */
+function writeFontFeatures(font) {
+  const css = readFileSync(GLOBALS, "utf8");
+  const value = font === DEFAULT.font ? '"ss01", "cv11"' : "normal";
+  const next = css.replace(/font-feature-settings: [^;]+;/, `font-feature-settings: ${value};`);
+  if (next !== css) writeFileSync(GLOBALS, next);
 }
 
 function writeBrand({ name = "Prototyp", primary }) {
