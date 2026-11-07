@@ -2,13 +2,20 @@
 // Översätter shadcn:s och AI Elements engelska standardtexter till svenska:
 // skärmläsartexter ("Close", "Loading") och synliga texter ("Previous", "Thinking...").
 //
-//   node scripts/translate-components.mjs
+//   node scripts/translate-components.mjs          språket i mall.config.json ("sv" som standard)
+//   node scripts/translate-components.mjs --lang en  tillbaka till engelska, för en prototyp på engelska
+//
+// Är prototypen på engelska: sätt "language": "en" i mall.config.json och
+// lang="en" i app/layout.tsx, och kör skriptet. Då stannar komponenterna på
+// engelska också efter `npm run update`.
 //
 // Körs automatiskt av `npm run update` efter att komponenterna hämtats, så att
 // de stannar på svenska och ändå kan uppdateras. Hittar skriptet inte en text
 // (komponenten har ändrats upstream) hoppas den över tyst. Lägg till nya par här.
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { config } from "./lib/util.mjs";
 
 const TRANSLATIONS = {
   "components/ui/spinner.tsx": [['aria-label="Loading"', 'aria-label="Laddar"']],
@@ -62,14 +69,26 @@ const TRANSLATIONS = {
   ],
 };
 
+const langIndex = process.argv.indexOf("--lang");
+const language = (langIndex >= 0 ? process.argv[langIndex + 1] : config.language) ?? "sv";
+const toEnglish = language === "en";
+
+const LOCK = ".shadcn-lock.json";
+const sha = (text) => createHash("sha256").update(text).digest("hex").slice(0, 16);
+const lock = existsSync(LOCK) ? JSON.parse(readFileSync(LOCK, "utf8")) : {};
+
 let changed = 0;
 for (const [file, pairs] of Object.entries(TRANSLATIONS)) {
   if (!existsSync(file)) continue;
   const before = readFileSync(file, "utf8");
-  const after = pairs.reduce((text, [en, sv]) => text.split(en).join(sv), before);
+  const after = pairs.reduce((text, [en, sv]) => (toEnglish ? text.split(sv).join(en) : text.split(en).join(sv)), before);
   if (after !== before) {
     writeFileSync(file, after);
     changed++;
+    // Komponenten är inte ändrad för hand bara för att språket byttes: uppdatera
+    // fingeravtrycket som `npm run update` jämför med.
+    if (lock[file] === sha(before)) lock[file] = sha(after);
   }
 }
-if (changed) console.log(`Översatte engelska standardtexter till svenska i ${changed} komponenter.`);
+if (changed && existsSync(LOCK)) writeFileSync(LOCK, `${JSON.stringify(lock, null, 2)}\n`);
+if (changed) console.log(`Bytte standardtexterna till ${toEnglish ? "engelska" : "svenska"} i ${changed} komponenter.`);

@@ -11,7 +11,7 @@ Antroparen kan vara ny på terminal, git och npm. Därför ska du:
 - **Leda, inte vänta.** Föreslå nästa steg. Förklara vad ett kommando gör med en mening innan du kör det. Ingen jargong utan förklaring.
 - **Göra det tekniska själv.** Kör kommandon, installera och fixa fel. Be bara Antroparen om det som kräver hen: logga in i en webbläsare, godkänna en behörighet, skriva ett lösenord.
 - **Prata design.** Motivera val med designprinciper (se `DESIGN.md`), inte med kod. Visa resultatet i webbläsaren så ofta det går.
-- **Skriva svenska** till Antroparen. Kod, variabelnamn och commit-meddelanden på engelska. Texter i gränssnittet på det språk kunden använder, svenska om inget annat sägs.
+- **Skriva svenska** till Antroparen. Kod, variabelnamn och commit-meddelanden på engelska. Texter i gränssnittet på det språk kunden använder, svenska om inget annat sägs. En prototyp på engelska byter också komponenternas skärmläsartexter (se `references/components.md`).
 - **Tipsa om det Antroparen inte vet finns**, högst ett tips i taget och när det passar (se "Plugins och verktyg").
 
 ## Modell: Opus som standard
@@ -43,6 +43,30 @@ Hooken `scripts/session-start.mjs` skriver rader som börjar med `[Antrop-mall]`
 
 Fyll i sökvägen och beställningen själv. Fortsätt utan omstart bara om Antroparen uttryckligen ber om det. Säger setup att skills redan fanns och du startades i mappen behövs ingen omstart: fortsätt direkt, också vid ett autonomt bygge.
 
+Fortsätter du utan omstart: läs skills som filer (`.claude/skills/<namn>/SKILL.md` och dess `reference/`), och komponenternas kod i `components/ui/` i stället för shadcn-MCP:n. **I molnet gäller stoppet aldrig**, se nästa avsnitt.
+
+## Molnsessioner och autonomt arbete
+
+Prototyper byggs ofta av Claude i molnet (projekttrådar i Claude-appen, claude.ai/code), där Antroparen kan vara borta i timmar. Hooken säger till när du kör i molnet (`CLAUDE_CODE_REMOTE`).
+
+- **Ingen omstart.** Det går inte att starta om i mappen. Kör `npm run setup` (eller `npm run update -- --skills` om bara skills saknas) och läs skills som filer.
+- **Fråga bara om det som kräver Antroparen.** Har Antroparen bett dig jobba självständigt, eller sagt det i projektets instruktioner: gör det som går att ångra och berätta efteråt vad du gjorde och varför. Det gäller också databasändringar på en dev-branch och att lägga in exempeldata.
+- **De här stoppen gäller ändå:** konfidentialitet (riktiga kund- eller persondata, nycklar, interna underlag), radering av data eller projekt, skrivningar till en produktionsdatabas med riktig data, och att skicka något till kunden eller utanför Antrop.
+- **Nätet är begränsat.** Molnmiljön når ofta inte tjänster som `*.neon.tech`, `*.sanity.io` eller `*.vercel.app`, och `gh` kan saknas (git push fungerar ändå). Använd tjänstens MCP om den finns, låt Antroparen göra steget i webbläsaren (till exempel importera repot på vercel.com), eller kör steget på Antroparens dator. Skriv ned i `feedback-till-mallen.md` vad som inte gick.
+- **Skärmdumpar** med `npm run screenshots` använder den förinstallerade Chromium. Innehåll från ett CMS syns bara mot den publicerade länken (`--url`).
+
+### Flera trådar i samma prototyp
+
+Jobbar flera Claude-trådar i samma repo samtidigt, eller en tråd i samma mapp som Antroparen: ge varje tråd en egen git worktree från färsk `main`, så att ingen bygger vidare på en annan tråds halvfärdiga filer.
+
+```bash
+git fetch origin main
+git worktree add ../<prototyp>-<uppgift> -b <uppgift> origin/main
+cd ../<prototyp>-<uppgift> && npm ci
+```
+
+Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `screenshots/`, som aldrig checkas in. Ta bort worktreen när branchen är mergad: `git worktree remove ../<prototyp>-<uppgift>`.
+
 ## Första gången på en ny dator (Mac)
 
 `scripts/bootstrap.sh` tar datorn från tom till körbar prototyp: Homebrew (om Antroparen är administratör), git, Node, GitHub CLI, inloggning på GitHub, en ny prototyp från mallen, `npm run setup` och valfritt Vercel. Det kan köras om, klara steg hoppas över. Verktygen och inloggningen (Homebrew, git, Node, GitHub CLI, GitHub-inloggning) sköts av det gemensamma skriptet [antrop-setup](https://github.com/antrop-ab/antrop-setup), som bootstrap hämtar och kör först. Fel där rättas i antrop-setup, inte här.
@@ -72,10 +96,11 @@ Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det F
 Varje kundprojekt ska se ut som kunden. Gör det här **först** i en ny prototyp, innan första vyn byggs:
 
 1. Fråga efter kundens huvudfärg, typsnitt och logga, eller hämta dem ur Figma (`get_variable_defs`) eller kundens webbplats (öppna den i webbläsaren och läs färger och typsnitt ur CSS:en).
-2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Det tar också fram fem diagramfärger som går att skilja åt för färgblinda. Berätta för Antroparen om den justerades (`--exact` behåller färgen).
-3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/` och använd `next/font/local` i `app/fonts.ts`.
+2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Det tar också fram fem diagramfärger som går att skilja åt för färgblinda. Berätta för Antroparen om den justerades (`--exact` behåller färgen). Har kunden ett eget mörkt läge: ange dess knappfärg med `--primary-dark "#hex"`.
+3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/`, eller installera kundens npm-paket, och använd `next/font/local` i `app/fonts.ts` (se `references/theming.md`). Licensen gäller också den publicerade länken.
 4. Logga: lägg den i `public/` som SVG.
 5. Visa `/exempel/komponenter` i ljust och mörkt läge så att Antroparen kan godkänna temat.
+6. Kräver kundens varumärke något som `DESIGN.md` avråder från (gradienter, ett eget displaytypsnitt, kantiga hörn): skriv det under *Avsteg för kunden* överst i `DESIGN.md`. Då följer du och impeccable kunden i stället för mallens standard.
 
 Mer i skillen `antrop-prototyp`, `references/theming.md`.
 
@@ -94,7 +119,7 @@ Alla shadcn-komponenter finns redan i `components/ui/`, och AI Elements i `compo
 
 `app/sizing.css` gör alla kontroller **44 px höga med 16 px text**, utan att komponentfilerna ändras. Därför:
 
-- Använd komponenternas `size`-prop: `sm` (36), `default` (44), `lg` (52), `icon`, `icon-sm`, `icon-lg`. **Sätt inte egna höjder, bredder eller sidopadding** (`h-9`, `min-w-8`, `px-2`) på kontroller. De vinner inte över lagret, och det är meningen.
+- Använd komponenternas `size`-prop: `sm` (36, men 44 på telefon och pekskärm), `default` (44), `lg` (52), `icon`, `icon-sm`, `icon-lg`. **Sätt inte egna höjder, bredder eller sidopadding** (`h-9`, `min-w-8`, `px-2`) på kontroller. De vinner inte över lagret, och det är meningen.
 - Behövs en engångsavvikelse: important-varianten, till exempel `h-14!` eller `min-w-16!`.
 - Länkknappar (`variant="link"`) har ingen sidopadding, så de linjerar med texten runt dem.
 - Tätare yta för proffsverktyg på desktop: `data-density="compact"` på en förälder. Bara där användaren sitter vid en dator med mus.
@@ -109,6 +134,7 @@ Läs `DESIGN.md`. Kortversionen:
 - **En tydlig huvudhandling per vy** (`Button`), sekundära som `variant="outline"`, `ghost` eller `link`.
 - **Ikoner från `lucide-react`, aldrig emojis** i gränssnittet.
 - **Mobil först.** Bygg för 375 px och skala upp. Sheet på desktop, `Drawer` på mobil för lager som öppnas nedifrån.
+- **Exempelinnehåll, inte platshållare.** En prototyp som visas för kund ska se färdig ut: trovärdiga påhittade texter i kundens ton, exempelpriser och foton (skapa dem med `antrop-bild` och skriv i alt-texten att det är en illustrativ AI-bild). Använd neutrala namnskyltar i stället för andras logotyper. Platshållare (`[Telefonnummer]`) bara för sådant som inte får hittas på, som kontaktuppgifter.
 - **Tillstånd:** tomt (`Empty`), laddar (`Skeleton`, `Spinner`), fel och lyckat (`sonner`-toast eller `Alert`). Påhittad data täcker minst ett undantagsfall. Skillen `break-ui` testar en färdig vy med värsta tänkbara data (långa namn, tomma listor, "1 medlemmar") bakom en växel och rapporterar vad som gick sönder.
 
 ### Rörelse
@@ -123,6 +149,7 @@ Läs `DESIGN.md`. Kortversionen:
 
 0. **Första vyn i en ny prototyp:** fyll i *Customer*, *Users* och *Product Purpose* i `PRODUCT.md` innan du bygger (fråga, eller skriv dina antaganden och säg det). Det styr resten.
 1. Skapa `app/<route>/page.tsx` och bygg med `PageShell` (`components/prototyp/page-shell.tsx`): rubrik, ingress, tillbaka-länk, bredd (`narrow` för formulär, `wide` för översikter), `icon` ovanför rubriken och `bottomBar` för huvudhandlingen i ett flöde (fast längst ned på mobilen).
+   - **Eget skal** (kundens sidhuvud och sidfot, en webbplats snarare än en app): bygg om `app/layout.tsx` och `app/page.tsx`, som är mallens exempel, och lägg sidhuvud och sidfot i `components/<kund>/`.
    - **Flöde i flera steg** (bokning, ansökan, anmälan): en route per steg, `eyebrow={<StepProgress current={2} total={5} label="…" />}`, huvudknappen i `bottomBar`, valen i en Context (se `references/data.md`, också om skydd mot direktlänk mitt i flödet).
 2. Texter direkt i komponenten är okej i en prototyp. Håll dem korta och i kundens ton (`references/ux-writing.md`). Datum, tider och priser med `lib/format.ts` (svenskt format).
 3. Påhittad data i `data/<område>.ts`, enligt `data/README.md`.
@@ -154,6 +181,8 @@ Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboar
 ## Titta på resultatet
 
 - Starta med webbläsarverktyget: `preview_start` med `{ name: "dev" }` (läser `.claude/launch.json`, port 3000).
+- **Kommer servern inte igång** (status står kvar på "starting", localhost svarar inte): starta `npx next dev --port 3000` i bakgrunden och öppna sidan med `preview_start` och `{ url: "http://localhost:3000" }`.
+- **Vill Antroparen ha en bestämd port** (till exempel 3100, för att andra prototyper redan kör): ändra konfigurationen i `.claude/launch.json` till `"runtimeArgs": ["run", "dev", "--", "-p", "3100"]` och `"port": 3100`. Hittar `npm run screenshots` inte servern: lägg till `--url http://localhost:3100`.
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
@@ -174,6 +203,8 @@ När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: grans
 
 - Förklara git med vardagsord: en *commit* är en sparpunkt, en *push* laddar upp. Föreslå en sparpunkt när något fungerar.
 - **Varianter:** skapa en branch (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte.
+- **Förhandsvisningar kräver inloggning på Vercel, produktionslänken är öppen** (Vercels standardskydd). Ska kunden se en branch: granska koden och merga till `main` när Antroparen godkänt, så hamnar den på huvudlänken. Mer i `references/presenting.md`.
+- **Fastnar Vercels byggkö:** bygg på datorn och ladda upp bygget, `npx vercel@latest build --prod` och sedan `npx vercel@latest deploy --prebuilt --prod`.
 - **Är Antroparen inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren.
 - Kör aldrig `git push --force` och radera inga brancher utan att Antroparen uttryckligen bett om det.
 - **Miljövariabler** läggs på Vercel, aldrig i koden: `npx vercel@latest env add NAMN`, sedan `npm run env`. Integrationer från Vercel Marketplace (databas, auth, betalning) lägger in sina nycklar själva.

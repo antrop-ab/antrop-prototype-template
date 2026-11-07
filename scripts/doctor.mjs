@@ -43,14 +43,21 @@ if (git) {
   });
 }
 
+// I Claudes molnmiljö finns inte gh, men git push fungerar via sessionens egen
+// inloggning. Där är gh valfritt, så att setup går hela vägen.
+const cloud = process.env.CLAUDE_CODE_REMOTE === "true";
 const env = cleanGhEnv();
 const gh = run("gh", ["--version"], { env });
-check("GitHub CLI (gh)", !!gh, gh?.split("\n")[0], { fix: "Mac: bash scripts/bootstrap.sh --no-project. Annars https://cli.github.com" });
+check("GitHub CLI (gh)", !!gh, gh?.split("\n")[0] ?? (cloud ? "molnsession: git går via sessionen" : undefined), {
+  required: !cloud,
+  fix: cloud ? undefined : "Mac: bash scripts/bootstrap.sh --no-project. Annars https://cli.github.com",
+});
 if (gh) {
   const status = run("gh", ["auth", "status", "--hostname", "github.com"], { env });
   const loggedIn = !!status && /Logged in/i.test(status);
   const user = loggedIn ? run("gh", ["api", "user", "--jq", ".login"], { env }) : null;
   check("Inloggad på GitHub", loggedIn, user ?? undefined, {
+    required: !cloud,
     fix: "gh auth login --hostname github.com --git-protocol https --web  (sedan: gh auth setup-git)",
   });
   if (loggedIn) {

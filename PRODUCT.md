@@ -8,7 +8,7 @@ _Fylls i per prototyp._ Kundens namn, bransch och varumärke. Länk till webbpla
 
 ## Platform
 
-web (responsiv, mobil först)
+web
 
 ## Stack
 
@@ -36,6 +36,7 @@ Klickbar prototyp för att testa och visa idéer, inte produktion. Exempeldata �
 
 ## Capabilities and Constraints
 
+- Responsiv och mobil först: byggs för 375 px och skalas upp till desktop.
 - shadcn/ui och kundens tema via `npm run theme`. Grundreglerna i `DESIGN.md`.
 - Ingen riktig kund- eller persondata.
 - Mobil först, ska fungera på desktop. Ljust och mörkt läge.

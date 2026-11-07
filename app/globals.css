@@ -174,6 +174,7 @@
   }
   body {
     @apply bg-background text-base text-foreground;
+    /* Figtrees alternativa tecken. npm run theme -- --font stänger av dem för andra typsnitt. */
     font-feature-settings: "ss01", "cv11";
   }
   h1,

@@ -41,6 +41,12 @@ Pluginen `neon-postgres@neon` är förinställd i `.claude/settings.json`. Den g
 
 Använd Neon Auth (skillen `neon-auth`, Managed Better Auth). Testkonton med påhittade namn och ett enkelt gemensamt lösenord räcker i en prototyp. Skriv dem i README:n så att Antroparen kan dela dem.
 
+## Dev och produktion
+
+När riktiga användare (eller kunden) har lagt in data i prototypen: arbeta mot en Neon-branch för utveckling (`dev`) och låt huvudbranchen vara produktion. Kör nya SQL-filer i `db/` mot `dev` först och mot produktion när de fungerar. Skapa en backup-branch innan en ändring körs mot produktion, och fråga Antroparen innan du skriver till produktion.
+
+**Saknas Neon-MCP:n och Neons skills** (pluginen installeras bara när Claude startas i mappen och någon godkänner den, och inte i molnet): skriv inte egna skript som kör SQL som ägare mot den enda branchen. Be Antroparen starta en ny chatt i mappen och godkänna pluginen, eller använd Neons CLI (`npx neonctl@latest`). Claudes molnmiljö når ofta inte `*.neon.tech`: då görs databasarbetet på Antroparens dator.
+
 ## Ändringar som inte går att ångra
 
 Radera aldrig ett Neon-projekt, en branch eller en tabell med data, och kör aldrig `DROP` eller `TRUNCATE` på data som Antroparen har lagt in, utan att hen uttryckligen bett om det. Ska schemat ändras på ett riskabelt sätt: gör det först på en Neon-branch (se `neon-postgres-branches`).

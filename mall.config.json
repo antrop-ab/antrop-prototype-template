@@ -3,6 +3,7 @@
   "templateRepo": "antrop-ab/antrop-prototype-template",
   "githubOwner": "antrop-ab",
   "vercelScope": null,
+  "language": "sv",
   "skills": [
     { "source": "https://github.com/shadcn/ui", "skill": "shadcn", "why": "shadcn:s egen skill: CLI, komponenter, formulärmönster, tema" },
     { "source": "https://github.com/pbakaus/impeccable", "why": "designprocess: shape före bygget, critique och audit efteråt" },

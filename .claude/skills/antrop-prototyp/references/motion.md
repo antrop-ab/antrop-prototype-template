@@ -42,6 +42,7 @@ Finns som CSS-variabler i `app/motion.css`. Kurvorna finns också som Tailwind-k
 - **Ofta använt = nästan omedelbart.** Kommandomenyer och tangentbordsgenvägar animeras knappt.
 - **Hover-effekter bara på enheter med mus:** `@media (hover: hover)` eller Tailwinds `hover:` (som redan gör det i v4).
 - **Ingen rörelse vid första laddningen** av en sida, utom en diskret toning.
+- **Element som tonar in vid scroll** (`animation-timeline: view()`) har opacitet 0 tills de syns. Tillgänglighetsverktyg som axe rapporterar då falska kontrastfel, och helsidesbilder får tomma ytor. Scrolla elementet i bild innan axe körs. `npm run screenshots` kör med reducerad rörelse som standard (`--motion` stänger av det), så respektera `prefers-reduced-motion` i egen rörelse.
 
 ## Egen rörelse med Motion
 

@@ -6,6 +6,9 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 
 const notes = [];
+// Claude i molnet (projekttrådar, claude.ai/code): ingen omstart i mappen är möjlig,
+// och Antroparen är ofta borta. Skills läses som filer i stället.
+const cloud = process.env.CLAUDE_CODE_REMOTE === "true";
 const state = (() => {
   try {
     return JSON.parse(readFileSync(".mall-state.json", "utf8"));
@@ -22,14 +25,21 @@ try {
     if (days > 7) notes.push("Mer än en vecka sedan senaste uppdateringen: föreslå `npm run update` (säkert, rör inte anpassade komponenter).");
   }
   if (!existsSync(".claude/skills/shadcn") || !existsSync(".claude/skills/impeccable")) {
-    notes.push("Skills saknas: kör `npm run update -- --skills` och be sedan designern starta en ny chatt i mappen.");
+    notes.push(
+      cloud
+        ? "Skills saknas: kör `npm run update -- --skills` och läs dem sedan som filer i `.claude/skills/<namn>/`. Molnsession: ingen omstart behövs eller går att göra."
+        : "Skills saknas: kör `npm run update -- --skills` och be sedan designern starta en ny chatt i mappen.",
+    );
+  }
+  if (cloud) {
+    notes.push("Molnsession: följ avsnittet \"Molnsessioner och autonomt arbete\" i CLAUDE.md (inga omstartsstopp, egen worktree om flera trådar jobbar i repot).");
   }
   const pkgName = JSON.parse(readFileSync("package.json", "utf8")).name;
   if (pkgName === "antrop-prototype-template" && !/antrop-prototype-template$/.test(process.cwd())) {
     const skillsLoaded = existsSync(".claude/skills/shadcn") && existsSync(".claude/skills/impeccable");
     notes.push(
       "Det här är en ny prototyp som inte har körts med `npm run setup` än. Kör det först (det hämtar senaste komponenterna och ger prototypen ett eget namn)." +
-        (skillsLoaded ? " Skills är redan laddade i den här chatten, så ingen omstart behövs efter setup." : ""),
+        (skillsLoaded || cloud ? " Ingen omstart behövs efter setup." : ""),
     );
   }
   if (!existsSync(".vercel/project.json")) {

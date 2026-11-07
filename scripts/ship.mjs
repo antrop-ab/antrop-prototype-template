@@ -121,7 +121,18 @@ async function waitForGitDeployment() {
 function deployDirectly() {
   say("Publicerar direkt från datorn (ingen GitHub-koppling hos Vercel).");
   const out = vercel(["deploy", "--yes", ...(branch === "main" ? ["--prod"] : [])], { timeout: 600_000 });
-  return out?.match(/https:\/\/[^\s]+\.vercel\.app/g)?.pop() ?? null;
+  // Nyare Vercel CLI svarar med JSON när den inte körs i en terminal.
+  const json = out?.match(/\{[\s\S]*\}/)?.[0];
+  if (json) {
+    try {
+      const data = JSON.parse(json);
+      const found = (branch === "main" && data.productionUrl) || data.deployment?.url || data.url || data.productionUrl;
+      if (found) return found.startsWith("http") ? found : `https://${found}`;
+    } catch {
+      // Inte JSON: leta efter adressen i texten nedan.
+    }
+  }
+  return out?.match(/https:\/\/[^\s"]+\.vercel\.app/g)?.pop() ?? null;
 }
 
 function productionAlias(deploymentUrl) {

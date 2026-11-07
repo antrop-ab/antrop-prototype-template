@@ -7,6 +7,10 @@ description: Antrops standardutseende för prototyper. Rent, luftigt och linjär
 
 > **Till Claude och designskills (till exempel impeccable):** prototyperna använder shadcn/ui med Antrops tema. Grundutseendet är medvetet valt: rent och linjärt som Linear, luftigt och vänligt som Airbnb. I ett kundprojekt byts färger, typsnitt och radie till kundens med `npm run theme`. Förbättra hierarki, flöde, avstånd, text, rörelse och tillgänglighet inom ramarna nedan. Byt inte den visuella världen på eget initiativ.
 
+## Avsteg för kunden
+
+_Tomt i mallen._ Fylls i när kundens varumärke kräver något som reglerna nedan avråder från, till exempel gradienter, ett eget displaytypsnitt eller kantiga hörn. Det som står här går före resten av filen.
+
 ## Overview
 
 Gränssnitten är till för att **få något gjort** (impeccables läge *Operate*): tydlighet och förutsägbara mönster går före uttryck. Varumärket syns i precisa detaljer: huvudfärgen på rätt ställen, ett välvalt typsnitt, mjuka skuggor och rörelse som känns fysisk. Kvalitetsribban är produkter som Linear, Airbnb och Stripe: generös luft, få men tydliga nivåer, inget brus.
