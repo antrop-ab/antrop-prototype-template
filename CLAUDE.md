@@ -119,7 +119,7 @@ Alla shadcn-komponenter finns redan i `components/ui/`, och AI Elements i `compo
 
 `app/sizing.css` gör alla kontroller **44 px höga med 16 px text**, utan att komponentfilerna ändras. Därför:
 
-- Använd komponenternas `size`-prop: `sm` (36), `default` (44), `lg` (52), `icon`, `icon-sm`, `icon-lg`. **Sätt inte egna höjder, bredder eller sidopadding** (`h-9`, `min-w-8`, `px-2`) på kontroller. De vinner inte över lagret, och det är meningen.
+- Använd komponenternas `size`-prop: `sm` (36, men 44 på telefon och pekskärm), `default` (44), `lg` (52), `icon`, `icon-sm`, `icon-lg`. **Sätt inte egna höjder, bredder eller sidopadding** (`h-9`, `min-w-8`, `px-2`) på kontroller. De vinner inte över lagret, och det är meningen.
 - Behövs en engångsavvikelse: important-varianten, till exempel `h-14!` eller `min-w-16!`.
 - Länkknappar (`variant="link"`) har ingen sidopadding, så de linjerar med texten runt dem.
 - Tätare yta för proffsverktyg på desktop: `data-density="compact"` på en förälder. Bara där användaren sitter vid en dator med mus.
