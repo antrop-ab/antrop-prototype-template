@@ -9,7 +9,8 @@
 //
 // Första gången skapas ett privat repo på GitHub (i organisationen i
 // mall.config.json om du är medlem) och ett projekt på Vercel.
-// Står du på en annan branch än main blir det en förhandsvisning med egen länk.
+// Står du på en branch som börjar med variant- eller preview- blir det en
+// förhandsvisning med egen länk. Andra grenar byggs inte (scripts/vercel-ignore-build.sh).
 
 import { readFileSync } from "node:fs";
 import { basename } from "node:path";
@@ -76,6 +77,12 @@ if (!slug) {
 say(`https://github.com/${slug}`);
 
 // 4. Vercel --------------------------------------------------------------------
+// Samma regel som scripts/vercel-ignore-build.sh: bara main, variant-* och preview-* byggs.
+if (!/^(main$|variant-|preview-)/.test(branch)) {
+  say(`\nGrenen ${branch} byggs inte på Vercel (det sparar byggkostnad).`);
+  say("Testa lokalt, och merga till main när det är klart. Behövs en egen länk: döp grenen till variant-… eller preview-….");
+  process.exit(0);
+}
 step("Publicerar på Vercel");
 if (!linkedProject()) {
   if (!exec("node", ["scripts/vercel-link.mjs"])) process.exit(2);

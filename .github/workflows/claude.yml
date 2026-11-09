@@ -1,6 +1,6 @@
 # Claude i GitHub: skriv @claude i ett ärende (issue) eller en pull request, så
-# gör Claude ändringen och öppnar en pull request. Vercel ger varje pull request
-# en egen förhandsvisningslänk.
+# gör Claude ändringen och öppnar en pull request. Grenen byggs inte på Vercel
+# (scripts/vercel-ignore-build.sh); ändringen syns på huvudlänken efter merge.
 #
 # Kräver en gång per repo (npm run github:claude guidar dig):
 #   1. Claudes GitHub-app: https://github.com/apps/claude
