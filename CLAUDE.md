@@ -65,7 +65,7 @@ git worktree add ../<prototyp>-<uppgift> -b <uppgift> origin/main
 cd ../<prototyp>-<uppgift> && npm ci
 ```
 
-Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `screenshots/`, som aldrig checkas in. Ta bort worktreen när branchen är mergad: `git worktree remove ../<prototyp>-<uppgift>`.
+Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `screenshots/`, som aldrig checkas in. Ta bort worktreen och grenen när branchen är mergad: `git worktree remove ../<prototyp>-<uppgift>` och `git push origin --delete <uppgift>`. En sådan gren byggs inte på Vercel (se "Byggen kostar"): testa lokalt i worktreen.
 
 ## Första gången på en ny dator (Mac)
 
@@ -202,12 +202,23 @@ Rör ändringen databasen, inloggningen eller ett API: kör också **`security-r
 När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör sedan `npm run ship -- "<vad som ändrats>"`. Skriptet kontrollerar koden, sparar (commit), laddar upp till GitHub (push) och väntar in Vercel. Första gången skapas ett privat repo i `antrop-ab` och ett projekt på Vercel. Ge Antroparen länken.
 
 - Förklara git med vardagsord: en *commit* är en sparpunkt, en *push* laddar upp. Föreslå en sparpunkt när något fungerar.
-- **Varianter:** skapa en branch (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte.
+- **Varianter:** skapa en branch vars namn börjar med `variant-` (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte. Andra grenar byggs inte (se "Byggen kostar").
 - **Förhandsvisningar kräver inloggning på Vercel, produktionslänken är öppen** (Vercels standardskydd). Ska kunden se en branch: granska koden och merga till `main` när Antroparen godkänt, så hamnar den på huvudlänken. Mer i `references/presenting.md`.
 - **Fastnar Vercels byggkö:** bygg på datorn och ladda upp bygget, `npx vercel@latest build --prod` och sedan `npx vercel@latest deploy --prebuilt --prod`.
 - **Är Antroparen inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren.
 - Kör aldrig `git push --force` och radera inga brancher utan att Antroparen uttryckligen bett om det.
 - **Miljövariabler** läggs på Vercel, aldrig i koden: `npx vercel@latest env add NAMN`, sedan `npm run env`. Integrationer från Vercel Marketplace (databas, auth, betalning) lägger in sina nycklar själva.
+
+### Byggen kostar: testa lokalt, publicera sällan
+
+Varje bygge på Vercel kostar pengar, och lagringen av varje gammal version också. En prototyp där Claude pushade varje liten ändring byggdes hundratals gånger i månaden. `vercel.json` kör därför `scripts/vercel-ignore-build.sh`, som bara bygger `main` och grenar som börjar med `variant-` eller `preview-`. Pushar till alla andra grenar (till exempel Claudes egna `claude/...`) byggs inte. Ta inte bort spärren.
+
+- **Testa lokalt tills det är klart:** `npm run typecheck`, `npm run build` vid behov, och klicka igenom i webbläsaren på localhost (eller `npm run screenshots`). Publicera först när Antroparen ska se eller dela resultatet, inte för att kolla en ändring.
+- **Prototyp utan riktiga användare:** arbeta direkt mot `main` och publicera när en omgång är klar. Ingen förhandsgren behövs.
+- **Prototyp i drift** (riktiga användare eller kund som testar): gör ändringen på en gren som börjar med `preview-` och merga till `main` när den är godkänd.
+- **Många ändringar efter varandra** (till exempel en lång lista med fynd): testa var och en lokalt och publicera en gång i slutet, inte efter varje.
+- **Ta bort grenen när den är mergad.** Gamla grenar och förhandslänkar behövs inte: allt finns i git-historiken.
+- **Lagringstid:** sätt kortaste möjliga lagringstid för gamla versioner under Settings → Security → Deployment Retention Policy på vercel.com (Antroparen gör det i webbläsaren, en gång per projekt).
 
 ### Konfidentialitet: viktigt
 
@@ -221,7 +232,7 @@ Föreslå alltid alternativet: påhittad exempeldata eller en generell beskrivni
 
 ## Claude i GitHub
 
-Med Claudes GitHub-app kan Antroparen (och kollegor) skriva `@claude` i ett ärende eller en pull request på GitHub, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request, och Vercel ger den en förhandsvisningslänk. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token och hemligheter skriver Antroparen själv i Terminal, aldrig i chatten.
+Med Claudes GitHub-app kan Antroparen (och kollegor) skriva `@claude` i ett ärende eller en pull request på GitHub, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request. Grenen byggs inte på Vercel (se "Byggen kostar"), så Antroparen ser ändringen på huvudlänken när pull requesten är mergad. Behövs en förhandslänk först: be Claude använda en gren som börjar med `preview-`. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token och hemligheter skriver Antroparen själv i Terminal, aldrig i chatten.
 
 ## Plugins och verktyg
 

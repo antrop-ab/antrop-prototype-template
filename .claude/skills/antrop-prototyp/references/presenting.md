@@ -2,7 +2,7 @@
 
 ## Länk att dela
 
-`npm run ship` ger en länk på Vercel. Huvudlänken (`<namn>.vercel.app`) uppdateras vid varje publicering från `main`. En branch ger en egen förhandsvisningslänk, bra för att visa varianter A och B.
+`npm run ship` ger en länk på Vercel. Huvudlänken (`<namn>.vercel.app`) uppdateras vid varje publicering från `main`. En branch vars namn börjar med `variant-` eller `preview-` ger en egen förhandsvisningslänk, bra för att visa varianter A och B. Andra grenar byggs inte, för att spara byggkostnad (`scripts/vercel-ignore-build.sh`).
 
 - Länken är öppen för den som har den, men indexeras inte av sökmotorer.
 - **Förhandsvisningar och produktion skyddas olika.** Med Vercels standardinställning (*Standard Protection*) kräver förhandsvisningar av brancher inloggning på Vercel, medan produktionslänken (`<namn>.vercel.app`) är öppen. Vill Antroparen ha en enkel länk till kunden: publicera från `main`. Ska ingenting vara öppet: Settings → Deployment Protection → *All Deployments* på vercel.com (lösenord kräver Vercels Pro-plan). Kontrollera med `curl -sI <länk>` att svaret är en omdirigering till inloggningen.
