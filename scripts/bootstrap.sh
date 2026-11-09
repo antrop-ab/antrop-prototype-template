@@ -140,6 +140,8 @@ else
       git ls-remote --exit-code "https://github.com/$ORG/$NAME.git" main >/dev/null 2>&1 && break
       sleep 2
     done
+    # Grenar tas bort automatiskt när en pull request mergas.
+    gh api -X PATCH "repos/$ORG/$NAME" -F delete_branch_on_merge=true --silent >/dev/null 2>&1 || true
   fi
   # init och fetch i stället för clone, så att det fungerar i en mapp som inte är helt tom.
   mkdir -p "$target"

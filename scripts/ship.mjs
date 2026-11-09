@@ -70,6 +70,8 @@ if (!slug) {
     process.exit(1);
   }
   slug = `${owner}/${name}`;
+  // Grenar tas bort automatiskt när en pull request mergas.
+  gh(["api", "-X", "PATCH", `repos/${slug}`, "-F", "delete_branch_on_merge=true", "--silent"]);
 } else if (!exec("git", ["push", "-u", "origin", branch])) {
   say("Uppladdningen misslyckades. Har någon annan pushat? Kör git pull och försök igen.");
   process.exit(1);
