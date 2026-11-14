@@ -17,24 +17,18 @@ Antroparen kan vara ny på terminal, git och npm. Därför ska du:
 
 ## Modell: Opus som standard
 
-Prototyper byggs som standard med **den senaste Opus-modellen** på sin vanliga effort-nivå (`medium`). `.claude/settings.json` väljer `opus`, ett alias som alltid pekar på den senaste versionen. I ett test där samma prototyp byggdes flera gånger (september 2026) gav Opus 5.5 tydligt bättre UX och UI än Sonnet 5.5, för ungefär dubbelt så stor förbrukning av kvoten. Sonnet 5.5 på effort `high` gav lika bra design men förbrukade mer än Opus.
+Prototyper byggs med **den senaste Opus-modellen** på effort `medium` (`.claude/settings.json` väljer aliaset `opus`). I ett test i september 2026 gav Opus 5.5 tydligt bättre UX och UI än Sonnet 5.5, för ungefär dubbelt så stor del av kvoten. Små, avgränsade ändringar (en text, en knapp, en färg) klarar Sonnet för halva kvoten: tipsa om det när kvoten tar slut. Höj inte effort-nivån för bättre design, det kostar mer än att byta till Opus.
 
-- **Nya vyer, flöden och större omtag:** Opus.
-- **Små, väl avgränsade ändringar** (en text, en knapp, en färg, en rad i en lista): Sonnet räcker och drar ungefär hälften så mycket av kvoten. Tipsa om det när Antroparen säger att kvoten tar slut, eller har Pro och gör många små ändringar.
-- **Höj inte effort-nivån** (`high`, `xhigh`) för att få bättre design. Det ger fler steg och kostar mer än att byta till Opus.
+**Kör du inte på Opus:** nämn det i en mening i första svaret och bygg vidare, utan att vänta på svar. **Frågar Antroparen om Opus är värt det:** svara kort med siffrorna och länka testet, där båda modellernas design syns sida vid sida: https://claude.ai/artifact/2johoTbNDTfzz2moQQMDKv
 
-**Kör du inte på Opus** (se din modell i systemprompten): nämn det i en mening i ditt första svar, till exempel att Opus ger bättre design för nya vyer men att du fortsätter på den valda modellen. Bygg sedan som vanligt. Stanna inte och vänta på svar: Antroparen kan ha valt modellen för att spara kvot.
-
-**Undrar Antroparen om Opus verkligen är värt det** (kostnaden, kvoten, Pro mot Max): svara kort med siffrorna ovan och ge länken till testet, där designerna från båda modellerna syns sida vid sida: https://claude.ai/artifact/2johoTbNDTfzz2moQQMDKv
-
-Det här gäller modellen som *bygger* prototypen. AI-funktionerna *i* prototypen väljer modell i `lib/ai.ts`.
+Det här gäller modellen som bygger. AI-funktionerna *i* prototypen väljer modell i `lib/ai.ts`.
 
 ## I början av varje session
 
 Hooken `scripts/session-start.mjs` skriver rader som börjar med `[Antrop-mall]`. Agera på dem innan du börjar på uppgiften. Annars:
 
-1. **Saknas `node_modules/`?** Kör `node --version` och `git --version`. Saknas något av dem: se "Första gången på en ny dator". Annars `npm run setup`.
-2. **Svarar MCP-servrarna?** Du ska ha `shadcn` och `next-devtools`, och via plugins `figma` och `vercel`. `mobbin` finns också men är valfri: saknas den, fortsätt utan. Verktygen kan vara *deferred*: sök med `ToolSearch` (till exempel `shadcn`) innan du drar slutsatsen att de saknas. Kräver en server inloggning ("requires authentication") kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
+1. **Saknas `node_modules/`?** Kör `npm run setup`. Saknas `node` eller `git`: se `references/ny-dator.md`.
+2. **Svarar MCP-servrarna?** `shadcn` och `next-devtools`, och via plugins `figma` och `vercel` (`mobbin` är valfri). De kan vara *deferred*: sök med `ToolSearch` innan du drar slutsatsen att de saknas. Kräver en server inloggning kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
 3. **Finns skills?** `.claude/skills/` ska ha `antrop-prototyp`, `shadcn`, `impeccable`, `emil-design-eng` med flera. Saknas de: `npm run update -- --skills`, sedan omstart.
 
 **Obligatoriskt stopp när omstart behövs.** Skills, MCP-servrar och plugins laddas bara när Claude startar i mallens mapp. Omstart behövs om du klonade prototypen i den här sessionen (du startades inte i dess mapp), eller om `npm run setup` avslutar med "starta en ny chatt" (skills saknades). Då: **bygg ingenting än.** Skriv ungefär:
@@ -67,31 +61,19 @@ git worktree add ../<prototyp>-<uppgift> -b <uppgift> origin/main
 cd ../<prototyp>-<uppgift> && npm ci
 ```
 
-Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `screenshots/`, som aldrig checkas in. Ta bort worktreen och grenen när branchen är mergad: `git worktree remove ../<prototyp>-<uppgift>` och `git push origin --delete <uppgift>`. En sådan gren byggs inte på Vercel (se "Byggen kostar"): testa lokalt i worktreen.
+Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `screenshots/`, som aldrig checkas in. Ta bort worktreen och grenen när branchen är mergad: `git worktree remove ../<prototyp>-<uppgift>` och `git push origin --delete <uppgift>`. En sådan gren byggs inte på Vercel (se "Publicera"): testa lokalt i worktreen.
 
 ## Första gången på en ny dator (Mac)
 
-`scripts/bootstrap.sh` tar datorn från tom till körbar prototyp: Homebrew (om Antroparen är administratör), git, Node, GitHub CLI, inloggning på GitHub, en ny prototyp från mallen, `npm run setup` och valfritt Vercel. Det kan köras om, klara steg hoppas över. Verktygen och inloggningen (Homebrew, git, Node, GitHub CLI, GitHub-inloggning) sköts av det gemensamma skriptet [antrop-setup](https://github.com/antrop-ab/antrop-setup), som bootstrap hämtar och kör först. Fel där rättas i antrop-setup, inte här.
-
-- **Enklast:** be Antroparen öppna *Terminal* och klistra in raden nedan. Då fungerar alla frågor och inloggningar.
-
-  ```bash
-  curl -fsSL https://raw.githubusercontent.com/antrop-ab/antrop-prototype-template/main/scripts/bootstrap.sh | bash
-  ```
-
-- **Kör du det själv** (Antroparen har öppnat en tom mapp i Claude-appen): lägg till `-s -- --here --no-vercel` efter `bash`. Kör i bakgrunden och läs utskriften. Vid GitHub-inloggningen skrivs en engångskod ut: ge den till Antroparen direkt. Homebrew och Vercel kräver ett Terminal-fönster och hoppas över.
-- **Prototypen ska ligga i ett repo som redan finns** (tomt, kanske på ett eget konto): stå i repots mapp och hämta mallen utan dess git-historik, sedan `npm run setup` och en första commit. `curl -fsSL https://github.com/antrop-ab/antrop-prototype-template/archive/refs/heads/main.tar.gz | tar xz --strip-components=1`. Bootstrap behövs inte då, men `npm run ship` utgår från `antrop-ab`: publicera med Vercels egen koppling till repot i stället.
-- Mallen är publik, men varje prototyp blir ett privat repo i `antrop-ab`. Antroparen behöver därför vara medlem i organisationen på GitHub. `npm run doctor` kollar det.
-- **Om `gh` säger att inloggningen misslyckats** fast Antroparen loggat in: en gammal `GH_TOKEN` i miljön går före. Kör `env -u GH_TOKEN -u GITHUB_TOKEN gh auth status`. Mallens skript tar bort den själva.
+Saknas git, Node eller själva prototypen: följ `.claude/skills/antrop-prototyp/references/ny-dator.md` (bootstrap-skriptet, att köra det själv, ett befintligt tomt repo och inloggningsproblem med `gh`). Varje prototyp blir ett privat repo i `antrop-ab`, så Antroparen behöver vara medlem där. `npm run doctor` kollar det.
 
 ## Innan du designar: underlag först
 
-Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser, eller ska jag utgå från en beskrivning?"**
+Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser, eller ska jag utgå från en beskrivning?"** Hur du läser Figma, hämtar referenser från Mobbin och bygger en design från Claude Design står i `references/underlag.md`.
 
-- **Figma:** be om länken (högerklick på framen, *Copy link to selection*). Läs med Figma-MCP:n: `get_design_context`, `get_screenshot` och `get_variable_defs`. Översätt lager till shadcn-komponenter, inte till handgjorda divar. Variabler för färg och typsnitt blir kundens tema (se "Kundens tema").
-- **Ingen Figma:** berätta att du planerar med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Problem*, *Users* och *Product Purpose* ifyllda, annars fråga (vilket är det jobbigaste ögonblicket i dag, vem, i vilken situation, vad ska hen få gjort). Kommer beställningen som en lösning ("synka kalendrar"): fråga efter problemet bakom innan konceptet formas. Kör `shape` före bygget och `critique` plus `audit` efter. Arbetsflödena är filer: läs `.claude/skills/impeccable/reference/<namn>.md`. Kör aldrig `bolder`, `colorize` eller `document` utan att Antroparen bett om det: de byter den visuella världen.
-- **Valfritt: referenser från Mobbin i konceptfasen.** Innan du formar ett nytt flöde eller en ny vy utan Figma: erbjud i en mening att hämta hur andra appar löst samma sak. Gör det bara om Antroparen vill, annars går du vidare till `shape`. Mobbin-MCP:n söker i skärmar och flöden från riktiga appar: `search_flows` för flöden i flera steg (onboarding, bokning, betalning), `search_screens` för en enskild vy (inställningar, profil, tomt läge) och `search_sections` för delar av webbsidor (prissättning, sidfot). Välj `platform` efter hur prototypen används: `ios` för mobil, `web` för desktop. Titta på bilderna, inte bara metadatan. Visa Antroparen 3–5 relevanta exempel som länkar (`mobbin_url`) med en mening om vad varje exempel gör bra, och vilka mönster du tänker använda. Kopiera mönster och struktur, aldrig någon annans varumärke, bilder eller texter. Bygget görs med shadcn och kundens tema. Svarar Mobbin att inloggning krävs: säg det i en mening och fortsätt utan referenser. Vid autonomt bygge: sök i Mobbin om du tror att det finns bra referenser där (vanliga flöden som onboarding, bokning, betalning, inställningar), en sökning per flöde. Välj själv och nämn kort vilka exempel du utgick från.
-- **Vill Antroparen utforska varianter först:** tipsa om `/design` (Claude Design), där idéer kan skissas och itereras visuellt innan de byggs här. Gäller det en enskild del (ett kort, en knapp, ett steg i flödet) i prototypen: tipsa om `/prototype`, som bygger 3–5 tydligt olika varianter med kundens tema och en väljare att bläddra mellan. Antroparen måste skriva kommandot själv. Får du en länk till en design från Claude Design: läs den med Artifact-verktyget (`read`) och bygg den med shadcn-komponenter.
+- **Ingen Figma:** planera med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Problem*, *Users* och *Product Purpose* ifyllda, annars fråga (vilket är det jobbigaste ögonblicket i dag, vem, i vilken situation, vad ska hen få gjort). Kommer beställningen som en lösning ("synka kalendrar"): fråga efter problemet bakom innan konceptet formas. Kör `shape` före bygget och `critique` plus `audit` efter. Arbetsflödena är filer i `.claude/skills/impeccable/reference/`. Kör aldrig `bolder`, `colorize` eller `document` utan att Antroparen bett om det: de byter den visuella världen.
+- **Referenser (valfritt):** innan ett nytt flöde formas utan Figma, erbjud i en mening att visa hur andra appar löst samma sak (Mobbin). Vid autonomt bygge: sök själv när flödet är vanligt (onboarding, bokning, betalning).
+- **Varianter:** vill Antroparen se flera riktningar, tipsa om `/design` (Claude Design) eller `/prototype` (3–5 varianter av en del, med en väljare). Antroparen skriver kommandot själv.
 - **Autonomt bygge** (Antroparen har bett dig bygga och granska utan att vänta): `shape` blir en plan på högst fem punkter, bygg direkt, kör `critique` och åtgärda utan de riktade frågorna. Välj det rimligaste och skriv designbesluten som antaganden överst i rapporten, så att Antroparen kan säga emot innan mer byggs ovanpå. Autonomi passar rättningar och finputs. Ett helt nytt flöde blir bättre om Antroparen hinner se skissen först (se nästa avsnitt): föreslå det när fullmakten kommer.
 
 ## Visa innan du bygger
@@ -107,13 +89,10 @@ Ett **nytt flöde eller ett omtag** visas för Antroparen och får ett ja innan 
 Varje kundprojekt ska se ut som kunden. Gör det här **först** i en ny prototyp, innan första vyn byggs:
 
 1. Fråga efter kundens huvudfärg, typsnitt och logga, eller hämta dem ur Figma (`get_variable_defs`) eller kundens webbplats (öppna den i webbläsaren och läs färger och typsnitt ur CSS:en).
-2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Namnet blir sidtitel och namn på hemskärmen, och ikonen följer färgen. Skriptet genererar ljust och mörkt läge, kollar kontrasten och justerar färgen om knapptexten blir oläslig. Det tar också fram fem diagramfärger som går att skilja åt för färgblinda. Berätta för Antroparen om den justerades (`--exact` behåller färgen). Har kunden ett eget mörkt läge: ange dess knappfärg med `--primary-dark "#hex"`.
-3. Kundens eget typsnitt som inte finns på Google Fonts: lägg filerna i `app/fonts/`, eller installera kundens npm-paket, och använd `next/font/local` i `app/fonts.ts` (se `references/theming.md`). Licensen gäller också den publicerade länken.
-4. Logga: lägg den i `public/` som SVG.
-5. Visa `/exempel/komponenter` i ljust och mörkt läge så att Antroparen kan godkänna temat.
-6. Kräver kundens varumärke något som `DESIGN.md` avråder från (gradienter, ett eget displaytypsnitt, kantiga hörn): skriv det under *Avsteg för kunden* överst i `DESIGN.md`. Då följer du och impeccable kunden i stället för mallens standard.
-
-Mer i skillen `antrop-prototyp`, `references/theming.md`.
+2. `npm run theme -- --primary "#hex" --name "Tjänstens namn" [--font "Namn"] [--radius 0.5] [--neutral warm]`. Skriptet gör ljust och mörkt läge, sidtitel, ikon och diagramfärger, och justerar huvudfärgen om knapptexten blir oläslig. Berätta för Antroparen om den justerades (`--exact` behåller den, `--primary-dark` anger kundens egen färg för mörkt läge).
+3. Typsnitt som inte finns på Google Fonts och loggan (SVG i `public/`): se `references/theming.md`. Typsnittets licens gäller också den publicerade länken.
+4. Visa `/exempel/komponenter` i ljust och mörkt läge så att Antroparen kan godkänna temat.
+5. Kräver kundens varumärke något som `DESIGN.md` avråder från (gradienter, ett eget displaytypsnitt, kantiga hörn): skriv det under *Avsteg för kunden* överst i `DESIGN.md`. Då följer du och impeccable kunden i stället för mallens standard.
 
 ## Så bygger du
 
@@ -137,24 +116,17 @@ Alla shadcn-komponenter finns redan i `components/ui/`, och AI Elements i `compo
 
 ### Designregler
 
-Läs `DESIGN.md`. Kortversionen:
+Läs `DESIGN.md` innan du bygger. Det som oftast går fel:
 
-- **Semantiska färger via temat:** `bg-background`, `text-muted-foreground`, `bg-primary`, `border-border`, `bg-primary-soft`. **Aldrig hårdkodade hex-värden** eller Tailwinds råa färger (`bg-blue-500`). Då fungerar kundens tema och mörkt läge automatiskt.
-- **Ljust och mörkt läge ska båda fungera.** Prototypen följer datorns inställning. Det finns ingen växlare i gränssnittet och ska inte heller läggas till. Testa med tangenten D.
-- **Luft, inte ramar.** Innehåll står på ytan och separeras med avstånd och rubriker. Kort (`Card`) bara när innehållet verkligen är ett objekt (ett projekt, en produkt), aldrig kort i kort.
-- **En tydlig huvudhandling per vy** (`Button`), sekundära som `variant="outline"`, `ghost` eller `link`.
-- **Ikoner från `lucide-react`, aldrig emojis** i gränssnittet.
-- **Mobil först.** Bygg för 375 px och skala upp. Sheet på desktop, `Drawer` på mobil för lager som öppnas nedifrån.
-- **Exempelinnehåll, inte platshållare.** En prototyp som visas för kund ska se färdig ut: trovärdiga påhittade texter i kundens ton, exempelpriser och foton (skapa dem med `antrop-bild` och skriv i alt-texten att det är en illustrativ AI-bild). Använd neutrala namnskyltar i stället för andras logotyper. Platshållare (`[Telefonnummer]`) bara för sådant som inte får hittas på, som kontaktuppgifter.
-- **Tillstånd:** tomt (`Empty`), laddar (`Skeleton`, `Spinner`), fel och lyckat (`sonner`-toast eller `Alert`). Påhittad data täcker minst ett undantagsfall. Skillen `break-ui` testar en färdig vy med värsta tänkbara data (långa namn, tomma listor, "1 medlemmar") bakom en växel och rapporterar vad som gick sönder.
+- **Semantiska färger via temat** (`bg-primary`, `text-muted-foreground`, `border-border`), aldrig hex-värden eller Tailwinds råa färger. Då fungerar kundens tema och mörkt läge.
+- **Ljust och mörkt läge** följer datorn. Ingen växlare i gränssnittet. Testa med tangenten D.
+- **Luft, inte ramar**, aldrig kort i kort. **En huvudhandling per vy.** Ikoner från `lucide-react`, aldrig emojis. **Mobil först** (375 px), `Drawer` på mobil och `Sheet` på desktop.
+- **Exempelinnehåll som ser färdigt ut:** trovärdiga påhittade texter, priser och foton (`antrop-bild`, med alt-text som säger att bilden är AI). Platshållare bara för sådant som inte får hittas på, som kontaktuppgifter.
+- **Tillstånd:** tomt, laddar, fel och lyckat, och minst ett undantagsfall i datan. Skillen `break-ui` testar en vy med värsta tänkbara data.
 
 ### Rörelse
 
-`app/motion.css` ger mikroanimationer (knappar som trycks ner, fokus som tonar in), sheets och drawers som glider in med iOS-kurvan, och vybyten som glider åt navigeringshållet. Använd:
-
-- `<Link transitionTypes={["nav-forward"]}>` djupare in i flödet och `["nav-back"]` tillbaka. Sidor i `PageShell` animeras då automatiskt.
-- `motion` (Motion for React) för egen rörelse: listor som sorteras om, siffror som räknas upp, delade element. Animera bara `transform` och `opacity`.
-- Skillen `emil-design-eng` för omdömet och `review-animations` för att granska. Mer i `references/motion.md`.
+`app/motion.css` ger mikroanimationer, lager som glider in och vybyten. Använd `<Link transitionTypes={["nav-forward"]}>` djupare in i flödet och `["nav-back"]` tillbaka. Egen rörelse med `motion`, bara `transform` och `opacity`. Mer i `references/motion.md` och skillen `emil-design-eng`.
 
 ### Ny sida: receptet
 
@@ -170,13 +142,7 @@ Läs `DESIGN.md`. Kortversionen:
 
 ### AI-funktioner
 
-Mallen är redo för AI: AI SDK, AI Elements (chatt, resonemang, källor, verktyg) och Vercel AI Gateway. Exempel: `app/exempel/chatt` och `app/api/chat/route.ts`.
-
-- **Utan Vercel-koppling** (tidigt i ett projekt): kolla `isGatewayConfigured()` från `lib/ai.ts` i routen och ge ett förutsägbart exempelsvar, tydligt märkt "Exempelsvar, AI är inte kopplad" i gränssnittet. Då går vyn att visa och skärmdumpa ändå. Se `references/ai-features.md`.
-- Modeller väljs i `lib/ai.ts` som `"leverantör/modell"`, till exempel `anthropic/claude-sonnet-5`. **Kolla att modellen finns** innan du byter: https://vercel.com/ai-gateway/models eller `curl -s https://ai-gateway.vercel.sh/v1/models`.
-- **Inga API-nycklar i koden eller i chatten.** På Vercel autentiseras AI Gateway automatiskt. Lokalt hämtar `npm run dev` en token från Vercel (`npm run env`). Är prototypen inte kopplad till Vercel än: `npm run vercel:link`.
-- Strukturerade svar (formulär som fylls i, förslag, klassning): `generateText` eller `streamText` med `output` och ett zod-schema. Läs `node_modules/ai/docs/` för aktuellt API, det ändras ofta.
-- Mer i `references/ai-features.md`.
+AI SDK, AI Elements och Vercel AI Gateway finns på plats (exempel: `app/exempel/chatt`, `app/api/chat/route.ts`). Läs `references/ai-features.md` innan du bygger. Det viktigaste: utan Vercel-koppling ger routen ett exempelsvar som är tydligt märkt i gränssnittet (`isGatewayConfigured()`), modeller väljs i `lib/ai.ts` och kollas mot https://vercel.com/ai-gateway/models, och inga nycklar skrivs i koden eller i chatten. Aktuellt API står i `node_modules/ai/docs/`.
 
 ### Next.js 16
 
@@ -193,8 +159,7 @@ Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboar
 ## Titta på resultatet
 
 - Starta med webbläsarverktyget: `preview_start` med `{ name: "dev" }` (läser `.claude/launch.json`, port 3000).
-- **Kommer servern inte igång** (status står kvar på "starting", localhost svarar inte): starta `npx next dev --port 3000` i bakgrunden och öppna sidan med `preview_start` och `{ url: "http://localhost:3000" }`.
-- **Vill Antroparen ha en bestämd port** (till exempel 3100, för att andra prototyper redan kör): ändra konfigurationen i `.claude/launch.json` till `"runtimeArgs": ["run", "dev", "--", "-p", "3100"]` och `"port": 3100`. Hittar `npm run screenshots` inte servern: lägg till `--url http://localhost:3100`.
+- **Kommer servern inte igång:** starta `npx next dev --port 3000` i bakgrunden och öppna `preview_start` med `{ url: "http://localhost:3000" }`. En annan port: ändra `runtimeArgs` och `port` i `.claude/launch.json`, och ge skripten `--url`.
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
@@ -218,26 +183,15 @@ Rör ändringen databasen, inloggningen eller ett API: kör också **`security-r
 
 ## Publicera: "bygg prototypen"
 
-När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör sedan `npm run ship -- "<vad som ändrats>"`. Skriptet kontrollerar koden, sparar (commit), laddar upp till GitHub (push) och väntar in Vercel. Första gången skapas ett privat repo i `antrop-ab` och ett projekt på Vercel. Ge Antroparen länken.
+När Antroparen säger *bygg*, *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör `npm run ship -- "<vad som ändrats>"`. Skriptet kontrollerar koden, sparar (commit), laddar upp (push) och väntar in Vercel. Första gången skapas ett privat repo i `antrop-ab` och ett projekt på Vercel. Ge Antroparen länken.
 
 - Förklara git med vardagsord: en *commit* är en sparpunkt, en *push* laddar upp. Föreslå en sparpunkt när något fungerar.
-- **Varianter:** skapa en branch vars namn börjar med `variant-` (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte. Andra grenar byggs inte (se "Byggen kostar").
-- **Förhandsvisningar kräver inloggning på Vercel, produktionslänken är öppen** (Vercels standardskydd). Ska kunden se en branch: granska koden och merga till `main` när Antroparen godkänt, så hamnar den på huvudlänken. Mer i `references/presenting.md`.
-- **Fastnar Vercels byggkö:** bygg på datorn och ladda upp bygget, `npx vercel@latest build --prod` och sedan `npx vercel@latest deploy --prebuilt --prod`.
-- **Är Antroparen inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren.
+- **Byggen kostar pengar.** Bara `main` och grenar som börjar med `variant-` eller `preview-` byggs på Vercel (`scripts/vercel-ignore-build.sh`, ta inte bort spärren). Testa lokalt tills en omgång är klar och publicera en gång i slutet, inte efter varje ändring.
+- **Grenar:** utan riktiga användare jobbar du mot `main`. Med riktiga användare eller kund som testar: ändra på en `preview-`-gren och merga när den är godkänd. En `variant-`-gren ger en egen länk för att jämföra. Föreslå att en gren tas bort när den är mergad.
+- **Förhandslänkar kräver inloggning på Vercel, produktionslänken är öppen.** Ska kunden se en ändring: merga till `main` när Antroparen godkänt. Skydd, byggkö och lagringstid: `references/presenting.md`.
+- **Är Antroparen inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal.
+- **Miljövariabler** läggs på Vercel, aldrig i koden: `npx vercel@latest env add NAMN`, sedan `npm run env`.
 - Kör aldrig `git push --force` och radera inga brancher utan att Antroparen uttryckligen bett om det.
-- **Miljövariabler** läggs på Vercel, aldrig i koden: `npx vercel@latest env add NAMN`, sedan `npm run env`. Integrationer från Vercel Marketplace (databas, auth, betalning) lägger in sina nycklar själva.
-
-### Byggen kostar: testa lokalt, publicera sällan
-
-Varje bygge på Vercel kostar pengar, och lagringen av varje gammal version också. En prototyp där Claude pushade varje liten ändring byggdes hundratals gånger i månaden. `vercel.json` kör därför `scripts/vercel-ignore-build.sh`, som bara bygger `main` och grenar som börjar med `variant-` eller `preview-`. Pushar till alla andra grenar (till exempel Claudes egna `claude/...`) byggs inte. Ta inte bort spärren.
-
-- **Testa lokalt tills det är klart:** `npm run typecheck`, `npm run build` vid behov, och klicka igenom i webbläsaren på localhost (eller `npm run screenshots`). Publicera först när Antroparen ska se eller dela resultatet, inte för att kolla en ändring.
-- **Prototyp utan riktiga användare:** arbeta direkt mot `main` och publicera när en omgång är klar. Ingen förhandsgren behövs.
-- **Prototyp i drift** (riktiga användare eller kund som testar): gör ändringen på en gren som börjar med `preview-` och merga till `main` när den är godkänd.
-- **Många ändringar efter varandra** (till exempel en lång lista med fynd): testa var och en lokalt och publicera en gång i slutet, inte efter varje.
-- **Ta bort grenen när den är mergad.** Gamla grenar och förhandslänkar behövs inte: allt finns i git-historiken.
-- **Lagringstid:** sätt kortaste möjliga lagringstid för gamla versioner under Settings → Security → Deployment Retention Policy på vercel.com (Antroparen gör det i webbläsaren, en gång per projekt).
 
 ### Konfidentialitet: viktigt
 
@@ -249,50 +203,21 @@ GitHub och Vercel ligger utanför kundens infrastruktur. **Stanna och fråga** i
 
 Föreslå alltid alternativet: påhittad exempeldata eller en generell beskrivning. Publicerade prototyper indexeras inte av sökmotorer, men länken är öppen för den som har den. Skydd med lösenord: Settings → Deployment Protection på vercel.com. Tumregel: *är du osäker, fråga.*
 
-## Claude i GitHub
-
-Med Claudes GitHub-app kan Antroparen (och kollegor) skriva `@claude` i ett ärende eller en pull request på GitHub, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request. Grenen byggs inte på Vercel (se "Byggen kostar"), så Antroparen ser ändringen på huvudlänken när pull requesten är mergad. Behövs en förhandslänk först: be Claude använda en gren som börjar med `preview-`. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token och hemligheter skriver Antroparen själv i Terminal, aldrig i chatten.
-
 ## Plugins och verktyg
 
-Förinställda i `.claude/settings.json`. Claude frågar om installationen första gången mappen öppnas.
+Förinställda i `.claude/settings.json`. De flesta nämns ovan där de används. Tipsa om resten när det passar, högst ett tips i taget:
 
-| Vad | Används till | Tips till Antroparen |
-|---|---|---|
-| **shadcn** (MCP + skill) | Hitta, förstå och lägga till komponenter och block | Alltid på |
-| **Figma** (plugin) | Läsa skisser, variabler och skärmdumpar. Kan också skriva till Figma | Så fort Figma nämns eller en figma.com-länk dyker upp |
-| **Vercel** (plugin) | Publicering, loggar, miljövariabler, AI Gateway, Marketplace | När något ska delas eller en deploy fallerar |
-| **next-devtools** (MCP) | Fel och varningar från den körande Next.js-servern | När sidan visar fel |
-| **Mobbin** (MCP) | Referenser: skärmar och flöden från riktiga appar och webbplatser | I konceptfasen av ett nytt flöde, eller "hur brukar andra göra det här?" |
-| **Neon** (plugin) | Databas: skapa projekt, köra SQL, schema, inloggning. MCP och Neons skills | När prototypen ska spara på riktigt, eller en dashboard ska visa riktig data |
-| **dataviz** (inbyggd skill) | Diagram, nyckeltal och färger som går att skilja åt för färgblinda | Varje gång ett diagram eller en dashboard byggs |
-| **code-review**, **security-review** (inbyggda skills) | Granskar koden och rättar fel | Efter varje större ändring och före publicering |
-| **Context7** (plugin) | Aktuell dokumentation för bibliotek | När du är osäker på ett API |
-| **antrop-toolbox** (plugin) | `avoid-ai-swedish` tar bort AI-ton ur svensk text, bildgenerering | Efter att du skrivit texter i gränssnittet |
-| **impeccable** (skill) | `shape`, `critique`, `audit`, `polish`, `layout`, `typeset`, `animate` | Ny vy utan Figma, eller granskning av en klar vy |
-| **Emil Kowalskis skills** | `emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype` | "Gör det här mer levande", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter" |
-| **Vercels skills** | `web-design-guidelines`, `vercel-react-view-transitions` | Granskning mot gränssnittsregler, vybyten |
-| **/design** (Claude Design) | Utforska och iterera visuella varianter innan bygget | När Antroparen vill se flera riktningar först |
-| **promo-video** (skill) | Showcase-video av prototypen med musik och ljud, som MP4 | När prototypen ska visas för kunden eller i en presentation |
-
-Föreslå vid behov, installera när Antroparen säger ja (`claude plugin install <namn>@claude-plugins-official`, laddas i nästa chatt):
-
-- **Atlassian** (Jira, Confluence), **Linear** eller **Notion** när ett ärende eller en sida nämns.
-- **Miro** när underlaget ligger på en Miro-tavla.
+- **Emil Kowalskis skills** (`emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype`): "gör det mer levande", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter".
+- **Vercels skills** (`web-design-guidelines`, `vercel-react-view-transitions`), **Context7** för aktuell dokumentation och **next-devtools** för fel från dev-servern.
+- **antrop-toolbox:** `avoid-ai-swedish` på svenska texter, `antrop-bild` för bilder. **promo-video** gör en showcase-video av prototypen.
+- **Claude i GitHub:** Antroparen och kollegor kan skriva `@claude` i ett ärende eller en pull request. Uppsättning och förhandslänkar: `references/presenting.md`.
+- **Föreslå vid behov**, installera när Antroparen säger ja (`claude plugin install <namn>@claude-plugins-official`, laddas i nästa chatt): Atlassian, Linear eller Notion när ett ärende eller en sida nämns, Miro när underlaget ligger på en tavla.
 
 Plugins som kräver inloggning öppnar en webbläsare. Antroparen loggar in själv. Be aldrig om lösenord eller tokens i chatten.
 
 ## Feedback till mallen
 
-Mallen förvaltas av Erik Markensten och blir bättre av att veta allt som skaver. **Skriv ned det i `feedback-till-mallen.md` så fort det händer**, under raden `<!-- nya punkter under den här raden -->`, nyaste överst. Skriv när:
-
-- ett skript, en MCP-server eller ett installationssteg inte fungerar som den här filen säger
-- en komponent eller ett skript beter sig annorlunda än dokumentationen
-- en instruktion här saknades, var fel eller krockade med en skill, och du fick gissa
-- du behövde en omväg eller byggde något som borde finnas i mallen
-- Antroparen blev osäker, fastnade eller fick göra något krångligt
-
-Format: `## ÅÅÅÅ-MM-DD: rubrik`, sedan *Vad hände*, *Så löstes det*, *Förslag till mallen*. Kort och konkret, med filnamn. **Inga kunduppgifter och inget konfidentiellt.**
+Mallen förvaltas av Erik Markensten och blir bättre av att veta allt som skaver. **Skriv ned det i `feedback-till-mallen.md` när det händer**, under raden `<!-- nya punkter under den här raden -->`, nyaste överst: ett skript eller en instruktion som inte stämmer, en omväg du behövde, något som borde finnas i mallen, eller att Antroparen fastnade. Format: `## ÅÅÅÅ-MM-DD: rubrik`, sedan *Vad hände*, *Så löstes det*, *Förslag till mallen*. Kort, med filnamn. **Inga kunduppgifter och inget konfidentiellt.**
 
 Påminn Antroparen första gången du skriver i filen och när ni avslutar: *"Jag har skrivit ned det som krånglade i feedback-till-mallen.md. Vill du att jag skickar det till mallens repo?"* Säger hen ja: visa först vad som skickas (`npm run feedback`) och skicka sedan med `npm run feedback -- --send`. Skicka aldrig utan ett ja.
 
@@ -318,35 +243,19 @@ Påminn Antroparen första gången du skriver i filen och när ni avslutar: *"Ja
 
 ## Projektstruktur
 
+Det som inte syns direkt:
+
 ```
-app/
-  layout.tsx              typsnitt, tema, TooltipProvider, Toaster
-  page.tsx                startsidan (ersätt med prototypens första vy)
-  globals.css             tema: färger per läge (mellan theme:start och theme:end), skuggor
-  sizing.css              44 px-lagret för kontroller
-  motion.css              rörelse: kurvor, mikroanimationer, lager, vybyten
-  fonts.ts                typsnitt (npm run theme -- --font)
-  manifest.ts             gör att prototypen kan läggas på hemskärmen
-  brand.ts                prototypens namn och huvudfärg (npm run theme -- --name)
-  icon.tsx, apple-icon.tsx  ikon i kundens färg, genereras från brand.ts
-  api/chat/route.ts       exempel på AI-anrop
-  exempel/                komponent- och AI-exempel (ta bort när de inte behövs)
-components/
-  ui/                     shadcn-komponenter (alla installerade)
-  ai-elements/            AI Elements
-  prototyp/page-shell.tsx sidskal: rubrik, ikon, stegrad, fast knappyta, vybyten
-  prototyp/step-progress.tsx  "Steg 2 av 5" för flöden
-hooks/use-mounted.ts      för innehåll som beror på klockan (se references/data.md)
-data/                     påhittad exempeldata
-db/                       databasens schema och exempeldata som SQL-filer (när prototypen har en databas)
-lib/ai.ts                 modellval för AI Gateway
-lib/format.ts             svenska format för datum, tid, pris och tal
-DESIGN.md                 visuella regler (läses av dig och impeccable)
-PRODUCT.md                vem prototypen är för och varför (fylls i per prototyp)
-mall.config.json          mallens inställningar: GitHub-organisation, Vercel-team, skills
-scripts/                  setup, update, theme, ship, feedback med flera
-scripts/video/            videomotor: tidslinje, rendering, musik och ljudeffekter
-video/promo/              färdig showcase-video, fylls i från STORY
-.claude/skills/antrop-prototyp/  mallens egen skill med referenser
-feedback-till-mallen.md   det som krånglat, skickas med npm run feedback
+app/globals.css           tema per läge (mellan theme:start och theme:end), skuggor
+app/sizing.css            44 px-lagret för kontroller
+app/motion.css            kurvor, mikroanimationer, lager, vybyten
+app/brand.ts              namn och huvudfärg (npm run theme); ikonerna genereras härifrån
+app/exempel/              exempel att ta bort när de inte behövs
+components/ui/            shadcn (ändra helst inte), ai-elements/ AI Elements
+components/prototyp/      PageShell och StepProgress
+data/, db/                påhittad data, och SQL-filer när prototypen har en databas
+lib/ai.ts, lib/format.ts  modellval, svenska format för datum, tid och pris
+scripts/lib/browser.mjs   startar Playwright (Chromium eller WebKit) i molnet och på Mac
+mall.config.json          GitHub-organisation, Vercel-team och skills
+.claude/skills/antrop-prototyp/  mallens skill med referenser
 ```

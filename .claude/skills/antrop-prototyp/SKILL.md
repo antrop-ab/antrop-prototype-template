@@ -19,31 +19,15 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 | Insiktsdashboards: nyckeltal, diagram, filter, citat, siffror som stämmer | [references/dashboards.md](references/dashboards.md) |
 | Visa prototypen: skärmdumpar, användartester, kunden | [references/presenting.md](references/presenting.md) |
 | Kontrollera i Safari på iPhone: simulatorn, WebKit, kända fällor | [references/ios-safari.md](references/ios-safari.md) |
+| Underlag: Figma, referenser från Mobbin, varianter och Claude Design | [references/underlag.md](references/underlag.md) |
+| Första gången på en ny dator, eller mallen i ett befintligt repo | [references/ny-dator.md](references/ny-dator.md) |
 
-## Arbetsgång för en ny vy
+## Arbetsgång och definition av klart
 
-1. **Underlag:** Figma-länk, beskrivning eller Claude Design. Fyll i `PRODUCT.md` om *Problem*, *Users* eller *Product Purpose* saknas.
-   - **Referenser (valfritt):** utan Figma, erbjud att söka hur andra appar löst samma flöde med Mobbin-MCP:n (`search_flows`, `search_screens`). Vill Antroparen det: visa 3–5 exempel som länkar. Vid autonomt bygge: sök själv om det troligen finns bra referenser. Se "Innan du designar" i `CLAUDE.md`.
-2. **Tema:** är kundens tema satt? (`npm run theme -- --show`). Om inte: gör det först.
-3. **Plan:** impeccables `shape` (med mönstren från eventuella referenser), eller högst fem punkter vid autonomt bygge. Välj shadcn-block om ett passar. Är flera personer inblandade: spela igenom loppet som var och en (se "Visa innan du bygger" i `CLAUDE.md`). Ett nytt flöde visas som skiss och får ett ja innan det byggs vidare.
-4. **Bygg** med `PageShell`, shadcn-komponenter, semantiska färger och påhittad data med undantagsfall. Kärnflödet först: databas, inloggning och externa tjänster kopplas in när flödet håller.
-5. **Texter:** skriv i kundens ton. Kör `avoid-ai-swedish` (antrop-toolbox) på längre svenska texter.
-6. **Rörelse:** `transitionTypes` på länkar, `Drawer` på mobil. Fråga `find-animation-opportunities` om något ska kännas mer levande.
-7. **Granska** i webbläsaren: mobil och desktop, ljust och mörkt, varje klick. Mobilprototyp: också i Safari på iPhone (`npm run ios-check`, `npm run screenshots -- --safari`). Kör impeccables `critique` och `audit`, åtgärda.
-8. **Kodgranskning:** kör `code-review` och åtgärda fynden. Rör ändringen databas, inloggning eller API: kör också `security-review`.
-9. **Publicera** med `npm run ship` när Antroparen vill dela.
+Står i `CLAUDE.md`, så att det bara finns på ett ställe: "Innan du designar", "Visa innan du bygger", "Ny sida: receptet" och "När något är klart". Utöver det gäller för en färdig vy:
 
-## Kvalitetsribba
-
-En vy är klar när allt nedan stämmer. Saknas något: skriv vad som inte är kontrollerat först i rapporten, till exempel *byggt, inte kontrollerat i Safari*.
-
-- den fungerar på 375 px och 1440 px, i ljust och mörkt läge
-- den är genomklickad på målplattformen, för en mobilprototyp i Safari på iPhone (simulatorn, WebKit eller Antroparens telefon, och rapporten säger vilket)
-- skärmbilderna ligger i chatten eller tråden, inte bara i en mapp
-- alla kontroller är minst 44 px och har synlig fokus
-- det finns en tydlig huvudhandling
+- den fungerar på 375 px och 1440 px, i ljust och mörkt läge, och mobilprototyper också i Safari på iPhone (`ios-safari.md`)
+- kontrollerna är minst 44 px och har synlig fokus, och det finns en tydlig huvudhandling
 - tomt, laddar och fel är hanterade där de kan uppstå
-- texterna är korta, konkreta och på kundens språk
+- texterna är korta, konkreta och i kundens ton (kör `avoid-ai-swedish` på längre svenska texter)
 - inga hårdkodade färger, inga emojis, inga kort i kort
-- `code-review` är körd och fynden åtgärdade
-- `npm run typecheck` går igenom

@@ -33,3 +33,12 @@ Vill Antroparen ha bilderna i Figma: Figma-pluginen kan skriva in dem, eller byg
 - **Inga återvändsgränder:** knappar som inte är byggda ska göra något rimligt (en toast "Finns inte i prototypen") hellre än ingenting.
 - **Scenarier:** behöver testet olika utgångslägen (ny kund, kund med skuld), lägg dem som `?scenario=ny` i adressen och läs med `useSearchParams`.
 - **Mät om det behövs:** `@vercel/analytics` ger sidvisningar och klick. Fråga först, och berätta för testpersonerna.
+
+## Publicering som krånglar
+
+- **Fastnar Vercels byggkö:** bygg på datorn och ladda upp bygget: `npx vercel@latest build --prod` och sedan `npx vercel@latest deploy --prebuilt --prod`.
+- **Lagringstid:** gamla versioner kostar lagring. Be Antroparen sätta kortaste möjliga tid under Settings → Security → Deployment Retention Policy på vercel.com, en gång per projekt.
+
+## Claude i GitHub
+
+Med Claudes GitHub-app kan Antroparen och kollegor skriva `@claude` i ett ärende eller en pull request på GitHub, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request. Grenen byggs inte på Vercel, så ändringen syns på huvudlänken när pull requesten är mergad. Behövs en förhandslänk först: be Claude använda en gren som börjar med `preview-`. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token och hemligheter skriver Antroparen själv i Terminal, aldrig i chatten.
