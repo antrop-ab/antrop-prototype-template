@@ -101,6 +101,7 @@ shadcn/ui i `components/ui/`, alla installerade. AI Elements i `components/ai-el
 - Skriv korta, konkreta texter i kundens ton (se skillen `antrop-prototyp`, `references/ux-writing.md`).
 - Visa verkliga lägen: tomt, laddar, fel, många och få poster.
 - Visa läget innan användaren trycker: "Fullt" eller "3 lediga" på dagar och val, med text och inte bara färg.
+- Förklara tomma och krympta resultat. När appen filtrerar på något användaren valt (hallar, tider, kategorier) ska det synas varför ett alternativ saknas, till exempel "16 nov saknas: ingen hall som alla valt har ledigt", och hur man ändrar valet.
 - Säg vad som saknas när huvudknappen inte går att använda, till exempel "Välj en tid för att boka" i `bottomBar`. En grå knapp utan förklaring får användaren att gissa.
 - Låt vågräta rader (dagar, chips) skrolla inom sidans marginaler eller brytas på flera rader. Inget ska sticka ut utanför kanten.
 - På desktop ska huvudhandlingen i ett flöde synas utan att man skrollar. Centrera inte bara mobilkolumnen när det finns plats bredvid.

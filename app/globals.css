@@ -167,7 +167,8 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans;
+    /* Bakgrunden också på html: Safari färgar verktygsfält och överskroll efter den. */
+    @apply bg-background font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;

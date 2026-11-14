@@ -80,3 +80,29 @@ AI Gateway debiterar per anrop på Vercel-teamets konto. Prototyper kostar oftas
 ## Egen nyckel i stället för AI Gateway
 
 Mallen går via AI Gateway och behöver ingen egen nyckel. Använder en prototyp ändå en egen Anthropic-nyckel: ge den ett annat namn än `ANTHROPIC_API_KEY` (till exempel `PROTOTYP_ANTHROPIC_KEY`) och läs det namnet i koden. Claude Code tömmer `ANTHROPIC_API_KEY` i sitt skal, särskilt i molnet, så tester av AI-funktionerna faller annars på en saknad nyckel.
+
+```bash
+npm install @ai-sdk/anthropic
+npx vercel@latest env add PROTOTYP_ANTHROPIC_KEY   # Antroparen klistrar in nyckeln själv
+npm run env
+```
+
+```ts
+// app/api/<namn>/route.ts
+import { createAnthropic } from "@ai-sdk/anthropic"
+import { generateText } from "ai"
+
+const key = process.env.PROTOTYP_ANTHROPIC_KEY
+const anthropic = key ? createAnthropic({ apiKey: key }) : null
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json()
+  if (!anthropic) {
+    return Response.json({ text: "Exempelsvar, AI är inte kopplad.", example: true })
+  }
+  const { text } = await generateText({ model: anthropic("claude-sonnet-5"), prompt, maxOutputTokens: 800 })
+  return Response.json({ text })
+}
+```
+
+Modellnamnet skrivs här utan `anthropic/` framför, till skillnad från AI Gateway. Kolla aktuella namn och API i `node_modules/@ai-sdk/anthropic/` och `node_modules/ai/docs/`. I molnet läses en ny miljövariabel in först i nästa tråd.

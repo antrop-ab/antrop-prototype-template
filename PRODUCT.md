@@ -2,6 +2,10 @@
 
 > Fylls i per prototyp. Claude fyller i de tomma fälten tillsammans med Antroparen första gången en vy byggs. Fälten som redan är ifyllda gäller alla prototyper från mallen. Läses av Claude och av designskillen impeccable.
 
+## Problem
+
+_Fylls i per prototyp._ Problemet i en mening, ur användarens synvinkel, och det jobbigaste ögonblicket i dag. Gärna med användarens egna ord. (Till exempel: "När en seriematch ställs in tar det en vecka av sms att hitta en ny tid som passar fyra personer och en ledig bana.") Kommer beställningen som en lösning, till exempel "synka kalendrarna", står problemet bakom här.
+
 ## Customer
 
 _Fylls i per prototyp._ Kundens namn, bransch och varumärke. Länk till webbplats, grafisk profil eller Figma-bibliotek.

@@ -19,6 +19,9 @@
 //   --both           både ljust och mörkt läge
 //   --full           hela sidan, inte bara det som syns i fönstret
 //   --motion         behåll rörelse (standard: reducerad rörelse, så att allt syns direkt)
+//   --safari         i WebKit, Safaris motor, som en iPhone (bilderna heter safari-...).
+//                    Hittar de flesta Safari-fel som Chrome döljer, men inte Safaris
+//                    verktygsfält eller tangentbord: se npm run ios-check.
 //
 // Med --url går det också att ta bilder av den publicerade prototypen, till exempel
 // när bilderna kommer från ett CMS som dev-servern inte når:
@@ -28,80 +31,34 @@
 // till exempel mobil-ljust-03-valj-tid.png. Bilder från tidigare körningar med
 // samma namn skrivs över, andra lämnas. Dev-servern måste vara igång.
 
-import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync } from "node:fs";
+import { mkdirSync } from "node:fs";
+import { findOwnDevServer, launchBrowser, slug } from "./lib/browser.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(`--${name}`);
 const urlIndex = argv.indexOf("--url");
 const base = (urlIndex >= 0 ? argv[urlIndex + 1] : findOwnDevServer()).replace(/\/$/, "");
-
-/**
- * Hittar dev-servern som startats från just den här mappen. Kör flera prototyper
- * samtidigt hamnar de på olika portar (3000, 3001 …), och då ska bilderna tas på rätt.
- */
-function findOwnDevServer() {
-  const fallback = "http://localhost:3000";
-  if (process.platform === "win32") return fallback;
-  try {
-    const listening = execFileSync("lsof", ["-nP", "-iTCP", "-sTCP:LISTEN", "-Fpn"], { encoding: "utf8" });
-    let pid = null;
-    for (const line of listening.split("\n")) {
-      if (line.startsWith("p")) pid = line.slice(1);
-      const port = line.startsWith("n") ? /:(3\d{3})$/.exec(line)?.[1] : null;
-      if (!port || !pid) continue;
-      const cwd = execFileSync("lsof", ["-a", "-p", pid, "-d", "cwd", "-Fn"], { encoding: "utf8" })
-        .split("\n")
-        .find((l) => l.startsWith("n"))
-        ?.slice(1);
-      if (cwd === process.cwd()) return `http://localhost:${port}`;
-    }
-  } catch {
-    // lsof saknas eller ger inget: använd standardporten.
-  }
-  return fallback;
-}
 const steps = argv.filter((a, i) => !a.startsWith("--") && !(urlIndex >= 0 && i === urlIndex + 1));
 
 if (steps.length === 0) {
-  console.log('Användning: npm run screenshots -- / "Knapptext" "Fältets etikett=text" "vänta:Text" [--desktop] [--dark|--both] [--full] [--url <adress>]');
+  console.log('Användning: npm run screenshots -- / "Knapptext" "Fältets etikett=text" "vänta:Text" [--desktop] [--dark|--both] [--full] [--safari] [--url <adress>]');
   process.exit(0);
 }
 
-const { chromium } = await import("playwright");
-
-// I Claudes molnmiljö finns Chromium förinstallerat här, ofta i en annan version
-// än mallens Playwright. Då används den i stället för att ladda ner en egen.
-const PREINSTALLED_CHROMIUM = "/opt/pw-browsers/chromium";
-
-async function launch() {
-  try {
-    return await chromium.launch();
-  } catch (error) {
-    if (existsSync(PREINSTALLED_CHROMIUM)) {
-      return chromium.launch({ executablePath: PREINSTALLED_CHROMIUM, args: ["--no-sandbox"] });
-    }
-    if (!String(error).includes("Executable doesn't exist")) throw error;
-    console.log("Laddar ner Chromium för skärmdumpar (bara första gången)...");
-    const result = spawnSync("npx", ["playwright", "install", "chromium"], {
-      stdio: "inherit",
-      shell: process.platform === "win32",
-    });
-    if (result.status !== 0) process.exit(1);
-    return chromium.launch();
-  }
+const safari = flag("safari");
+const { devices } = await import("playwright");
+// --safari: WebKit (Safaris motor) som en iPhone 13 mini, 375 px bred. Fönstret är
+// lägre än skärmen eftersom Safaris adressfält och verktygsfält tar plats.
+const iphone = { ...devices["iPhone 13 Mini"], deviceScaleFactor: 2 };
+delete iphone.defaultBrowserType;
+const viewports = [
+  safari
+    ? { name: "safari", options: iphone }
+    : { name: "mobil", options: { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2 } },
+];
+if (flag("desktop")) {
+  viewports.push({ name: safari ? "safari-desktop" : "desktop", options: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 } });
 }
-
-const viewports = [{ name: "mobil", width: 375, height: 812 }];
-if (flag("desktop")) viewports.push({ name: "desktop", width: 1440, height: 900 });
-
-const slug = (text) =>
-  text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") || "start";
 
 // Radioknappar, flikar och liknande: val av tjänst, tid eller dag är ofta RadioGroup,
 // ToggleGroup (role="radio") eller Tabs, inte knappar.
@@ -126,14 +83,16 @@ mkdirSync("screenshots", { recursive: true });
 const schemes = flag("both") ? ["light", "dark"] : [flag("dark") ? "dark" : "light"];
 const schemeName = { light: "ljust", dark: "morkt" };
 
-const browser = await launch();
+const browser = await launchBrowser(safari ? "webkit" : "chromium");
 let failed = false;
 try {
   for (const viewport of viewports) for (const scheme of schemes) {
     const context = await browser.newContext({
-      viewport: { width: viewport.width, height: viewport.height },
+      ...viewport.options,
       colorScheme: scheme,
-      deviceScaleFactor: 2,
+      // Som en svensk telefon: datumfält, veckodagar och tider visas på svenska.
+      locale: "sv-SE",
+      timezoneId: "Europe/Stockholm",
       // Utan rörelse syns allt direkt: element som tonar in vid scroll är annars
       // osynliga i helsidesbilder, och öppna lager hinner inte glida klart.
       reducedMotion: flag("motion") ? "no-preference" : "reduce",

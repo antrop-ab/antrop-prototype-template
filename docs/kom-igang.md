@@ -62,7 +62,7 @@ Säg *"publicera"*. Claude sparar, laddar upp till GitHub och publicerar på Ver
 
 ## Claude i GitHub (valfritt)
 
-Med Claudes GitHub-app kan du och kollegor skriva `@claude byt rubriken på startsidan` i ett ärende på GitHub, så gör Claude ändringen och Vercel ger en länk att titta på. Säg *"sätt upp Claude i GitHub"* så guidar Claude dig. En sak gör du själv i Terminal: klistrar in en token som bara ska synas för dig.
+Med Claudes GitHub-app kan du och kollegor skriva `@claude byt rubriken på startsidan` i ett ärende på GitHub, så gör Claude ändringen i en pull request som du kan titta på och godkänna. Säg *"sätt upp Claude i GitHub"* så guidar Claude dig. En sak gör du själv i Terminal: klistrar in en token som bara ska synas för dig.
 
 ## När något krånglar
 

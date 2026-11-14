@@ -2,6 +2,8 @@
 
 När prototypen ska spara på riktigt: flera användare, inloggning, data som finns kvar efter en omladdning, eller en dashboard med riktig data. Allt annat klarar sig med påhittad data i `data/` (se `data.md`).
 
+**Kärnflödet först.** Bygg och visa flödet med påhittad data innan databasen kopplas in. Allt som byggs innan flödet håller måste följa med i varje omtag.
+
 **Fråga Antroparen först** om riktig data ska in. Se "Konfidentialitet" i `CLAUDE.md`. Påminn om att prototypen inte är produktion.
 
 ## Varför Neon
@@ -26,12 +28,20 @@ Pluginen `neon-postgres@neon` är förinställd i `.claude/settings.json`. Den g
    ```
    Har du adressen från MCP:n: `printf '%s' "postgresql://..." | npm run db:connect`.
    Skriptet lägger `DATABASE_URL` på Vercel för produktion, förhandsvisning och lokalt, och hämtar den till `.env.local`. Vercel är källan: `npm run env` skriver över `.env.local`, så lägg aldrig adressen bara lokalt. Skriv den aldrig i koden, i en fil som checkas in eller i chatten till Antroparen.
-4. **Schema som filer.** Spara varje ändring som en numrerad SQL-fil i `db/` (`db/001-schema.sql`, `db/002-uppdrag-status.sql`) och kör den mot databasen. Då kan en kollega bygga upp samma databas, och ändringarna syns i git.
-5. **Exempeldata** i `db/seed.sql`: påhittad, trovärdig och med undantagsfall, enligt samma regler som `data/README.md`.
+4. **Schema som filer.** Spara varje ändring som en numrerad SQL-fil i `db/` (`db/001-schema.sql`, `db/002-uppdrag-status.sql`) och kör den mot databasen, med Neon-MCP:n eller `npm run db:migrate` (kräver `npm install @neondatabase/serverless`). Skriv filerna så att de går att köra om. Då kan en kollega bygga upp samma databas, och ändringarna syns i git.
+5. **Exempeldata** i `db/seed.sql` (`npm run db:migrate -- seed`): påhittad, trovärdig och med undantagsfall, enligt samma regler som `data/README.md`.
 
 ## I koden
 
 - Följ `neon-postgres` för drivrutin och anslutning. På Vercel rekommenderar Neon `pg` med `attachDatabasePool` från `@vercel/functions`.
+- **Port 5432 är ofta stängd** i Claudes molnmiljö, så `psql` och `pg` får "connection refused" där. Neons HTTP-drivrutin `@neondatabase/serverless` går över vanlig HTTPS och fungerar både i molnet och på Vercel. Den kör en fråga per anrop, vilket räcker för en prototyp:
+  ```ts
+  // lib/db.ts
+  import "server-only"
+  import { neon } from "@neondatabase/serverless"
+  export const sql = neon(process.env.DATABASE_URL!)
+  // const rows = await sql`select * from uppdrag where id = ${id}`
+  ```
 - Fråga databasen **bara på servern**: serverkomponenter, server actions eller route handlers. Aldrig i `"use client"`-filer, och aldrig `NEXT_PUBLIC_` före en databasvariabel.
 - Lägg frågorna i `lib/db.ts` eller `lib/queries/`, inte utspridda i sidorna.
 - Alla värden från användaren går in som parametrar (`$1`), aldrig ihopklistrade i SQL-strängen.
@@ -46,6 +56,18 @@ Använd Neon Auth (skillen `neon-auth`, Managed Better Auth). Testkonton med på
 När riktiga användare (eller kunden) har lagt in data i prototypen: arbeta mot en Neon-branch för utveckling (`dev`) och låt huvudbranchen vara produktion. Kör nya SQL-filer i `db/` mot `dev` först och mot produktion när de fungerar. Skapa en backup-branch innan en ändring körs mot produktion, och fråga Antroparen innan du skriver till produktion.
 
 **Saknas Neon-MCP:n och Neons skills** (pluginen installeras bara när Claude startas i mappen och någon godkänner den, och inte i molnet): skriv inte egna skript som kör SQL som ägare mot den enda branchen. Be Antroparen starta en ny chatt i mappen och godkänna pluginen, eller använd Neons CLI (`npx neonctl@latest`). Claudes molnmiljö når ofta inte `*.neon.tech`: då görs databasarbetet på Antroparens dator.
+
+## Testa flödet som flera personer
+
+Är flera personer inblandade i samma flöde (en bjuder in, andra svarar), räcker det inte att klicka som en. Skriv ett testskript i `scripts/`, till exempel `scripts/test-flode.mjs`, som spelar hela loppet:
+
+- En webbläsarkontext per person (`browser.newContext()`), så att var och en har egna cookies och egen lagring, som fyra olika telefoner. Starta webbläsaren med `launchBrowser()` från `scripts/lib/browser.mjs`.
+- Personerna turas om i den ordning det händer på riktigt: den första skapar och delar länken, de andra öppnar den, och den första ser svaren.
+- Ta med de sneda fallen från rollspelet (se "Visa innan du bygger" i `CLAUDE.md`): någon svarar inte, ingen tid passar.
+- Kör mot en egen Neon-branch för test (`test`), aldrig mot produktion, och nollställ den mellan körningarna (`reset_from_parent` i Neon-MCP:n).
+- Spara en skärmbild per person och steg, och visa de viktigaste i tråden.
+
+Testet ersätter inte att en människa provar, men hittar fel i samspelet innan Antroparen gör det.
 
 ## Ändringar som inte går att ångra
 
