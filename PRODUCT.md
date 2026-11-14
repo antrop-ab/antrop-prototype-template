@@ -4,7 +4,7 @@
 
 ## Problem
 
-_Fylls i per prototyp._ Problemet i en mening, ur användarens synvinkel, och det jobbigaste ögonblicket i dag. Gärna med användarens egna ord. (Till exempel: "När en seriematch ställs in tar det en vecka av sms att hitta en ny tid som passar fyra personer och en ledig bana.") Kommer beställningen som en lösning, till exempel "synka kalendrarna", står problemet bakom här.
+_Fylls i per prototyp._ Problemet i en mening, ur användarens synvinkel, och det jobbigaste ögonblicket i dag. Gärna med användarens egna ord. (Till exempel: "När ett möte med flera parter ställs in tar det en vecka av mejl att hitta en ny tid som passar alla.") Kommer beställningen som en lösning, till exempel "synka kalendrarna", står problemet bakom här.
 
 ## Customer
 

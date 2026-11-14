@@ -52,7 +52,7 @@ Kör guarden i `useEffect`, aldrig direkt under rendering, och testa hela flöde
 
 ## Data från en extern tjänst
 
-Hämtar prototypen data från en tjänst (en bokningsapp, en kalender, ett konto hos kunden): visa det som hämtats och låt användaren bekräfta innan det används ("Vi hittade lagen Smash och Lobbarna. Stämmer det?"). Inofficiella gränssnitt ger ofta fel id eller fel lag utan att något felmeddelande syns. Testa tidigt med ett riktigt konto som Antroparen loggar in med själv, inte bara med påhittad data, och spara inget av det i repot.
+Hämtar prototypen data från en tjänst (en bokningsapp, en kalender, ett konto hos kunden): visa det som hämtats och låt användaren bekräfta innan det används ("Vi hittade tre bokningar i din kalender. Stämmer det?"). Inofficiella gränssnitt ger ofta fel id eller fel poster utan att något felmeddelande syns. Testa tidigt med ett riktigt konto som Antroparen loggar in med själv, inte bara med påhittad data, och spara inget av det i repot.
 
 ## Spara på riktigt
 
