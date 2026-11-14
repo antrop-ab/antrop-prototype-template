@@ -10,7 +10,7 @@ De flesta prototyper testas av kunden och testpersonerna i Safari på en iPhone.
 | `npm run screenshots -- /boka "Välj tid" "Fortsätt" --safari` | Klickflödet i WebKit som en iPhone 13 mini | Verktygsfältet och tangentbordet |
 | Antroparens egen iPhone | Allt, också tangentbordet | — |
 
-- **Mobilprototyp:** kör `ios-check` på vyerna du ändrat, och `screenshots --safari` på flödet, innan du säger att något är klart. Lägg bilderna i tråden.
+- **Föreslå, kör vid ja.** Innan en mobilprototyp visas för kund eller testas: föreslå i en mening att kontrollera den i Safari, och säg varför (Safari visar fel som Chrome döljer). Kör `ios-check` på vyerna och `screenshots --safari` på flödet när Antroparen säger ja, och lägg bilderna i tråden. Säger hen nej: skriv i rapporten att Safari inte är kontrollerat.
 - **Xcode** finns bara om Antroparen har installerat det (15 GB från App Store). Be inte om det för en enskild prototyp: WebKit räcker för det mesta, och Antroparens iPhone tar resten.
 - **I molnet** finns ingen simulator. WebKit laddas ner automatiskt. Säg i rapporten att verktygsfältet och tangentbordet inte är kontrollerade.
 - **Telefonen:** `npm run dev` skriver ut en *Network*-adress som telefonen når i samma wifi, eller publicera och öppna länken.

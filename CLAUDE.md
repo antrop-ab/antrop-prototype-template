@@ -81,7 +81,7 @@ Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det F
 Ett **nytt flöde eller ett omtag** visas för Antroparen och får ett ja innan det byggs på riktigt. Små ändringar (en text, en knapp, en rättning) byggs direkt.
 
 - **Skissen är snabb, inte en spec:** en klickbar version med påhittad data och utan backend, eller 2–3 varianter att välja mellan (tipsa om `/prototype`). Lägg skärmbilderna i chatten.
-- **Flera personer i samma flöde** (en som bjuder in och andra som svarar, en som bokar och en som godkänner): spela igenom loppet som var och en innan skissen visas. En tabell med en rad per person: varifrån hen kommer (länk i sms, WhatsApp, mejl), vad hen vet när sidan öppnas, vad hen gör och ser, och vad som händer sedan. Lägg till minst två sneda fall: ingen tid passar, någon svarar inte, någon öppnar länken i en annan app. Visa tabellen med skissen. Tankefel i konceptet hittas här på tio minuter, och efter bygget kostar de ett omtag.
+- **Flera personer i samma flöde** (en som bjuder in och andra som svarar, en som bokar och en som godkänner): föreslå att spela igenom loppet som var och en innan skissen visas, och gör det vid ja. En tabell med en rad per person: varifrån hen kommer (länk i sms, WhatsApp, mejl), vad hen vet när sidan öppnas, vad hen gör och ser, och vad som händer sedan. Lägg till minst två sneda fall: ingen tid passar, någon svarar inte, någon öppnar länken i en annan app. Visa tabellen med skissen. Tankefel i konceptet hittas här på tio minuter, och efter bygget kostar de ett omtag: säg det när du föreslår det.
 - **Antroparen är inte alltid användaren.** Påminn om att låta en riktig användare prova skissen tidigt, tio minuter räcker.
 
 ## Kundens tema
@@ -163,14 +163,16 @@ Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboar
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
-- **Safari på iPhone** är där kunden och testpersonerna oftast öppnar prototypen, och Chrome i mobilstorlek döljer fel som stoppar flöden. Kör `npm run ios-check -- <adresser>` på vyerna du ändrat och `npm run screenshots -- <flöde> --safari` på flödet. Fällorna står i `references/ios-safari.md`.
+- **Safari på iPhone (föreslå, kör vid ja):** kunden och testpersonerna öppnar oftast prototypen i Safari, och Chrome i mobilstorlek döljer fel som kan stoppa ett flöde. Innan en mobilprototyp visas för kund eller testas: föreslå i en mening att kontrollera den med `npm run ios-check` (simulatorn eller WebKit) och `npm run screenshots -- <flöde> --safari`. Det tar några minuter. Kör när Antroparen säger ja. Fällorna, som du ska undvika ändå, står i `references/ios-safari.md`.
 - `npm run typecheck` ska gå igenom innan något publiceras. Det är mallens kvalitetsgrind, tester behövs inte för prototyper.
 
 ### När något är klart
 
-Skriv **klart** bara när allt det här är gjort: `npm run typecheck` går igenom, `code-review` är körd, varje klick är prövat på målplattformen (Safari på iPhone för en mobilprototyp, se ovan), och skärmbilderna ligger i chatten eller tråden, inte bara i en mapp.
+Skriv **klart** bara när det här är gjort: `npm run typecheck` går igenom, `code-review` är körd, varje klick är prövat i webbläsaren på mobil och desktop, och skärmbilderna ligger i chatten eller tråden, inte bara i en mapp.
 
-**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. Saknas något av punkterna ovan: skriv *byggt, inte kontrollerat i Safari* (eller vad som saknas) först, inte i en bisats längre ned. Det Antroparen läser först ska vara det hen behöver kolla själv.
+**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. Skriv till exempel *byggt och klickat i Chrome, inte kontrollerat i Safari* först, inte i en bisats längre ned. Det Antroparen läser först ska vara det hen behöver kolla själv eller be dig kontrollera.
+
+**Tunga kontroller är valbara.** Simulatorn, rollspel för flöden med flera personer och testskript som spelar flera användare kostar tid och kvot. Föreslå dem i en mening när det finns skäl (en mobilprototyp ska till kund, ett flöde där flera personer samspelar) och kör dem när Antroparen säger ja, inte på eget initiativ.
 
 ## Kodgranskning
 

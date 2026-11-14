@@ -59,7 +59,7 @@ När riktiga användare (eller kunden) har lagt in data i prototypen: arbeta mot
 
 ## Testa flödet som flera personer
 
-Är flera personer inblandade i samma flöde (en bjuder in, andra svarar), räcker det inte att klicka som en. Skriv ett testskript i `scripts/`, till exempel `scripts/test-flode.mjs`, som spelar hela loppet:
+Är flera personer inblandade i samma flöde (en bjuder in, andra svarar), räcker det inte att klicka som en. Det här är valbart och kostar tid: föreslå det när samspelet är kärnan i prototypen och bygg det när Antroparen säger ja. Skriv ett testskript i `scripts/`, till exempel `scripts/test-flode.mjs`, som spelar hela loppet:
 
 - En webbläsarkontext per person (`browser.newContext()`), så att var och en har egna cookies och egen lagring, som fyra olika telefoner. Starta webbläsaren med `launchBrowser()` från `scripts/lib/browser.mjs`.
 - Personerna turas om i den ordning det händer på riktigt: den första skapar och delar länken, de andra öppnar den, och den första ser svaren.

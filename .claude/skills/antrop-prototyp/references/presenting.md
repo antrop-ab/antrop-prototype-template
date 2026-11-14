@@ -12,7 +12,7 @@
 
 - Öppna länken på telefonen och välj *Lägg till på hemskärmen*. Prototypen öppnas då i helskärm utan webbläsarens adressfält (`app/manifest.ts`), som en riktig app. Bra i användartester.
 - Lokalt: `npm run dev` och öppna datorns adress i nätverket (Next skriver ut den som *Network*) på telefonen, i samma wifi.
-- **Innan Antroparen eller kunden öppnar den på en iPhone:** kör `npm run ios-check` och `npm run screenshots -- <flöde> --safari`. Safari visar fel som Chrome döljer (se `ios-safari.md`).
+- **Innan kunden öppnar den på en iPhone:** föreslå en kontroll med `npm run ios-check` och `npm run screenshots -- <flöde> --safari`. Safari visar fel som Chrome döljer (se `ios-safari.md`).
 
 ## Skärmdumpar till presentationer och rapporter
 
