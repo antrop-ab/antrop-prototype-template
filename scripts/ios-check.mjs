@@ -118,5 +118,9 @@ if (result.status === 0) {
   console.log("\nKontrollerat i: WebKit som iPhone (Safaris motor, inte riktig Safari).");
   console.log("INTE kontrollerat: Safaris verktygsfält och adressfält, tangentbordet. Säg det i rapporten,");
   console.log("eller be Antroparen öppna sidan på sin iPhone.");
+  if (process.platform === "darwin") {
+    console.log("Tips: Safari 27 och senare kan styras av Claude via sin inbyggda MCP-server, med riktig Safari och klick.");
+    console.log("Se .claude/skills/antrop-prototyp/references/ios-safari.md.");
+  }
 }
 process.exit(result.status ?? 1);
