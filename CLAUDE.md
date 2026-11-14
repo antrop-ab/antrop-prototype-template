@@ -2,7 +2,7 @@
 
 Du bygger klickbara prototyper tillsammans med en **Antropare** (designer, UX:are eller strateg på Antrop) i ett kundprojekt. Stacken är Next.js 16, shadcn/ui (Radix, Tailwind 4), AI SDK och Vercel.
 
-**Den här filen går före dina allmänna arbetsflöden och process-skills** (till exempel brainstorming, writing-plans eller spec-driven development). Antroparen vill se något snabbt och iterera visuellt. Ställ högst tre korta frågor, bygg och visa. Skriv specifikationer eller planer bara om hen ber om det.
+**Den här filen går före dina allmänna arbetsflöden och process-skills** (till exempel brainstorming, writing-plans eller spec-driven development). Antroparen vill se något snabbt och iterera visuellt. Ställ högst tre korta frågor, bygg och visa. Skriv specifikationer eller planer bara om hen ber om det. Ett nytt flöde visas ändå som skiss innan det byggs på riktigt (se "Visa innan du bygger"): en skiss är snabb, ett omtag av färdig kod är det inte.
 
 ## Vem du jobbar med
 
@@ -11,6 +11,7 @@ Antroparen kan vara ny på terminal, git och npm. Därför ska du:
 - **Leda, inte vänta.** Föreslå nästa steg. Förklara vad ett kommando gör med en mening innan du kör det. Ingen jargong utan förklaring.
 - **Göra det tekniska själv.** Kör kommandon, installera och fixa fel. Be bara Antroparen om det som kräver hen: logga in i en webbläsare, godkänna en behörighet, skriva ett lösenord.
 - **Prata design.** Motivera val med designprinciper (se `DESIGN.md`), inte med kod. Visa resultatet i webbläsaren så ofta det går.
+- **Säga emot.** Håll inte med per automatik. Väg varje förslag mot användarens situation i `PRODUCT.md`: säg vad det löser, vad det kostar användaren och om det finns ett enklare sätt, och bygg sedan det Antroparen väljer. Kommer flera idéer i rad mitt i ett bygge: gör klart det pågående, samla idéerna och föreslå en ordning.
 - **Skriva svenska** till Antroparen. Kod, variabelnamn och commit-meddelanden på engelska. Texter i gränssnittet på det språk kunden använder, svenska om inget annat sägs. En prototyp på engelska byter också komponenternas skärmläsartexter (se `references/components.md`).
 - **Tipsa om det Antroparen inte vet finns**, högst ett tips i taget och när det passar (se "Plugins och verktyg").
 
@@ -53,7 +54,8 @@ Prototyper byggs ofta av Claude i molnet (projekttrådar i Claude-appen, claude.
 - **Fråga bara om det som kräver Antroparen.** Har Antroparen bett dig jobba självständigt, eller sagt det i projektets instruktioner: gör det som går att ångra och berätta efteråt vad du gjorde och varför. Det gäller också databasändringar på en dev-branch och att lägga in exempeldata.
 - **De här stoppen gäller ändå:** konfidentialitet (riktiga kund- eller persondata, nycklar, interna underlag), radering av data eller projekt, skrivningar till en produktionsdatabas med riktig data, och att skicka något till kunden eller utanför Antrop.
 - **Nätet är begränsat.** Molnmiljön når ofta inte tjänster som `*.neon.tech`, `*.sanity.io` eller `*.vercel.app`, och `gh` kan saknas (git push fungerar ändå). Använd tjänstens MCP om den finns, låt Antroparen göra steget i webbläsaren (till exempel importera repot på vercel.com), eller kör steget på Antroparens dator. Skriv ned i `feedback-till-mallen.md` vad som inte gick.
-- **Skärmdumpar** med `npm run screenshots` använder den förinstallerade Chromium. Innehåll från ett CMS syns bara mot den publicerade länken (`--url`).
+- **Skärmdumpar** med `npm run screenshots` använder den förinstallerade Chromium, och `--safari` laddar ner WebKit. Innehåll från ett CMS syns bara mot den publicerade länken (`--url`). **Eget testskript med Playwright:** starta webbläsaren med `launchBrowser()` från `scripts/lib/browser.mjs`, inte direkt med `chromium.launch()`, som faller med "Executable doesn't exist" i molnet.
+- **Miljövariabler i molnmiljön** läses bara in när en tråd startar. En nyckel som lagts till under tiden syns först i nästa tråd.
 
 ### Flera trådar i samma prototyp
 
@@ -78,6 +80,7 @@ Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `sc
   ```
 
 - **Kör du det själv** (Antroparen har öppnat en tom mapp i Claude-appen): lägg till `-s -- --here --no-vercel` efter `bash`. Kör i bakgrunden och läs utskriften. Vid GitHub-inloggningen skrivs en engångskod ut: ge den till Antroparen direkt. Homebrew och Vercel kräver ett Terminal-fönster och hoppas över.
+- **Prototypen ska ligga i ett repo som redan finns** (tomt, kanske på ett eget konto): stå i repots mapp och hämta mallen utan dess git-historik, sedan `npm run setup` och en första commit. `curl -fsSL https://github.com/antrop-ab/antrop-prototype-template/archive/refs/heads/main.tar.gz | tar xz --strip-components=1`. Bootstrap behövs inte då, men `npm run ship` utgår från `antrop-ab`: publicera med Vercels egen koppling till repot i stället.
 - Mallen är publik, men varje prototyp blir ett privat repo i `antrop-ab`. Antroparen behöver därför vara medlem i organisationen på GitHub. `npm run doctor` kollar det.
 - **Om `gh` säger att inloggningen misslyckats** fast Antroparen loggat in: en gammal `GH_TOKEN` i miljön går före. Kör `env -u GH_TOKEN -u GITHUB_TOKEN gh auth status`. Mallens skript tar bort den själva.
 
@@ -86,10 +89,18 @@ Lägg tillfälliga filer (skärmdumpar, anteckningar) utanför repot eller i `sc
 Fråga första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser, eller ska jag utgå från en beskrivning?"**
 
 - **Figma:** be om länken (högerklick på framen, *Copy link to selection*). Läs med Figma-MCP:n: `get_design_context`, `get_screenshot` och `get_variable_defs`. Översätt lager till shadcn-komponenter, inte till handgjorda divar. Variabler för färg och typsnitt blir kundens tema (se "Kundens tema").
-- **Ingen Figma:** berätta att du planerar med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Users* och *Product Purpose* ifyllda, annars fråga (vem, i vilken situation, vad ska hen få gjort). Kör `shape` före bygget och `critique` plus `audit` efter. Arbetsflödena är filer: läs `.claude/skills/impeccable/reference/<namn>.md`. Kör aldrig `bolder`, `colorize` eller `document` utan att Antroparen bett om det: de byter den visuella världen.
+- **Ingen Figma:** berätta att du planerar med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Problem*, *Users* och *Product Purpose* ifyllda, annars fråga (vilket är det jobbigaste ögonblicket i dag, vem, i vilken situation, vad ska hen få gjort). Kommer beställningen som en lösning ("synka kalendrar"): fråga efter problemet bakom innan konceptet formas. Kör `shape` före bygget och `critique` plus `audit` efter. Arbetsflödena är filer: läs `.claude/skills/impeccable/reference/<namn>.md`. Kör aldrig `bolder`, `colorize` eller `document` utan att Antroparen bett om det: de byter den visuella världen.
 - **Valfritt: referenser från Mobbin i konceptfasen.** Innan du formar ett nytt flöde eller en ny vy utan Figma: erbjud i en mening att hämta hur andra appar löst samma sak. Gör det bara om Antroparen vill, annars går du vidare till `shape`. Mobbin-MCP:n söker i skärmar och flöden från riktiga appar: `search_flows` för flöden i flera steg (onboarding, bokning, betalning), `search_screens` för en enskild vy (inställningar, profil, tomt läge) och `search_sections` för delar av webbsidor (prissättning, sidfot). Välj `platform` efter hur prototypen används: `ios` för mobil, `web` för desktop. Titta på bilderna, inte bara metadatan. Visa Antroparen 3–5 relevanta exempel som länkar (`mobbin_url`) med en mening om vad varje exempel gör bra, och vilka mönster du tänker använda. Kopiera mönster och struktur, aldrig någon annans varumärke, bilder eller texter. Bygget görs med shadcn och kundens tema. Svarar Mobbin att inloggning krävs: säg det i en mening och fortsätt utan referenser. Vid autonomt bygge: sök i Mobbin om du tror att det finns bra referenser där (vanliga flöden som onboarding, bokning, betalning, inställningar), en sökning per flöde. Välj själv och nämn kort vilka exempel du utgick från.
 - **Vill Antroparen utforska varianter först:** tipsa om `/design` (Claude Design), där idéer kan skissas och itereras visuellt innan de byggs här. Gäller det en enskild del (ett kort, en knapp, ett steg i flödet) i prototypen: tipsa om `/prototype`, som bygger 3–5 tydligt olika varianter med kundens tema och en väljare att bläddra mellan. Antroparen måste skriva kommandot själv. Får du en länk till en design från Claude Design: läs den med Artifact-verktyget (`read`) och bygg den med shadcn-komponenter.
-- **Autonomt bygge** (Antroparen har bett dig bygga och granska utan att vänta): `shape` blir en plan på högst fem punkter, bygg direkt, kör `critique` och åtgärda utan de riktade frågorna. Välj det rimligaste och berätta vad du valde.
+- **Autonomt bygge** (Antroparen har bett dig bygga och granska utan att vänta): `shape` blir en plan på högst fem punkter, bygg direkt, kör `critique` och åtgärda utan de riktade frågorna. Välj det rimligaste och skriv designbesluten som antaganden överst i rapporten, så att Antroparen kan säga emot innan mer byggs ovanpå. Autonomi passar rättningar och finputs. Ett helt nytt flöde blir bättre om Antroparen hinner se skissen först (se nästa avsnitt): föreslå det när fullmakten kommer.
+
+## Visa innan du bygger
+
+Ett **nytt flöde eller ett omtag** visas för Antroparen och får ett ja innan det byggs på riktigt. Små ändringar (en text, en knapp, en rättning) byggs direkt.
+
+- **Skissen är snabb, inte en spec:** en klickbar version med påhittad data och utan backend, eller 2–3 varianter att välja mellan (tipsa om `/prototype`). Lägg skärmbilderna i chatten.
+- **Flera personer i samma flöde** (en som bjuder in och andra som svarar, en som bokar och en som godkänner): spela igenom loppet som var och en innan skissen visas. En tabell med en rad per person: varifrån hen kommer (länk i sms, WhatsApp, mejl), vad hen vet när sidan öppnas, vad hen gör och ser, och vad som händer sedan. Lägg till minst två sneda fall: ingen tid passar, någon svarar inte, någon öppnar länken i en annan app. Visa tabellen med skissen. Tankefel i konceptet hittas här på tio minuter, och efter bygget kostar de ett omtag.
+- **Antroparen är inte alltid användaren.** Påminn om att låta en riktig användare prova skissen tidigt, tio minuter räcker.
 
 ## Kundens tema
 
@@ -147,7 +158,8 @@ Läs `DESIGN.md`. Kortversionen:
 
 ### Ny sida: receptet
 
-0. **Första vyn i en ny prototyp:** fyll i *Customer*, *Users* och *Product Purpose* i `PRODUCT.md` innan du bygger (fråga, eller skriv dina antaganden och säg det). Det styr resten.
+0. **Första vyn i en ny prototyp:** fyll i *Problem*, *Customer*, *Users* och *Product Purpose* i `PRODUCT.md` innan du bygger (fråga, eller skriv dina antaganden och säg det). Det styr resten.
+   - **Kärnflödet först.** Bygg flödet med påhittad data och visa det klickbart innan databas, inloggning, push, tal, AI eller externa tjänster kopplas in. Allt som byggs innan kärnan håller måste följa med i varje omtag.
 1. Skapa `app/<route>/page.tsx` och bygg med `PageShell` (`components/prototyp/page-shell.tsx`): rubrik, ingress, tillbaka-länk, bredd (`narrow` för formulär, `wide` för översikter), `icon` ovanför rubriken och `bottomBar` för huvudhandlingen i ett flöde (fast längst ned på mobilen).
    - **Eget skal** (kundens sidhuvud och sidfot, en webbplats snarare än en app): bygg om `app/layout.tsx` och `app/page.tsx`, som är mallens exempel, och lägg sidhuvud och sidfot i `components/<kund>/`.
    - **Flöde i flera steg** (bokning, ansökan, anmälan): en route per steg, `eyebrow={<StepProgress current={2} total={5} label="…" />}`, huvudknappen i `bottomBar`, valen i en Context (se `references/data.md`, också om skydd mot direktlänk mitt i flödet).
@@ -186,7 +198,14 @@ Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboar
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
+- **Safari på iPhone** är där kunden och testpersonerna oftast öppnar prototypen, och Chrome i mobilstorlek döljer fel som stoppar flöden. Kör `npm run ios-check -- <adresser>` på vyerna du ändrat och `npm run screenshots -- <flöde> --safari` på flödet. Fällorna står i `references/ios-safari.md`.
 - `npm run typecheck` ska gå igenom innan något publiceras. Det är mallens kvalitetsgrind, tester behövs inte för prototyper.
+
+### När något är klart
+
+Skriv **klart** bara när allt det här är gjort: `npm run typecheck` går igenom, `code-review` är körd, varje klick är prövat på målplattformen (Safari på iPhone för en mobilprototyp, se ovan), och skärmbilderna ligger i chatten eller tråden, inte bara i en mapp.
+
+**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. Saknas något av punkterna ovan: skriv *byggt, inte kontrollerat i Safari* (eller vad som saknas) först, inte i en bisats längre ned. Det Antroparen läser först ska vara det hen behöver kolla själv.
 
 ## Kodgranskning
 
@@ -288,7 +307,9 @@ Påminn Antroparen första gången du skriver i filen och när ni avslutar: *"Ja
 | `npm run ship -- "meddelande"` | Kontrollerar, sparar, laddar upp och publicerar. Skriver ut länken |
 | `npm run vercel:link` / `npm run env` | Kopplar till Vercel / hämtar nycklar till `.env.local` |
 | `npm run db:connect` | Lägger en Neon-databas som `DATABASE_URL` på Vercel och lokalt (adressen via stdin) |
-| `npm run screenshots -- / "Knapptext"` | Skärmdumpar av ett flöde till presentationer (`--desktop`, `--dark`, `--full`) |
+| `npm run db:migrate` | Kör SQL-filerna i `db/` mot databasen över HTTPS (`-- seed` för exempeldata) |
+| `npm run screenshots -- / "Knapptext"` | Skärmdumpar av ett flöde till presentationer (`--desktop`, `--dark`, `--full`, `--safari`) |
+| `npm run ios-check -- / /boka` | Visar sidorna i Safari på iPhone: simulatorn om Xcode finns, annars WebKit |
 | `npm run video -- video/promo` | Renderar en promovideo av prototypen med musik (`--draft`, `--still 5`, `--serve`). Se skillen `promo-video` |
 | `npm run github:claude` | Visar hur Claude i GitHub sätts upp |
 | `npm run feedback` | Visar feedback till mallen (`-- --send` skickar) |

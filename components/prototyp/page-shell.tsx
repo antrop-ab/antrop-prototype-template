@@ -104,7 +104,9 @@ export function PageShell({
           <>
             {/* Plats så att innehållet inte hamnar bakom knappytan på mobilen. */}
             <div aria-hidden className="h-24 sm:hidden" />
-            <div data-bottom-bar className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+            {/* Helt ogenomskinlig: Safari på iPhone färgar sitt verktygsfält efter den
+                fasta ytan längst ned, och en halvgenomskinlig yta ger fel färg. */}
+            <div data-bottom-bar className="fixed inset-x-0 bottom-0 z-20 border-t bg-background px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0">
               <div className="mx-auto flex max-w-xl flex-col gap-2 sm:max-w-none sm:flex-row sm:items-center">
                 {bottomBar}
               </div>

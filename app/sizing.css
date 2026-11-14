@@ -144,6 +144,23 @@
     padding: 0.625rem 0.875rem;
     font-size: var(--control-font);
   }
+  /*
+   * Datum- och tidsfält i Safari på iPhone: utan det här ritar Safari sin egen
+   * kontroll, som ignorerar höjden, centrerar texten och kan bli bredare än skärmen.
+   * Syns inte i Chrome. Se references/ios-safari.md.
+   */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  input[type="month"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    max-width: 100%;
+  }
+  input::-webkit-date-and-time-value {
+    text-align: start;
+  }
   [data-slot="input-otp-slot"][data-slot="input-otp-slot"] {
     width: var(--control-h);
     height: var(--control-h);

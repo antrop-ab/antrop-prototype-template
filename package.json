@@ -19,10 +19,12 @@
     "env": "node scripts/env.mjs",
     "vercel:link": "node scripts/vercel-link.mjs",
     "db:connect": "node scripts/db-connect.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
     "ship": "node scripts/ship.mjs",
     "feedback": "node scripts/feedback.mjs",
     "github:claude": "node scripts/github-claude.mjs",
     "screenshots": "node scripts/screenshots.mjs",
+    "ios-check": "node scripts/ios-check.mjs",
     "video": "node scripts/video/render.mjs"
   },
   "dependencies": {

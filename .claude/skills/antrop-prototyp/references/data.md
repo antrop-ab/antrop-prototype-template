@@ -50,6 +50,10 @@ Kör guarden i `useEffect`, aldrig direkt under rendering, och testa hela flöde
 
 **Ska det överleva en omladdning** (till exempel ett flöde över flera dagar i en dagboksstudie): spara i `localStorage` med en egen hook. Lägg till en dold återställning (till exempel `?reset` i adressen) så att nästa testperson börjar om.
 
+## Data från en extern tjänst
+
+Hämtar prototypen data från en tjänst (en bokningsapp, en kalender, ett konto hos kunden): visa det som hämtats och låt användaren bekräfta innan det används ("Vi hittade lagen Smash och Lobbarna. Stämmer det?"). Inofficiella gränssnitt ger ofta fel id eller fel lag utan att något felmeddelande syns. Testa tidigt med ett riktigt konto som Antroparen loggar in med själv, inte bara med påhittad data, och spara inget av det i repot.
+
 ## Spara på riktigt
 
 Behövs riktig lagring (flera användare, data som ska finnas kvar): fråga Antroparen först. Rekommendation:
