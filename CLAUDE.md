@@ -28,7 +28,7 @@ Det här gäller modellen som bygger. AI-funktionerna *i* prototypen väljer mod
 Hooken `scripts/session-start.mjs` skriver rader som börjar med `[Antrop-mall]`. Agera på dem innan du börjar på uppgiften. Annars:
 
 1. **Saknas `node_modules/`?** Kör `npm run setup`. Saknas `node` eller `git`: se `references/ny-dator.md`.
-2. **Svarar MCP-servrarna?** `shadcn` och `next-devtools`, och via plugins `figma` och `vercel` (`mobbin` är valfri). De kan vara *deferred*: sök med `ToolSearch` innan du drar slutsatsen att de saknas. Kräver en server inloggning kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
+2. **Svarar MCP-servrarna?** `shadcn`, `next-devtools` och `vercel`, och via plugin `figma` (`mobbin` är valfri). De kan vara *deferred*: sök med `ToolSearch` innan du drar slutsatsen att de saknas. Kräver en server inloggning kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
 3. **Finns skills?** `.claude/skills/` ska ha `antrop-prototyp`, `shadcn`, `impeccable`, `emil-design-eng` med flera. Saknas de: `npm run update -- --skills`, sedan omstart.
 
 **Obligatoriskt stopp när omstart behövs.** Skills, MCP-servrar och plugins laddas bara när Claude startar i mallens mapp. Omstart behövs om du klonade prototypen i den här sessionen (du startades inte i dess mapp), eller om `npm run setup` avslutar med "starta en ny chatt" (skills saknades). Då: **bygg ingenting än.** Skriv ungefär:
@@ -218,7 +218,8 @@ Föreslå alltid alternativet: påhittad exempeldata eller en generell beskrivni
 
 Förinställda i `.claude/settings.json`. De flesta nämns ovan där de används. Tipsa om resten när det passar, högst ett tips i taget:
 
-- **Emil Kowalskis skills** (`emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype`): "gör det mer levande", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter".
+- **Emil Kowalskis skills** (`emil-design-eng`, `animate`, `gestures`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype`): "gör det mer levande", "animera den här", "ska gå att svepa bort", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter".
+- **`/learn-taste`** gör Antroparens designrättningar till regler i `DESIGN.md`, så att nästa chatt inte upprepar misstaget. Föreslå den i slutet av en session där Antroparen rättat designen flera gånger. Antroparen skriver kommandot själv.
 - **Vercels skills** (`web-design-guidelines`, `vercel-react-view-transitions`), **Context7** för aktuell dokumentation och **next-devtools** för fel från dev-servern.
 - **antrop-toolbox:** `avoid-ai-swedish` på svenska texter, `antrop-bild` för bilder. **promo-video** gör en showcase-video av prototypen.
 - **Claude i GitHub:** Antroparen och kollegor kan skriva `@claude` i ett ärende eller en pull request. Uppsättning och förhandslänkar: `references/presenting.md`.

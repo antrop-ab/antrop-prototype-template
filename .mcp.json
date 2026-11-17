@@ -11,6 +11,10 @@
     "mobbin": {
       "type": "http",
       "url": "https://api.mobbin.com/mcp"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
     }
   }
 }
