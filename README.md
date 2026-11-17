@@ -87,7 +87,7 @@ Fler i [CLAUDE.md](CLAUDE.md).
 | **Storlekar** | Kontroller 44 px och 16 px text som standard (`app/sizing.css`), tät variant för proffsverktyg |
 | **Rörelse** | Knapptryck, sheets och drawers med iOS-kurva, vybyten åt navigeringshållet, Motion for React (`app/motion.css`) |
 | **AI** | AI SDK, AI Elements, Vercel AI Gateway (Claude, GPT, Gemini med flera) |
-| **MCP-servrar** | shadcn, Next.js devtools, Mobbin (valfri). Via plugins: Figma, Vercel, Context7 |
+| **MCP-servrar** | shadcn, Next.js devtools, Vercel, Mobbin (valfri). Via plugins: Figma, Context7 |
 | **Skills** | antrop-prototyp (mallens egen), shadcn, impeccable, Emil Kowalskis skills för rörelse, gester och mobil, Vercels gränssnittsregler och vybyten, avoid-ai-swedish |
 | **Publicering** | GitHub (privat repo i antrop-ab) och Vercel. Claude i GitHub via `@claude` |
 | **Telefon** | Kan läggas på hemskärmen och öppnas i helskärm, bra i användartester |

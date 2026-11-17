@@ -6,7 +6,7 @@
 
 - Länken är öppen för den som har den, men indexeras inte av sökmotorer.
 - **Förhandsvisningar och produktion skyddas olika.** Med Vercels standardinställning (*Standard Protection*) kräver förhandsvisningar av brancher inloggning på Vercel, medan produktionslänken (`<namn>.vercel.app`) är öppen. Vill Antroparen ha en enkel länk till kunden: publicera från `main`. Ska ingenting vara öppet: Settings → Deployment Protection → *All Deployments* på vercel.com (lösenord kräver Vercels Pro-plan). Kontrollera med `curl -sI <länk>` att svaret är en omdirigering till inloggningen.
-- **Kommentarer från kunden:** Vercels verktygsrad på förhandsvisningar låter inloggade kommentera direkt på sidan. Kommentarerna syns på vercel.com och kan läsas av Claude via Vercel-pluginen.
+- **Kommentarer från kunden:** Vercels verktygsrad på förhandsvisningar låter inloggade kommentera direkt på sidan. Kommentarerna syns på vercel.com och kan läsas av Claude via Vercel-MCP:n.
 
 ## På telefonen
 

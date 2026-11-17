@@ -28,7 +28,7 @@ Det här gäller modellen som bygger. AI-funktionerna *i* prototypen väljer mod
 Hooken `scripts/session-start.mjs` skriver rader som börjar med `[Antrop-mall]`. Agera på dem innan du börjar på uppgiften. Annars:
 
 1. **Saknas `node_modules/`?** Kör `npm run setup`. Saknas `node` eller `git`: se `references/ny-dator.md`.
-2. **Svarar MCP-servrarna?** `shadcn` och `next-devtools`, och via plugins `figma` och `vercel` (`mobbin` är valfri). De kan vara *deferred*: sök med `ToolSearch` innan du drar slutsatsen att de saknas. Kräver en server inloggning kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
+2. **Svarar MCP-servrarna?** `shadcn`, `next-devtools` och `vercel`, och via plugin `figma` (`mobbin` är valfri). De kan vara *deferred*: sök med `ToolSearch` innan du drar slutsatsen att de saknas. Kräver en server inloggning kan du inte logga in åt Antroparen: be hen göra det via kopplingarna i Claude-appen och starta en ny chatt.
 3. **Finns skills?** `.claude/skills/` ska ha `antrop-prototyp`, `shadcn`, `impeccable`, `emil-design-eng` med flera. Saknas de: `npm run update -- --skills`, sedan omstart.
 
 **Obligatoriskt stopp när omstart behövs.** Skills, MCP-servrar och plugins laddas bara när Claude startar i mallens mapp. Omstart behövs om du klonade prototypen i den här sessionen (du startades inte i dess mapp), eller om `npm run setup` avslutar med "starta en ny chatt" (skills saknades). Då: **bygg ingenting än.** Skriv ungefär:
