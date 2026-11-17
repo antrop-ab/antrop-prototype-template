@@ -11,7 +11,7 @@ De flesta prototyper testas av kunden och testpersonerna i Safari på en iPhone.
 | Safari på datorn via MCP (se nedan) | Riktig Safari med samma motor som på iPhone, där du själv klickar, skriver, läser konsolen och tar skärmbilder i 375 px bredd | iPhones verktygsfält, tangentbord och säkra ytor |
 | Antroparens egen iPhone | Allt, också tangentbordet | — |
 
-- **Föreslå, kör vid ja.** Innan en mobilprototyp visas för kund eller testas: föreslå i en mening att kontrollera den i Safari, och säg varför (Safari visar fel som Chrome döljer). Kör `ios-check` på vyerna och `screenshots --safari` på flödet när Antroparen säger ja, och lägg bilderna i tråden. Säger hen nej: skriv i rapporten att Safari inte är kontrollerat.
+- **Föreslå, kör vid ja.** Innan en mobilprototyp visas för kund eller testas: föreslå i en mening att kontrollera den i Safari, och säg varför (Safari visar fel som Chrome döljer). Kör `npm run verify -- --full` när Antroparen säger ja (det kör flödena i WebKit och öppnar sidorna i simulatorn om Xcode finns), och lägg bilderna i tråden. Enstaka vyer eller flöden utanför `flows.json`: `ios-check` och `screenshots --safari`. Säger hen nej: skriv i rapporten att Safari inte är kontrollerat.
 - **Xcode** finns bara om Antroparen har installerat det (15 GB från App Store). Be inte om det för en enskild prototyp: WebKit räcker för det mesta, och Antroparens iPhone tar resten.
 - **I molnet** finns ingen simulator. WebKit laddas ner automatiskt. Säg i rapporten att verktygsfältet och tangentbordet inte är kontrollerade.
 - **Telefonen:** `npm run dev` skriver ut en *Network*-adress som telefonen når i samma wifi, eller publicera och öppna länken.

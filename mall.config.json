@@ -4,6 +4,8 @@
   "githubOwner": "antrop-ab",
   "vercelScope": null,
   "language": "sv",
+  "verify": "vardag",
+  "$verify": "Nivån för npm run verify: \"vardag\" (snabbt, Chromium mobil) eller \"skarp\" (alla format, lägen och Safari). Sätt skarp när prototypen närmar sig kund eller användartest.",
   "skills": [
     { "source": "https://github.com/shadcn/ui", "skill": "shadcn", "why": "shadcn:s egen skill: CLI, komponenter, formulärmönster, tema" },
     { "source": "https://github.com/pbakaus/impeccable", "why": "designprocess: shape före bygget, critique och audit efteråt" },

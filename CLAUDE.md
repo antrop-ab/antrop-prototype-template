@@ -138,7 +138,8 @@ Läs `DESIGN.md` innan du bygger. Det som oftast går fel:
 2. Texter direkt i komponenten är okej i en prototyp. Håll dem korta och i kundens ton (`references/ux-writing.md`). Datum, tider och priser med `lib/format.ts` (svenskt format).
 3. Påhittad data i `data/<område>.ts`, enligt `data/README.md`.
 4. Länka dit med `transitionTypes`.
-5. **Exemplen tas bort i den här ordningen:** låt Antroparen godkänna temat på `/exempel/komponenter` (skärmdumpar i ljust och mörkt), bygg de egna vyerna, och ta sedan bort `app/exempel/`, `app/api/chat/` (hör bara till chattexemplet) och startsidans exempellista.
+5. Lägg till flödet i `flows.json` och kör `npm run verify`.
+6. **Exemplen tas bort i den här ordningen:** låt Antroparen godkänna temat på `/exempel/komponenter` (skärmdumpar i ljust och mörkt), bygg de egna vyerna, och ta sedan bort `app/exempel/`, `app/api/chat/` (hör bara till chattexemplet), startsidans exempellista och exempelflödena i `flows.json`.
 
 ### AI-funktioner
 
@@ -163,16 +164,24 @@ Kundinsikter, enkätsvar och nyckeltal i kundens tema: läs `references/dashboar
 - **Klicka igenom varje interaktion** innan du säger att något är klart. Leta upp element med `find` eller `read_page` och klicka med `ref`.
 - Kolla **mobil 375×812 och desktop 1440×900**, i **ljust och mörkt läge** (tryck D). Sätt fönsterstorleken i början av varje omgång, den kan hoppa tillbaka.
 - **Skärmdumpar som filer** (till Antroparens presentationer, eller om du saknar webbläsarverktyg): `npm run screenshots`. Mer i `references/presenting.md`, också om användartester och att öppna prototypen på telefonen.
-- **Safari på iPhone (föreslå, kör vid ja):** kunden och testpersonerna öppnar oftast prototypen i Safari, och Chrome i mobilstorlek döljer fel som kan stoppa ett flöde. Innan en mobilprototyp visas för kund eller testas: föreslå i en mening att kontrollera den med `npm run ios-check` (simulatorn eller WebKit) och `npm run screenshots -- <flöde> --safari`. Syns ett fel bara i Safari: föreslå att styra Safari på datorn via dess inbyggda MCP-server, så att du kan klicka och läsa konsolen själv. Det tar några minuter. Kör när Antroparen säger ja. Fällorna, som du ska undvika ändå, står i `references/ios-safari.md`.
-- `npm run typecheck` ska gå igenom innan något publiceras. Det är mallens kvalitetsgrind, tester behövs inte för prototyper.
+- **Safari på iPhone:** kunden och testpersonerna öppnar oftast prototypen i Safari, och Chrome i mobilstorlek döljer fel som kan stoppa ett flöde. Den skarpa nivån nedan kör flödena i Safaris motor och iOS-simulatorn. Syns ett fel bara i Safari: föreslå att styra Safari på datorn via dess inbyggda MCP-server, så att du kan klicka och läsa konsolen själv. Fällorna, som du ska undvika ändå, står i `references/ios-safari.md`.
+
+### Kontroller: vardag och skarp nivå
+
+Kontrollerna ska inte göra vardagen trög, men skärpas när något närmar sig kund. Inga enhetstester behövs: `npm run verify` klickar sig igenom prototypen som en användare, med Playwright.
+
+- **Flödeskartan `flows.json`** listar kärnflödena, ett per sak användaren ska få gjort, med samma steg som `npm run screenshots` och `syns:Text` för det som ska synas när det lyckats. Lägg till flödet när du bygger det och ändra det när flödet ändras. Ändra aldrig ett flöde bara för att verify ska gå igenom: säg i så fall till Antroparen vad som ändrats i flödet och varför.
+- **Vardag, varje omgång:** `npm run typecheck`, `npm run verify` (kärnflödena i Chromium på mobil, några sekunder per flöde), kontrollerna i `references/kontroller.md` som ändringen utlöser och klick i webbläsaren på det du ändrat.
+- **Skarp nivå** när en omgång ska visas för kund, testas med användare eller delas utanför projektet, eller när Antroparen ber om hårdare tester: `npm run verify -- --full` (mobil och desktop, ljust och mörkt, Safaris motor som iPhone och iOS-simulatorn om Xcode finns, med en skärmdump av varje steg). Låt sedan en underagent som inte har byggt vyerna granska skärmdumparna mot `PRODUCT.md` och svara på vad en användare skulle fastna på. Föreslå skarp nivå i en mening när det finns skäl och kör den när Antroparen säger ja. Vill Antroparen ha skarp nivå hela tiden: sätt `"verify": "skarp"` i `mall.config.json`.
+- **Tre försök, sedan stopp.** Fallerar en kontroll fortfarande efter tre rättningar: sluta, och berätta för Antroparen med vardagsord vad som inte fungerar, vad du har provat och vad du föreslår. Lägg inte in väntetider, kör inte om tills den råkar gå igenom och hoppa inte över kontrollen. Kör om bara de flöden som fallerade (`npm run verify -- "Flödets namn"`) medan du rättar, och alla flöden en gång på slutet.
 
 ### När något är klart
 
-Skriv **klart** bara när det här är gjort: `npm run typecheck` går igenom, `code-review` är körd, varje klick är prövat i webbläsaren på mobil och desktop, och skärmbilderna ligger i chatten eller tråden, inte bara i en mapp.
+Skriv **klart** bara när det här är gjort: `npm run typecheck` och `npm run verify` går igenom, `code-review` är körd, varje klick är prövat i webbläsaren på mobil och desktop, och skärmbilderna ligger i chatten eller tråden, inte bara i en mapp.
 
-**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. Skriv till exempel *byggt och klickat i Chrome, inte kontrollerat i Safari* först, inte i en bisats längre ned. Det Antroparen läser först ska vara det hen behöver kolla själv eller be dig kontrollera.
+**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. `verify` skriver ut raderna *Kontrollerat i* och *INTE kontrollerat*: använd dem. Skriv till exempel *byggt och klickat i Chrome, inte kontrollerat i Safari* först, inte i en bisats längre ned. Det Antroparen läser först ska vara det hen behöver kolla själv eller be dig kontrollera.
 
-**Tunga kontroller är valbara.** Simulatorn, rollspel för flöden med flera personer och testskript som spelar flera användare kostar tid och kvot. Föreslå dem i en mening när det finns skäl (en mobilprototyp ska till kund, ett flöde där flera personer samspelar) och kör dem när Antroparen säger ja, inte på eget initiativ.
+**Tunga kontroller är valbara.** Den skarpa nivån, rollspel för flöden med flera personer och testskript som spelar flera användare kostar tid och kvot. Föreslå dem i en mening när det finns skäl (en mobilprototyp ska till kund, ett flöde där flera personer samspelar) och kör dem när Antroparen säger ja, inte på eget initiativ.
 
 ## Kodgranskning
 
@@ -231,11 +240,12 @@ Påminn Antroparen första gången du skriver i filen och när ni avslutar: *"Ja
 | `npm run dev` | Startar prototypen på localhost:3000 (hämtar AI-nycklar från Vercel vid behov) |
 | `npm run theme -- --primary "#hex"` | Byter till kundens tema (också `--font`, `--radius`, `--neutral`, `--show`, `--reset`) |
 | `npm run update` | Uppdaterar paket, komponenter och skills säkert (`--check` visar bara) |
-| `npm run ship -- "meddelande"` | Kontrollerar, sparar, laddar upp och publicerar. Skriver ut länken |
+| `npm run ship -- "meddelande"` | Kontrollerar koden och flödena, sparar, laddar upp och publicerar. Skriver ut länken |
 | `npm run vercel:link` / `npm run env` | Kopplar till Vercel / hämtar nycklar till `.env.local` |
 | `npm run db:connect` | Lägger en Neon-databas som `DATABASE_URL` på Vercel och lokalt (adressen via stdin) |
 | `npm run db:migrate` | Kör SQL-filerna i `db/` mot databasen över HTTPS (`-- seed` för exempeldata) |
 | `npm run screenshots -- / "Knapptext"` | Skärmdumpar av ett flöde till presentationer (`--desktop`, `--dark`, `--full`, `--safari`) |
+| `npm run verify` | Spelar upp kärnflödena i `flows.json` och säger vad som fungerar och vad som inte är kontrollerat (`--full` för skarp nivå) |
 | `npm run ios-check -- / /boka` | Visar sidorna i Safari på iPhone: simulatorn om Xcode finns, annars WebKit |
 | `npm run video -- video/promo` | Renderar en promovideo av prototypen med musik (`--draft`, `--still 5`, `--serve`). Se skillen `promo-video` |
 | `npm run github:claude` | Visar hur Claude i GitHub sätts upp |
@@ -258,6 +268,8 @@ components/prototyp/      PageShell och StepProgress
 data/, db/                påhittad data, och SQL-filer när prototypen har en databas
 lib/ai.ts, lib/format.ts  modellval, svenska format för datum, tid och pris
 scripts/lib/browser.mjs   startar Playwright (Chromium eller WebKit) i molnet och på Mac
+scripts/lib/flow.mjs      stegen i ett flöde, gemensamma för screenshots och verify
+flows.json                kärnflödena som npm run verify spelar upp
 mall.config.json          GitHub-organisation, Vercel-team och skills
 .claude/skills/antrop-prototyp/  mallens skill med referenser
 ```

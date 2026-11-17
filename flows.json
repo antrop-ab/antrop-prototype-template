@@ -1,0 +1,22 @@
+{
+  "$comment": "Prototypens kärnflöden, som npm run verify spelar upp. Ett flöde per sak en användare ska få gjort. Steg: \"/adress\", \"Knapptext\", \"Etikett=text\", \"vänta:Text\", \"syns:Text\", \"inte:Text\" (se scripts/lib/flow.mjs). Byt ut exemplen mot prototypens egna flöden när app/exempel/ tas bort.",
+  "flows": [
+    {
+      "name": "Startsidan till komponenterna",
+      "steps": [
+        "/",
+        "syns:Din prototyp är redo",
+        "Komponenter och tema",
+        "syns:Färger"
+      ]
+    },
+    {
+      "name": "Öppna ett lager",
+      "steps": [
+        "/exempel/komponenter",
+        "Öppna sheet",
+        "syns:Detaljer"
+      ]
+    }
+  ]
+}

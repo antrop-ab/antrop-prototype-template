@@ -21,6 +21,8 @@
 //   --both           både ljust och mörkt läge
 //   --wait <sek>     väntetid per sida i simulatorn (standard 4)
 //   --webkit         hoppa över simulatorn och använd WebKit direkt
+//   --simulator-only bara simulatorn: finns den inte avslutas skriptet med kod 3 utan
+//                    WebKit-bilder (npm run verify -- --full har redan kört WebKit)
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
@@ -99,12 +101,17 @@ async function withSimulator(device) {
 }
 
 const device = findIphone();
+if (!device && flag("simulator-only")) {
+  console.log("iOS-simulatorn finns inte här (kräver Xcode på en Mac). Riktig Safari på iPhone är INTE kontrollerad.");
+  process.exit(3);
+}
 if (device) {
   try {
     await withSimulator(device);
     process.exit(0);
   } catch (error) {
     console.error(`Simulatorn krånglade: ${String(error.stderr ?? error.message ?? error).split("\n")[0]}`);
+    if (flag("simulator-only")) process.exit(3);
     console.error("Tar bilderna med WebKit i stället.\n");
   }
 } else if (process.platform === "darwin" && !flag("webkit") && !process.env.CLAUDE_CODE_REMOTE) {

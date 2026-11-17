@@ -9,7 +9,8 @@
 // "Namn=Anna Andersson" skriver i fältet vars etikett är Namn. "vänta:Text"
 // väntar tills texten syns (till exempel ett AI-svar) innan bilden tas. Allt annat
 // är namnet på något att klicka på: en knapp, länk, radioknapp, kryssruta, flik eller
-// ett menyval (samma text som skärmläsaren läser upp).
+// ett menyval (samma text som skärmläsaren läser upp). Alla stegtyper: scripts/lib/flow.mjs.
+// Att kontrollera att flödena fungerar: npm run verify (flödena i flows.json).
 //
 //   npm run screenshots -- /boka/uppgifter "Namn=Anna Andersson" "Telefon=070-123 45 67" "Fortsätt"
 //
@@ -33,6 +34,7 @@
 
 import { mkdirSync } from "node:fs";
 import { findOwnDevServer, launchBrowser, slug } from "./lib/browser.mjs";
+import { newContext, runStep, schemeName, viewports } from "./lib/flow.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(`--${name}`);
@@ -46,83 +48,21 @@ if (steps.length === 0) {
 }
 
 const safari = flag("safari");
-const { devices } = await import("playwright");
-// --safari: WebKit (Safaris motor) som en iPhone 13 mini, 375 px bred. Fönstret är
-// lägre än skärmen eftersom Safaris adressfält och verktygsfält tar plats.
-const iphone = { ...devices["iPhone 13 Mini"], deviceScaleFactor: 2 };
-delete iphone.defaultBrowserType;
-const viewports = [
-  safari
-    ? { name: "safari", options: iphone }
-    : { name: "mobil", options: { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2 } },
-];
-if (flag("desktop")) {
-  viewports.push({ name: safari ? "safari-desktop" : "desktop", options: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 } });
-}
-
-// Radioknappar, flikar och liknande: val av tjänst, tid eller dag är ofta RadioGroup,
-// ToggleGroup (role="radio") eller Tabs, inte knappar.
-const clickableRoles = ["button", "link", "radio", "tab", "checkbox", "switch", "option", "menuitem"];
-
-async function click(page, name) {
-  const candidates = [
-    ...clickableRoles.map((role) => page.getByRole(role, { name, exact: true })),
-    ...clickableRoles.map((role) => page.getByRole(role, { name })),
-    page.getByText(name, { exact: true }),
-  ];
-  for (const locator of candidates) {
-    if ((await locator.count()) > 0) {
-      await locator.first().click();
-      return;
-    }
-  }
-  throw new Error(`Hittade inget att klicka på som heter "${name}".`);
-}
+const formats = [safari ? { name: "safari", viewport: viewports.iphone } : { name: "mobil", viewport: viewports.mobil }];
+if (flag("desktop")) formats.push({ name: safari ? "safari-desktop" : "desktop", viewport: viewports.desktop });
 
 mkdirSync("screenshots", { recursive: true });
 const schemes = flag("both") ? ["light", "dark"] : [flag("dark") ? "dark" : "light"];
-const schemeName = { light: "ljust", dark: "morkt" };
 
 const browser = await launchBrowser(safari ? "webkit" : "chromium");
 let failed = false;
 try {
-  for (const viewport of viewports) for (const scheme of schemes) {
-    const context = await browser.newContext({
-      ...viewport.options,
-      colorScheme: scheme,
-      // Som en svensk telefon: datumfält, veckodagar och tider visas på svenska.
-      locale: "sv-SE",
-      timezoneId: "Europe/Stockholm",
-      // Utan rörelse syns allt direkt: element som tonar in vid scroll är annars
-      // osynliga i helsidesbilder, och öppna lager hinner inte glida klart.
-      reducedMotion: flag("motion") ? "no-preference" : "reduce",
-    });
+  for (const format of formats) for (const scheme of schemes) {
+    const context = await newContext(browser, { viewport: format.viewport, scheme, motion: flag("motion") });
     const page = await context.newPage();
-    // Dölj Next.js utvecklarknapp ("N") så att den inte syns i bilderna.
-    await page.addInitScript(() => {
-      const hide = () => {
-        const style = document.createElement("style");
-        style.textContent = "nextjs-portal { display: none !important; }";
-        document.head?.appendChild(style);
-      };
-      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hide);
-      else hide();
-    });
     for (const [index, step] of steps.entries()) {
-      if (step.startsWith("/")) {
-        await page.goto(base + step, { waitUntil: "networkidle" });
-      } else if (step.startsWith("vänta:")) {
-        await page.getByText(step.slice(6).trim()).first().waitFor({ timeout: 60_000 });
-      } else if (step.includes("=")) {
-        const [label, ...rest] = step.split("=");
-        await page.getByLabel(label.trim(), { exact: true }).first().fill(rest.join("="));
-      } else {
-        await click(page, step);
-        await page.waitForLoadState("networkidle");
-      }
-      // Låt Sheets och andra lager animera klart.
-      await page.waitForTimeout(700);
-      const file = `screenshots/${viewport.name}-${schemeName[scheme]}-${String(index + 1).padStart(2, "0")}-${slug(step)}.png`;
+      await runStep(page, base, step);
+      const file = `screenshots/${format.name}-${schemeName[scheme]}-${String(index + 1).padStart(2, "0")}-${slug(step)}.png`;
       await page.screenshot({ path: file, fullPage: flag("full"), animations: "disabled" });
       console.log(`Sparade ${file}`);
     }

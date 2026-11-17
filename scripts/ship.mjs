@@ -4,7 +4,7 @@
 //
 //   npm run ship
 //   npm run ship -- "Lägg till betalsidan"      eget meddelande för sparpunkten
-//   npm run ship -- --no-check                  hoppa över typkontrollen
+//   npm run ship -- --no-check                  hoppa över typkontrollen och flödena
 //   npm run ship -- --template                  bara för mallens förvaltare: publicera mallen själv
 //
 // Första gången skapas ett privat repo på GitHub (i organisationen i
@@ -12,7 +12,8 @@
 // Står du på en branch som börjar med variant- eller preview- blir det en
 // förhandsvisning med egen länk. Andra grenar byggs inte (scripts/vercel-ignore-build.sh).
 
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { cleanGhEnv, config, exec, linkedProject, repoSlug, run, say, step, vercel } from "./lib/util.mjs";
 
@@ -29,6 +30,16 @@ if (!argv.includes("--no-check")) {
     process.exit(1);
   }
   say("Inga fel.");
+  // Flödena i flows.json, om dev-servern är igång (npm run verify).
+  if (existsSync("flows.json")) {
+    step("Kontrollerar flödena");
+    const result = spawnSync(process.execPath, ["scripts/verify.mjs"], { stdio: "inherit" });
+    if (result.status === 1) {
+      say("\nEtt flöde fungerar inte (se ovan). Rätta det först, eller publicera ändå med --no-check.");
+      process.exit(1);
+    }
+    if (result.status !== 0) say("Flödena är INTE kontrollerade. Säg det när du delar länken.");
+  }
 }
 
 // 2. Spara ---------------------------------------------------------------------
