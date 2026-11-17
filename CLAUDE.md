@@ -209,7 +209,8 @@ Föreslå alltid alternativet: påhittad exempeldata eller en generell beskrivni
 
 Förinställda i `.claude/settings.json`. De flesta nämns ovan där de används. Tipsa om resten när det passar, högst ett tips i taget:
 
-- **Emil Kowalskis skills** (`emil-design-eng`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype`): "gör det mer levande", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter".
+- **Emil Kowalskis skills** (`emil-design-eng`, `animate`, `gestures`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`, `/prototype`): "gör det mer levande", "animera den här", "ska gå att svepa bort", "känns fel på mobilen", "vad händer med riktig data?", "visa några varianter".
+- **`/learn-taste`** gör Antroparens designrättningar till regler i `DESIGN.md`, så att nästa chatt inte upprepar misstaget. Föreslå den i slutet av en session där Antroparen rättat designen flera gånger. Antroparen skriver kommandot själv.
 - **Vercels skills** (`web-design-guidelines`, `vercel-react-view-transitions`), **Context7** för aktuell dokumentation och **next-devtools** för fel från dev-servern.
 - **antrop-toolbox:** `avoid-ai-swedish` på svenska texter, `antrop-bild` för bilder. **promo-video** gör en showcase-video av prototypen.
 - **Claude i GitHub:** Antroparen och kollegor kan skriva `@claude` i ett ärende eller en pull request. Uppsättning och förhandslänkar: `references/presenting.md`.

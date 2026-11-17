@@ -2,7 +2,7 @@
 
 Bra rörelse märks inte som animation. Den gör att gränssnittet känns snabbt, fysiskt och begripligt. Grunden finns redan i `app/motion.css`. Den här filen säger när och hur du lägger till mer.
 
-För omdöme: skillen **`emil-design-eng`** (Emil Kowalski, som gjort Sonner och Vaul). För granskning: **`review-animations`**. För att hitta ställen som borde röra sig: **`find-animation-opportunities`**. För mobilkänsla: **`mobile-native`**. För vybyten: **`vercel-react-view-transitions`**.
+För omdöme: skillen **`emil-design-eng`** (Emil Kowalski, som gjort Sonner och Vaul). För att bygga en animation: **`animate`**. För dra, svep och sheets: **`gestures`**. För granskning: **`review-animations`**. För att hitta ställen som borde röra sig: **`find-animation-opportunities`**. För mobilkänsla: **`mobile-native`**. För vybyten: **`vercel-react-view-transitions`**.
 
 ## Det som redan fungerar
 
