@@ -19,6 +19,7 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 | Insiktsdashboards: nyckeltal, diagram, filter, citat, siffror som stämmer | [references/dashboards.md](references/dashboards.md) |
 | Visa prototypen: skärmdumpar, användartester, kunden | [references/presenting.md](references/presenting.md) |
 | Kontrollera i Safari på iPhone: simulatorn, WebKit, kända fällor | [references/ios-safari.md](references/ios-safari.md) |
+| Kontroller som en ändring utlöser (databas, AI, Safari-fällor, färger, data) | [references/kontroller.md](references/kontroller.md) |
 | Underlag: Figma, referenser från Mobbin, varianter och Claude Design | [references/underlag.md](references/underlag.md) |
 | Första gången på en ny dator, eller mallen i ett befintligt repo | [references/ny-dator.md](references/ny-dator.md) |
 
@@ -26,7 +27,7 @@ Den här skillen kompletterar `CLAUDE.md` och `DESIGN.md` med fördjupning. Läs
 
 Står i `CLAUDE.md`, så att det bara finns på ett ställe: "Innan du designar", "Visa innan du bygger", "Ny sida: receptet" och "När något är klart". Utöver det gäller för en färdig vy:
 
-- den fungerar på 375 px och 1440 px, i ljust och mörkt läge (Safari på iPhone är en valbar extra kontroll, se `ios-safari.md`)
+- den fungerar på 375 px och 1440 px, i ljust och mörkt läge, och dess flöde finns i `flows.json` och går igenom `npm run verify` (Safari på iPhone ingår i den skarpa nivån, `npm run verify -- --full`)
 - kontrollerna är minst 44 px och har synlig fokus, och det finns en tydlig huvudhandling
 - tomt, laddar och fel är hanterade där de kan uppstå
 - texterna är korta, konkreta och i kundens ton (kör `avoid-ai-swedish` på längre svenska texter)

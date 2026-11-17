@@ -15,9 +15,14 @@ export const PREINSTALLED_CHROMIUM = "/opt/pw-browsers/chromium";
 /**
  * Startar Chromium eller WebKit (samma motor som Safari). Saknas webbläsaren laddas
  * den ner första gången. Går det inte (till exempel utan nät) avslutas skriptet med
- * ett meddelande som säger vad som inte gick att kontrollera.
+ * ett meddelande som säger vad som inte gick att kontrollera. Med { optional: true }
+ * returneras null i stället, så att skriptet kan kontrollera resten.
  */
-export async function launchBrowser(engine = "chromium") {
+export async function launchBrowser(engine = "chromium", { optional = false } = {}) {
+  const giveUp = () => {
+    if (optional) return null;
+    process.exit(2);
+  };
   const playwright = await import("playwright");
   const type = playwright[engine];
   try {
@@ -36,7 +41,7 @@ export async function launchBrowser(engine = "chromium") {
       // Systembibliotek saknas (vanligt för WebKit på Linux, till exempel i molnet).
       if (process.platform !== "linux" || !npx("install", "--with-deps", engine)) {
         console.error(`Kunde inte ladda ner ${name}. Det som skulle kontrolleras i den är INTE kontrollerat.`);
-        process.exit(2);
+        return giveUp();
       }
     }
     try {
@@ -47,7 +52,7 @@ export async function launchBrowser(engine = "chromium") {
       }
       console.error(`${name} startar inte här: ${String(retryError).split("\n")[0]}`);
       console.error("Det som skulle kontrolleras i den är INTE kontrollerat. Kör kommandot på Antroparens Mac.");
-      process.exit(2);
+      return giveUp();
     }
   }
 }

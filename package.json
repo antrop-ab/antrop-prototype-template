@@ -25,6 +25,7 @@
     "github:claude": "node scripts/github-claude.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "ios-check": "node scripts/ios-check.mjs",
+    "verify": "node scripts/verify.mjs",
     "video": "node scripts/video/render.mjs"
   },
   "dependencies": {

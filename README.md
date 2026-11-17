@@ -70,6 +70,7 @@ Claude kör dem åt dig, men de finns här om du vill veta vad som händer.
 | `npm run theme -- --primary "#0B5FFF" --font "Inter"` | Byter till kundens tema |
 | `npm run ship -- "Vad som ändrats"` | Sparar, laddar upp och publicerar. Skriver ut länken |
 | `npm run screenshots -- / "Knapptext"` | Skärmdumpar av ett flöde, mobil och desktop, ljust och mörkt |
+| `npm run verify` | Klickar sig igenom prototypens kärnflöden (`flows.json`) och säger vad som inte fungerar. `--full` kör också mörkt läge, desktop, Safari och iOS-simulatorn |
 | `npm run video -- video/promo` | Showcase-video av prototypen med musik och ljud |
 | `npm run update` | Uppdaterar paket, komponenter och skills |
 | `npm run feedback` | Visar feedback till mallen (`-- --send` skickar) |
@@ -108,7 +109,7 @@ Fler i [CLAUDE.md](CLAUDE.md).
 
 ## För den som förvaltar mallen
 
-- **Feedback** kommer som ärenden i [mallens repo](https://github.com/antrop-ab/antrop-prototype-template/issues), skickade med `npm run feedback -- --send`.
+- **Feedback** kommer som ärenden i [mallens repo](https://github.com/antrop-ab/antrop-prototype-template/issues), skickade med `npm run feedback -- --send`. Ett fel som hänt i minst två prototyper och går att känna igen i en ändring blir en punkt i `references/kontroller.md` (eller en rättning i mallen, som är bättre). Ett fel som hänt en gång väntar. Rensa `kontroller.md` och `CLAUDE.md` med jämna mellanrum: ta bort det som mallen nu förhindrar, så att listorna stannar korta nog att följas.
 - **Vercel-team:** sätt `vercelScope` i `mall.config.json` till Antrops team när det finns, så hamnar alla prototyper där. Med ett team på Pro-planen kan privata repon i `antrop-ab` kopplas så att varje push publiceras, och AI Gateway faktureras samlat.
 - **Vercels GitHub-app** behöver vara installerad för `antrop-ab` för att push ska publicera automatiskt. Utan den publicerar `npm run ship` direkt från datorn i stället.
 - **Claude i GitHub:** installera [Claudes GitHub-app](https://github.com/apps/claude) för `antrop-ab` en gång. Varje repo behöver sedan hemligheten `CLAUDE_CODE_OAUTH_TOKEN` (`npm run github:claude`).
