@@ -21,7 +21,9 @@
 | Knappar i grupp | `ButtonGroup` |
 | Tangentbordsgenvägar | `Kbd` |
 | Sökbar väljare | `Combobox` eller `Command` i en `Popover` |
-| Lager | `Sheet` (sida), `Drawer` (nedifrån, mobil), `Dialog`, `AlertDialog` (bekräfta destruktivt), `Popover`, `HoverCard` |
+| Appbar | `AppBar` i `components/prototyp/`, inbyggd i `PageShell` (`back`, `barActions`) |
+| Lager | `AppSheet` i `components/prototyp/` (sheet på mobil, dialog på desktop), `AlertDialog` (bekräfta destruktivt), `Popover`, `HoverCard` |
+| Menyer | `ActionMenu` i `components/prototyp/` (stora rader i en sheet på mobil, dropdown på desktop) |
 | Aviseringar | `sonner` (`toast("Sparat")`), `Alert` för meddelanden på sidan |
 | Diagram | `Chart` (Recharts) med `chart-1` till `chart-5` |
 | Navigering | `Sidebar`, `NavigationMenu`, `Tabs`, `Breadcrumb`, `Pagination` |
@@ -52,6 +54,18 @@ Block lägger filer i `app/` och `components/`. Titta på vad som skapades och f
 **Välja bland knappar** (dag, tid, storlek, filter): `ToggleGroup type="single" variant="outline"`. Valt läge har huvudfärgen (se `app/globals.css`). En rad man sveper i på mobilen: `flex overflow-x-auto snap-x` på gruppen och `snap-start` på knapparna.
 
 **Flöde i flera steg:** en route per steg med `PageShell`, `eyebrow={<StepProgress … />}` och huvudknappen i `bottomBar`. Valen sparas i en Context (`references/data.md`).
+
+**Lager:** `AppSheet` med `title`, `trigger` eller `open`/`onOpenChange`, och vid behov `description`, `footer` (huvudknappen, står kvar), `toolbar` (flikar eller filter som står kvar), `head` (ett sökfält i stället för rubriken), `full` (alltid full höjd, t.ex. sökning) och `nested` (ett lager inifrån ett annat). Bygg inte en egen sheet av `Drawer` eller `Sheet`: då försvinner dragningen, krysset, höjdreglerna och rubriken som scrollar med.
+
+```tsx
+<AppSheet title="Byt tid" trigger={<Button variant="outline">Byt tid</Button>} footer={<Button className="w-full">Spara</Button>}>
+  …
+</AppSheet>
+```
+
+**Meny:** `ActionMenu` med `trigger` (en ikonknapp med `aria-label`), `title` (rubriken på mobilen) och `groups`, en lista av grupper med `{ icon, label, onSelect, destructive?, disabled?, now? }`. `now` för det som måste köras direkt i trycket, som telefonens dela-meny. Exempel i `app/exempel/komponenter/lager.tsx`.
+
+**Appbar:** `PageShell` lägger in den. `back={{ href: "/bokningar", label: "Bokningar" }}` leder till nivån ovanför, `barActions` tar ikonknappar till höger (stäng, ⋯ med `ActionMenu`). På sidor med eget skal: `<AppBar title="…" watch="id-på-rubriken" />`.
 
 **Bekräftelse:** `PageShell` med `icon` (till exempel `CircleCheck` i `text-primary`), en rubrik som säger vad som hänt och det användaren behöver härnäst.
 

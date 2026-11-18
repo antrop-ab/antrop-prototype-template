@@ -14,8 +14,17 @@
       "name": "Öppna ett lager",
       "steps": [
         "/exempel/komponenter",
-        "Öppna sheet",
-        "syns:Detaljer"
+        "Lång sheet",
+        "syns:Fönsterputs, Vasagatan 12"
+      ]
+    },
+    {
+      "name": "Meny som blir ett lager på mobilen",
+      "steps": [
+        "/exempel/komponenter",
+        "Mer för Norrsken AB",
+        "Byt namn",
+        "syns:Spara"
       ]
     }
   ]

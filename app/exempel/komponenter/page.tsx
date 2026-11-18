@@ -1,6 +1,7 @@
 import { Bell, Download, MoreHorizontal, Plus, Search, Settings, Trash2 } from "lucide-react"
 
 import { PageShell } from "@/components/prototyp/page-shell"
+import { LayerExamples } from "./lager"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,16 +18,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -40,15 +31,6 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -275,41 +257,14 @@ export default function ComponentsExample() {
           </Alert>
         </Section>
 
-        <Section title="Lager och rörelse">
+        <Section title="Lager och menyer">
+          <p className="text-muted-foreground">
+            AppSheet är en sheet nedifrån på mobilen och en dialog på desktop. Dra ned den eller tryck på krysset för
+            att stänga. ActionMenu blir stora rader i en sheet på mobilen och en dropdown på desktop. Dialogen
+            nedan är bara för att bekräfta något som inte går att ångra.
+          </p>
+          <LayerExamples />
           <div className="flex flex-wrap gap-3">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline">Öppna sheet</Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Detaljer</SheetTitle>
-                  <SheetDescription>Sheets passar för detaljer och redigering på desktop.</SheetDescription>
-                </SheetHeader>
-                <SheetFooter>
-                  <Button>Spara</Button>
-                </SheetFooter>
-              </SheetContent>
-            </Sheet>
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button variant="outline">Öppna drawer</Button>
-              </DrawerTrigger>
-              <DrawerContent>
-                <div className="mx-auto w-full max-w-md">
-                  <DrawerHeader>
-                    <DrawerTitle>Välj datum</DrawerTitle>
-                    <DrawerDescription>På mobil känns en drawer som en app. Dra nedåt för att stänga.</DrawerDescription>
-                  </DrawerHeader>
-                  <DrawerFooter>
-                    <Button>Klar</Button>
-                    <DrawerClose asChild>
-                      <Button variant="ghost">Avbryt</Button>
-                    </DrawerClose>
-                  </DrawerFooter>
-                </div>
-              </DrawerContent>
-            </Drawer>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline">Öppna dialog</Button>
