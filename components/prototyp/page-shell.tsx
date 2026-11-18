@@ -1,8 +1,6 @@
-import Link from "next/link"
 import { ViewTransition, type ReactNode } from "react"
-import { ArrowLeft } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { AppBar } from "@/components/prototyp/app-bar"
 import { cn } from "@/lib/utils"
 
 type Width = "narrow" | "default" | "wide" | "full"
@@ -30,16 +28,19 @@ type Props = {
    * och under innehållet på större skärmar.
    */
   bottomBar?: ReactNode
-  /** Visar en tillbaka-länk ovanför rubriken. */
+  /** Tillbaka till nivån ovanför, till vänster i appbaren. */
   back?: { href: string; label: string }
+  /** Ikonknappar till höger i appbaren, t.ex. stäng eller en ActionMenu. Högst två. */
+  barActions?: ReactNode
   width?: Width
   className?: string
   children: ReactNode
 }
 
 /**
- * Standardskal för en sida: luftig rubrik, valfri tillbaka-länk och innehåll
- * direkt på ytan. Bygg sidor med det här i stället för att börja från noll.
+ * Standardskal för en sida: appbar högst upp (tillbaka, handlingar, och rubriken i liten
+ * stil när man har scrollat), luftig rubrik och innehåll direkt på ytan. Bygg sidor med
+ * det här i stället för att börja från noll.
  */
 export function PageShell({
   title,
@@ -49,6 +50,7 @@ export function PageShell({
   eyebrow,
   bottomBar,
   back,
+  barActions,
   width = "default",
   className,
   children,
@@ -70,29 +72,17 @@ export function PageShell({
     >
       <main
         className={cn(
-          "mx-auto w-full px-5 pt-10 pb-24 sm:px-8 sm:pt-16",
+          "mx-auto w-full px-5 pb-24 sm:px-8",
           widths[width],
           className
         )}
       >
-        {back && (
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="mb-6 -ml-3 text-muted-foreground"
-          >
-            <Link href={back.href} transitionTypes={["nav-back"]}>
-              <ArrowLeft />
-              {back.label}
-            </Link>
-          </Button>
-        )}
-        <header className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <AppBar title={title} watch="sidrubrik" back={back} actions={barActions} />
+        <header className="mt-2 mb-10 flex sm:mt-8 flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex max-w-2xl min-w-0 flex-1 flex-col gap-3">
             {eyebrow && <div className="mb-2">{eyebrow}</div>}
             {icon && <div className="mb-3">{icon}</div>}
-            <h1 className="text-3xl font-semibold sm:text-4xl">{title}</h1>
+            <h1 id="sidrubrik" className="text-3xl font-semibold sm:text-4xl">{title}</h1>
             {description && (
               <p className="text-lg text-muted-foreground">{description}</p>
             )}

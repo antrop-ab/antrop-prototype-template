@@ -67,7 +67,7 @@ Djup skapas med **lager och mjuka skuggor**, inte med ramar. Skuggorna i `global
 
 - Sida: platt. Kort: kant eller `shadow-sm`, inte båda kraftigt.
 - Menyer och popovers: `shadow-md`. Dialoger och sheets: `shadow-lg` eller `shadow-xl`.
-- Detaljer öppnas i ett lager (`Sheet`, `Drawer`, `Dialog`, `Popover`) i stället för att staplas på sidan.
+- Detaljer öppnas i ett lager (`AppSheet`, se Components) i stället för att staplas på sidan.
 
 ## Shapes
 
@@ -91,6 +91,13 @@ shadcn/ui i `components/ui/`, alla installerade. AI Elements i `components/ai-el
 - **Formulär:** `FieldGroup` > `Field` > `FieldLabel` + kontroll + `FieldDescription`/`FieldError`. Etiketter ovanför fälten.
 - **Listor:** `Item` (med `ItemMedia`, `ItemContent`, `ItemActions`) eller `Table` för data med kolumner.
 - **Tomma lägen:** `Empty`, med en väg vidare när det går (till exempel närmaste dag med lediga tider). **Laddning:** `Skeleton`. **Bekräftelse:** `sonner`-toast för små handlingar. En bekräftelsesida efter ett flöde svarar på "vad händer nu?": vad som är gjort, nästa steg och en sekundär knapp för att börja om.
+- **Appbar högst upp på varje sida** (`AppBar`, inbyggd i `PageShell`): tillbaka till nivån ovanför till vänster (`back`), högst två ikonknappar till höger (`barActions`, t.ex. stäng eller ⋯). Appbaren står kvar när man scrollar, och när sidans stora rubrik har scrollat bort visas rubriken i liten stil i mitten med en tunn linje under. Stora rubriken står inte fast.
+- **Lager (sheets):** alltid `AppSheet` från `components/prototyp/`, aldrig `ui/drawer`, `ui/sheet` eller `ui/dialog` direkt. På mobilen glider den upp nedifrån, på desktop blir den en dialog i mitten.
+  - Lika hög som innehållet. Får innehållet inte plats går den hela vägen upp och innehållet scrollar.
+  - Stängs genom att **dra ned** den, med **krysset uppe till höger** eller med Esc. Krysset finns alltid.
+  - Toppen är **inte fast**: rubriken scrollar med innehållet. När den har försvunnit tar en smal rad med rubriken och krysset över. Fast topp bara när toppen är ett verktyg (sökfält i `head`, flikar eller filter i `toolbar`), och huvudknappen står kvar längst ned i `footer`.
+  - `AlertDialog` gäller fortfarande för att bekräfta något som inte går att ångra.
+- **Menyer** (⋯, Mer, Sortera): `ActionMenu` från `components/prototyp/`. På desktop en dropdown vid knappen, på mobilen ett `AppSheet` med stora rader (56 px): ikon i en rund platta till vänster och texten bredvid, grupper skilda med en linje, det som förstör (ta bort) sist och i rött.
 - **Navigering:** `Sidebar` för verktyg på desktop, flikar (`Tabs`) för vyer på samma nivå, `Breadcrumb` i djupa strukturer.
 
 ## Do's and Don'ts
