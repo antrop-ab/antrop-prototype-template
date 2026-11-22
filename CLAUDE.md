@@ -120,7 +120,7 @@ Läs `DESIGN.md` innan du bygger. Det som oftast går fel:
 
 - **Semantiska färger via temat** (`bg-primary`, `text-muted-foreground`, `border-border`), aldrig hex-värden eller Tailwinds råa färger. Då fungerar kundens tema och mörkt läge.
 - **Ljust och mörkt läge** följer datorn. Ingen växlare i gränssnittet. Testa med tangenten D.
-- **Luft, inte ramar**, aldrig kort i kort. **En huvudhandling per vy.** Ikoner från `lucide-react`, aldrig emojis. **Mobil först** (375 px).
+- **Luft, inte ramar**, aldrig kort i kort. Linjer bara mellan listrader, aldrig under den sista (`divide-y`). **En huvudhandling per vy.** Ikoner från `lucide-react`, aldrig emojis. **Mobil först** (375 px).
 - **Appbar, lager och menyer:** varje sida har en appbar (`PageShell` med `back` och `barActions`). Lager byggs med `AppSheet` och menyer med `ActionMenu` (båda i `components/prototyp/`), inte med `Drawer`, `Sheet` eller `DropdownMenu` direkt. Sheeten är lika hög som innehållet, går hela vägen upp när det inte får plats, stängs med dragning nedåt eller krysset uppe till höger och har ingen fast topp utom en smal rad med rubrik och kryss när man scrollat. Mer i `DESIGN.md` under Components.
 - **Exempelinnehåll som ser färdigt ut:** trovärdiga påhittade texter, priser och foton (`antrop-bild`, med alt-text som säger att bilden är AI). Platshållare bara för sådant som inte får hittas på, som kontaktuppgifter.
 - **Tillstånd:** tomt, laddar, fel och lyckat, och minst ett undantagsfall i datan. Skillen `break-ui` testar en vy med värsta tänkbara data.
